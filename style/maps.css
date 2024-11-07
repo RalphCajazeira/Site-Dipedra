@@ -1,0 +1,22 @@
+#maps {
+  padding: var(--spacing-4) 0; /* Espaçamento superior e inferior */
+  text-align: center;
+}
+
+#maps h2 {
+  font-size: 1.5rem;
+  margin-bottom: var(--spacing-3); /* Espaçamento abaixo do título */
+}
+
+.map-container {
+  width: 80%;
+  margin: 0 auto;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+.map-container iframe {
+  width: 80%; /* Largura do iframe ajustada */
+  height: 20rem; /* Altura do iframe */
+  border: 0; /* Remove borda */
+}

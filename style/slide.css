@@ -20,7 +20,7 @@
 }
 
 .card-content {
-  background-color: rgba(255, 255, 255, 0.6);
+  background-color: rgba(255, 255, 255, 0.5);
   padding: var(--spacing-4); /* 24px */
   border-radius: var(--border-radius); /* 8px */
   display: flex;
@@ -58,13 +58,13 @@
 .button-box .btn {
   display: inline-block;
   padding: var(--spacing-2) var(--spacing-3); /* 8px 16px */
-  background-color: #004080;
-  color: white;
+  color: rgba(39, 24, 93, 0.685);
   text-decoration: none;
   border-radius: var(--border-radius); /* 8px */
   transition: background-color 0.3s;
+  border: 1px solid #00408057;
 }
 
 .button-box .btn:hover {
-  background-color: #00234f;
+  background-color: #004080a3;
 }

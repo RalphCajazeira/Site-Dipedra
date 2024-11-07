@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
       currentSlide = (currentSlide + 1) % images.length;
       cardContainer.style.backgroundImage = `url('${images[currentSlide]}')`;
       console.log(`Mostrando imagem: ${images[currentSlide]}`);
-    }, 3000); // alterna a cada 3 segundos
+    }, 6000); // alterna a cada 3 segundos
   }
 
   startSlideShow();
