@@ -17,22 +17,17 @@
 a {
   text-decoration: none;
   color: inherit;
+  transition: transform 0.2s ease-in-out;
+}
 
-  &:hover {
-    transform: scale(1.05);
-    display: inline-block;
-    transition: transform 0.2s ease-in-out;
-  }
+a:hover {
+  transform: scale(1.05);
 }
 
 footer {
-  margin-top: 1rem;
-  & p {
-    text-align: center;
-    padding: 0.5rem;
-    background-color: #00234f;
-    color: #ffffff;
-    width: 100%;
-    bottom: 0;
-  }
+  margin-top: var(--spacing-3);
+  text-align: center;
+  padding: var(--spacing-2);
+  background-color: #00234f;
+  color: #ffffff;
 }

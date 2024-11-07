@@ -16,7 +16,7 @@
 }
 
 .map-container iframe {
-  width: 80%;
+  width: 100%;
   height: 20rem;
   border: 0;
 }
@@ -24,21 +24,20 @@
 /* Responsividade */
 @media (max-width: 768px) {
   .map-container {
-    width: 100%; /* Ajusta o contêiner para ocupar toda a largura */
+    width: 100%;
   }
 
   .map-container iframe {
-    width: 100%; /* Ajusta o iframe para ocupar toda a largura */
-    height: 18rem; /* Ajusta a altura para dispositivos menores */
+    height: 18rem;
   }
 }
 
 @media (max-width: 480px) {
   #maps h2 {
-    font-size: 1.25rem; /* Reduz o tamanho do título em telas pequenas */
+    font-size: 1.25rem;
   }
 
   .map-container iframe {
-    height: 16rem; /* Reduz mais a altura do iframe para dispositivos muito pequenos */
+    height: 16rem;
   }
 }
