@@ -1,11 +1,11 @@
 #maps {
-  padding: var(--spacing-4) 0; /* Espaçamento superior e inferior */
+  padding: var(--spacing-4) 0;
   text-align: center;
 }
 
 #maps h2 {
   font-size: 1.5rem;
-  margin-bottom: var(--spacing-3); /* Espaçamento abaixo do título */
+  margin-bottom: var(--spacing-3);
 }
 
 .map-container {
@@ -16,7 +16,29 @@
 }
 
 .map-container iframe {
-  width: 80%; /* Largura do iframe ajustada */
-  height: 20rem; /* Altura do iframe */
-  border: 0; /* Remove borda */
+  width: 80%;
+  height: 20rem;
+  border: 0;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .map-container {
+    width: 100%; /* Ajusta o contêiner para ocupar toda a largura */
+  }
+
+  .map-container iframe {
+    width: 100%; /* Ajusta o iframe para ocupar toda a largura */
+    height: 18rem; /* Ajusta a altura para dispositivos menores */
+  }
+}
+
+@media (max-width: 480px) {
+  #maps h2 {
+    font-size: 1.25rem; /* Reduz o tamanho do título em telas pequenas */
+  }
+
+  .map-container iframe {
+    height: 16rem; /* Reduz mais a altura do iframe para dispositivos muito pequenos */
+  }
 }
