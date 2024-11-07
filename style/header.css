@@ -1,0 +1,10 @@
+.header-main {
+  & > img {
+    width: 8rem;
+  }
+
+  & ul {
+    display: flex;
+    gap: 1rem;
+  }
+}
