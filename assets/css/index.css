@@ -1,9 +1,8 @@
-/* Importando CSS Global e Específico */
+/* index.css - Arquivo central de importação de CSS */
+
 @import url("global.css");
-@import url("header.css");
-@import url("footer.css");
-@import url("slide.css");
-@import url("maps.css");
-@import url("contacts.css");
-@import url("utility.css");
-@import url("portfolio.css"); /* CSS específico para a página de portfólio */
+@import url("components.css"); /* Importando estilos para header, footer e utilitários */
+@import url("home.css"); /* Estilos específicos para a página inicial */
+@import url("portfolio.css"); /* Estilos específicos para a página de portfólio */
+@import url("maps.css"); /* Estilos específicos para a seção de mapas */
+@import url("contacts.css"); /* Estilos específicos para a seção de contatos */

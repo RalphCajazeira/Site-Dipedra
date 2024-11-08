@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-br">
   <head>
-    <!-- Carregamento direto do CSS -->
-    <link rel="stylesheet" href="https://use.typekit.net/fut0vuv.css" />
+    <link rel="stylesheet" href="../assets/css/index.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Portfólio - Dipedra</title>
-    <link rel="stylesheet" href="../assets/css/index.css" />
   </head>
   <body>
     <div class="page-container">
@@ -30,7 +28,11 @@
           Aqui você encontra nossos melhores trabalhos em mármores, granitos e
           pedras naturais.
         </p>
-        <!-- Galeria de Projetos pode ser inserida aqui -->
+
+        <!-- Grid de Cards -->
+        <section id="portfolio-grid" class="grid-container">
+          <!-- Os cards serão gerados dinamicamente aqui -->
+        </section>
       </main>
 
       <!-- Footer -->
@@ -38,5 +40,8 @@
         <p>&copy; 2024 Dipedra</p>
       </footer>
     </div>
+
+    <!-- Script para carregar os cards dinamicamente -->
+    <script src="../scripts/portfolio.js"></script>
   </body>
 </html>
