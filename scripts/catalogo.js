@@ -12,17 +12,41 @@ document.addEventListener("DOMContentLoaded", function () {
   let allItems = []; // Armazena todos os itens do JSON para pesquisa
   let ambientesMap = new Map(); // Armazena os ambientes únicos e a primeira imagem de cada
 
+  // Função para abrir o modal com a imagem ampliada
+  function openModal(imageSrc) {
+    const modal = document.getElementById("image-modal");
+    const modalImage = document.getElementById("modal-image");
+    modalImage.src = imageSrc;
+    modal.style.display = "flex";
+  }
+
+  // Função para fechar o modal
+  window.closeModal = function () {
+    document.getElementById("image-modal").style.display = "none";
+  };
+
   // Função para exibir a grid inicial com os ambientes
   function displayAmbientes() {
     catalogoGrid.innerHTML = ""; // Limpa o grid
 
-    // Cria um card para cada ambiente com a primeira imagem encontrada
+    // Cria um card para cada ambiente com a primeira imagem disponível, dando prioridade a imagens não repetidas
     ambientesMap.forEach((items, ambiente) => {
-      const firstItem = items[0]; // A primeira ocorrência do ambiente
+      let firstItem = items[0]; // Inicialmente assume a primeira imagem como capa
+      let remainingItems = items.slice(1); // Outros itens após a primeira
+
+      // Tenta encontrar uma imagem que ainda não foi usada
+      for (let item of remainingItems) {
+        if (!item.capaUsada) {
+          firstItem = item;
+          item.capaUsada = true;
+          break;
+        }
+      }
+
       const card = document.createElement("div");
       card.classList.add("card");
 
-      // Imagem do ambiente (primeira ocorrência do ambiente no JSON)
+      // Imagem do ambiente (primeira ocorrência ou uma imagem diferente da capa)
       const img = document.createElement("img");
       img.src = `${imagePath}${firstItem.imagem}`;
       img.alt = `Imagem de ${ambiente}`;
@@ -35,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
       title.textContent = ambiente;
       card.appendChild(title);
 
-      // Evento de clique para exibir as imagens do ambiente
+      // Evento de clique no card para exibir as imagens do ambiente
       card.addEventListener("click", () => displayImagesByAmbiente(ambiente));
 
       catalogoGrid.appendChild(card);
@@ -58,15 +82,18 @@ document.addEventListener("DOMContentLoaded", function () {
       img.onerror = () => (img.src = placeholderPath);
       imgWrapper.appendChild(img);
 
+      // Evento de clique para abrir a imagem no modal
+      img.addEventListener("click", () => openModal(img.src));
+
       // Informações do produto
       const info = document.createElement("div");
       info.classList.add("image-info");
       info.innerHTML = `
-          <h3>${item.nome}</h3>
-          <p><strong>Tipo:</strong> ${item.tipo}</p>
-          <p><strong>Material:</strong> ${item.material}</p>
-          <p><strong>Ambientes:</strong> ${item.ambientes.join(", ")}</p>
-        `;
+        <h3>${item.nome}</h3>
+        <p><strong>Tipo:</strong> ${item.tipo}</p>
+        <p><strong>Material:</strong> ${item.material}</p>
+        <p><strong>Ambientes:</strong> ${item.ambientes.join(", ")}</p>
+      `;
       imgWrapper.appendChild(info);
 
       catalogoGrid.appendChild(imgWrapper);
@@ -99,15 +126,18 @@ document.addEventListener("DOMContentLoaded", function () {
       img.onerror = () => (img.src = placeholderPath);
       imgWrapper.appendChild(img);
 
+      // Evento de clique para abrir a imagem no modal
+      img.addEventListener("click", () => openModal(img.src));
+
       // Informações do produto
       const info = document.createElement("div");
       info.classList.add("image-info");
       info.innerHTML = `
-          <h3>${item.nome}</h3>
-          <p><strong>Tipo:</strong> ${item.tipo}</p>
-          <p><strong>Material:</strong> ${item.material}</p>
-          <p><strong>Ambientes:</strong> ${item.ambientes.join(", ")}</p>
-        `;
+        <h3>${item.nome}</h3>
+        <p><strong>Tipo:</strong> ${item.tipo}</p>
+        <p><strong>Material:</strong> ${item.material}</p>
+        <p><strong>Ambientes:</strong> ${item.ambientes.join(", ")}</p>
+      `;
       imgWrapper.appendChild(info);
 
       catalogoGrid.appendChild(imgWrapper);

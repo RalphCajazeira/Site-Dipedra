@@ -33,5 +33,12 @@
     "tipo": "Marmore",
     "material": "Branco",
     "ambientes": ["Piscina"]
+  },
+  {
+    "imagem": "2xg.jpg",
+    "nome": "Bancada Ilha",
+    "tipo": "Marmore",
+    "material": "Azul",
+    "ambientes": ["Cozinha"]
   }
 ]
