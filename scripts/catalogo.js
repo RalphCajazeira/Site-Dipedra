@@ -15,23 +15,55 @@ document.addEventListener("DOMContentLoaded", function () {
     const modal = document.getElementById("image-modal");
     const modalImage = document.getElementById("modal-image");
     currentImageIndex = imageIndex;
-    modalImage.src = `${imagePath}${filteredItems[imageIndex].imagem}`;
-    modal.style.display = "flex";
+
+    if (modal && modalImage) {
+      modalImage.src = `${imagePath}${filteredItems[imageIndex].imagem}`;
+      modal.style.display = "flex";
+
+      // Adiciona o evento de teclado ao abrir o modal
+      document.addEventListener("keydown", handleKeydown);
+    } else {
+      console.error("Elemento modal ou modal-image não encontrado.");
+    }
   }
 
-  window.closeModal = function () {
-    document.getElementById("image-modal").style.display = "none";
-  };
+  function closeModal() {
+    const modal = document.getElementById("image-modal");
+    if (modal) {
+      modal.style.display = "none";
 
-  function navigateImage(direction) {
-    currentImageIndex += direction;
-    if (currentImageIndex < 0) {
-      currentImageIndex = filteredItems.length - 1;
-    } else if (currentImageIndex >= filteredItems.length) {
-      currentImageIndex = 0;
+      // Remove o evento de teclado ao fechar o modal
+      document.removeEventListener("keydown", handleKeydown);
     }
+  }
+
+  // Função para navegação entre as imagens
+  function navigateImage(direction) {
     const modalImage = document.getElementById("modal-image");
-    modalImage.src = `${imagePath}${filteredItems[currentImageIndex].imagem}`;
+    if (modalImage) {
+      currentImageIndex += direction;
+      if (currentImageIndex < 0) {
+        currentImageIndex = filteredItems.length - 1;
+      } else if (currentImageIndex >= filteredItems.length) {
+        currentImageIndex = 0;
+      }
+      modalImage.src = `${imagePath}${filteredItems[currentImageIndex].imagem}`;
+    }
+  }
+
+  // Tornar navigateImage e closeModal globais para serem acessíveis no HTML
+  window.navigateImage = navigateImage;
+  window.closeModal = closeModal;
+
+  // Função para lidar com eventos de teclado
+  function handleKeydown(event) {
+    if (event.key === "Escape") {
+      closeModal();
+    } else if (event.key === "ArrowRight") {
+      navigateImage(1);
+    } else if (event.key === "ArrowLeft") {
+      navigateImage(-1);
+    }
   }
 
   function displayAmbientes() {
@@ -177,10 +209,13 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
   // Navegação dos botões de próxima e anterior
-  document
-    .querySelector(".modal-button.left")
-    .addEventListener("click", () => navigateImage(-1));
-  document
-    .querySelector(".modal-button.right")
-    .addEventListener("click", () => navigateImage(1));
+  const leftButton = document.querySelector(".modal-button.left");
+  const rightButton = document.querySelector(".modal-button.right");
+
+  if (leftButton) {
+    leftButton.addEventListener("click", () => navigateImage(-1));
+  }
+  if (rightButton) {
+    rightButton.addEventListener("click", () => navigateImage(1));
+  }
 });

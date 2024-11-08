@@ -1,4 +1,4 @@
-/* home.css - Estilos específicos para a página inicial (index.html) */
+/* Estilos principais do home.css já existentes */
 
 .slideshow {
   position: relative;
@@ -55,4 +55,65 @@
 .button-box .btn:hover {
   background-color: var(--color-secondary);
   color: var(--color-text-light);
+}
+
+/* Estilos da seção Contacts (incorporando contacts.css) */
+
+#contacts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  align-items: center;
+  background-color: var(--color-background);
+  color: var(--color-text-dark);
+}
+
+.address,
+.phone {
+  text-align: center;
+}
+
+.title {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-2);
+  color: var(--color-primary);
+}
+
+.social-media {
+  display: flex;
+  gap: var(--spacing-3);
+}
+
+.social-media img {
+  width: 2rem;
+  height: 2rem;
+}
+
+/* Estilos da seção Maps (incorporando maps.css) */
+
+#maps {
+  padding: var(--spacing-4) 0;
+  text-align: center;
+  background-color: var(--color-background-alt);
+}
+
+#maps h2 {
+  font-size: 1.5rem;
+  margin-bottom: var(--spacing-3);
+  color: var(--color-primary);
+}
+
+.map-container {
+  width: 80%;
+  margin: 0 auto;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+
+.map-container iframe {
+  width: 100%;
+  height: 20rem;
+  border: 0;
 }

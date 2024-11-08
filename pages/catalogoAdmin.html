@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Administração do Catálogo - Upload</title>
+    <link rel="stylesheet" href="../assets/css/index.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Administração do Catálogo</h1>
+    </header>
+
+    <main>
+      <form id="uploadForm" enctype="multipart/form-data">
+        <label for="productName">Nome do Produto:</label>
+        <input type="text" id="productName" name="productName" required />
+
+        <label for="productType">Tipo do Produto:</label>
+        <input type="text" id="productType" name="productType" required />
+
+        <label for="productMaterial">Material:</label>
+        <input
+          type="text"
+          id="productMaterial"
+          name="productMaterial"
+          required
+        />
+
+        <label for="productAmbientes"
+          >Ambientes (separados por vírgulas):</label
+        >
+        <input
+          type="text"
+          id="productAmbientes"
+          name="productAmbientes"
+          required
+        />
+
+        <label for="productImage">Imagem:</label>
+        <input
+          type="file"
+          id="productImage"
+          name="productImage"
+          accept="image/*"
+          required
+        />
+
+        <button type="submit">Enviar</button>
+      </form>
+
+      <div id="uploadStatus"></div>
+    </main>
+
+    <script src="../scripts/upload.js"></script>
+  </body>
+</html>

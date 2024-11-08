@@ -1,9 +1,6 @@
-/* index.css - Arquivo central de importação de CSS */
+/* index.css - Arquivo principal que importa e organiza os estilos globais e específicos */
 
-@import url("global.css");
-@import url("components.css"); /* Importando estilos para header, footer e utilitários */
+@import url("global.css"); /* Estilos globais e variáveis */
+@import url("components.css"); /* Componentes comuns: header, footer, utilitários */
 @import url("home.css"); /* Estilos específicos para a página inicial */
-@import url("portfolio.css"); /* Estilos específicos para a página de portfólio */
-@import url("maps.css"); /* Estilos específicos para a seção de mapas */
-@import url("contacts.css"); /* Estilos específicos para a seção de contatos */
-@import url(catalogo.css);
+@import url("catalogo.css"); /* Estilos específicos para a página do catálogo */

@@ -16,13 +16,13 @@
   --border-radius: 0.5rem; /* 8px */
 
   /* Variáveis de cores */
-  --color-primary: #021a37; /* Azul Escuro - principal para textos e botões */
-  --color-secondary: #0050a0; /* Azul mais claro - para hover e destaques */
-  --color-background: #ffffff; /* Branco - fundo principal */
-  --color-text-dark: #333333; /* Cinza Escuro - texto principal */
-  --color-text-light: #ffffff; /* Branco - texto em fundos escuros */
-  --color-border: #cccccc; /* Cinza Claro - bordas suaves */
-  --color-background-alt: #f4f4f4; /* Cinza Muito Claro - fundos alternativos */
+  --color-primary: #021a37; /* Azul Escuro */
+  --color-secondary: #0050a0; /* Azul Claro */
+  --color-background: #ffffff; /* Branco */
+  --color-text-dark: #333333; /* Cinza Escuro */
+  --color-text-light: #ffffff; /* Branco */
+  --color-border: #cccccc; /* Cinza Claro */
+  --color-background-alt: #f4f4f4; /* Cinza Claro */
 }
 
 /* Estilos básicos para links */
@@ -36,7 +36,7 @@ a:hover {
   transform: scale(1.05);
 }
 
-/* Configuração para layout sticky footer */
+/* Layout com footer fixo */
 html,
 body {
   height: 100%;
@@ -49,7 +49,7 @@ body {
 }
 
 main {
-  flex: 1; /* O conteúdo principal ocupa o espaço disponível */
+  flex: 1;
 }
 
 /* Estilo do Footer */

@@ -4,41 +4,74 @@
     "nome": "Bancada",
     "tipo": "Granito",
     "material": "Preto São Gabriel",
-    "ambientes": ["Cozinha", "Banheiro"]
+    "ambientes": [
+      "Cozinha",
+      "Banheiro"
+    ]
   },
   {
     "imagem": "mesa1.jpg",
     "nome": "Mesa",
     "tipo": "Mármore",
     "material": "Carrara",
-    "ambientes": ["Sala de Jantar"]
+    "ambientes": [
+      "Sala de Jantar"
+    ]
   },
   {
     "imagem": "piso1.jpg",
     "nome": "Piso",
     "tipo": "Porcelanato",
     "material": "Branco",
-    "ambientes": ["Sala", "Banheiro"]
+    "ambientes": [
+      "Sala",
+      "Banheiro"
+    ]
   },
   {
     "imagem": "Varanda1.jpg",
     "nome": "Bancada",
     "tipo": "Granito",
     "material": "Branco",
-    "ambientes": ["Área de Serviço", "Banheiro"]
+    "ambientes": [
+      "Área de Serviço",
+      "Banheiro"
+    ]
   },
   {
     "imagem": "Piscina2.jpg",
     "nome": "Piscina",
     "tipo": "Marmore",
     "material": "Branco",
-    "ambientes": ["Piscina"]
+    "ambientes": [
+      "Piscina"
+    ]
   },
   {
     "imagem": "2xg.jpg",
     "nome": "Bancada Ilha",
     "tipo": "Marmore",
     "material": "Azul",
-    "ambientes": ["Cozinha"]
+    "ambientes": [
+      "Cozinha"
+    ]
+  },
+  {
+    "imagem": "Snapinsta.app_465082309_18464056879013933_1538628036958080932_n_1080.jpg",
+    "nome": "Bancada",
+    "tipo": "Granito",
+    "material": "Mont Blanc",
+    "ambientes": [
+      "Banheiro"
+    ]
+  },
+  {
+    "imagem": "bancada-granito-mont-blanc.jpg",
+    "nome": "Bancada",
+    "tipo": "Granito",
+    "material": "Mont Blanc",
+    "ambientes": [
+      "Banheiro"
+    ]
   }
 ]
