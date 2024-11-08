@@ -4,7 +4,13 @@ document.addEventListener("DOMContentLoaded", function () {
   const portfolioGrid = document.getElementById("portfolio-grid");
 
   // Definindo as pastas dos projetos atuais
-  const projects = ["Area de Serviço", "Banheiro", "Cozinha", "Varanda"];
+  const projects = [
+    "Area de Serviço",
+    "Banheiro",
+    "Cozinha",
+    "Varanda",
+    "Pisicina",
+  ];
 
   // Caminho da imagem de fallback (caso capa.jpg não esteja presente)
   const placeholderPath = "../assets/images/placeholder.jpg"; // Caminho relativo ajustado

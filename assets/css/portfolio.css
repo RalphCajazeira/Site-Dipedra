@@ -20,6 +20,7 @@
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: var(--spacing-4);
   padding: 0 var(--spacing-4);
+  margin-top: var(--spacing-4);
 }
 
 /* Card Style */
