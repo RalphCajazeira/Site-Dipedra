@@ -1,0 +1,37 @@
+[
+  {
+    "imagem": "bancada1.jpg",
+    "nome": "Bancada",
+    "tipo": "Granito",
+    "material": "Preto São Gabriel",
+    "ambientes": ["Cozinha", "Banheiro"]
+  },
+  {
+    "imagem": "mesa1.jpg",
+    "nome": "Mesa",
+    "tipo": "Mármore",
+    "material": "Carrara",
+    "ambientes": ["Sala de Jantar"]
+  },
+  {
+    "imagem": "piso1.jpg",
+    "nome": "Piso",
+    "tipo": "Porcelanato",
+    "material": "Branco",
+    "ambientes": ["Sala", "Banheiro"]
+  },
+  {
+    "imagem": "Varanda1.jpg",
+    "nome": "Bancada",
+    "tipo": "Granito",
+    "material": "Branco",
+    "ambientes": ["Área de Serviço", "Banheiro"]
+  },
+  {
+    "imagem": "Piscina2.jpg",
+    "nome": "Piscina",
+    "tipo": "Marmore",
+    "material": "Branco",
+    "ambientes": ["Piscina"]
+  }
+]
