@@ -1,78 +1,70 @@
-// catalogo.js - Carrega os ambientes e imagens do JSON do catálogo
-
 document.addEventListener("DOMContentLoaded", function () {
   const catalogoGrid = document.getElementById("catalogo-grid");
   const searchInput = document.getElementById("search-input");
 
-  // Caminhos para o JSON e as imagens
   const catalogoJsonPath = "../assets/catalogo.json";
   const imagePath = "../assets/images/catalogo/";
   const placeholderPath = "../assets/images/placeholder.jpg";
 
-  let allItems = []; // Armazena todos os itens do JSON para pesquisa
-  let ambientesMap = new Map(); // Armazena os ambientes únicos e a primeira imagem de cada
+  let allItems = [];
+  let ambientesMap = new Map();
+  let filteredItems = [];
+  let currentImageIndex = 0;
 
-  // Função para abrir o modal com a imagem ampliada
-  function openModal(imageSrc) {
+  function openModal(imageIndex) {
     const modal = document.getElementById("image-modal");
     const modalImage = document.getElementById("modal-image");
-    modalImage.src = imageSrc;
+    currentImageIndex = imageIndex;
+    modalImage.src = `${imagePath}${filteredItems[imageIndex].imagem}`;
     modal.style.display = "flex";
   }
 
-  // Função para fechar o modal
   window.closeModal = function () {
     document.getElementById("image-modal").style.display = "none";
   };
 
-  // Função para exibir a grid inicial com os ambientes
+  function navigateImage(direction) {
+    currentImageIndex += direction;
+    if (currentImageIndex < 0) {
+      currentImageIndex = filteredItems.length - 1;
+    } else if (currentImageIndex >= filteredItems.length) {
+      currentImageIndex = 0;
+    }
+    const modalImage = document.getElementById("modal-image");
+    modalImage.src = `${imagePath}${filteredItems[currentImageIndex].imagem}`;
+  }
+
   function displayAmbientes() {
-    catalogoGrid.innerHTML = ""; // Limpa o grid
-
-    // Cria um card para cada ambiente com a primeira imagem disponível, dando prioridade a imagens não repetidas
+    catalogoGrid.innerHTML = "";
     ambientesMap.forEach((items, ambiente) => {
-      let firstItem = items[0]; // Inicialmente assume a primeira imagem como capa
-      let remainingItems = items.slice(1); // Outros itens após a primeira
-
-      // Tenta encontrar uma imagem que ainda não foi usada
-      for (let item of remainingItems) {
-        if (!item.capaUsada) {
-          firstItem = item;
-          item.capaUsada = true;
-          break;
-        }
-      }
+      let firstItem = items.find((item) => !item.capaUsada) || items[0];
+      firstItem.capaUsada = true;
 
       const card = document.createElement("div");
       card.classList.add("card");
 
-      // Imagem do ambiente (primeira ocorrência ou uma imagem diferente da capa)
       const img = document.createElement("img");
       img.src = `${imagePath}${firstItem.imagem}`;
       img.alt = `Imagem de ${ambiente}`;
       img.onerror = () => (img.src = placeholderPath);
       card.appendChild(img);
 
-      // Título do ambiente
       const title = document.createElement("div");
       title.classList.add("card-title");
       title.textContent = ambiente;
       card.appendChild(title);
 
-      // Evento de clique no card para exibir as imagens do ambiente
       card.addEventListener("click", () => displayImagesByAmbiente(ambiente));
 
       catalogoGrid.appendChild(card);
     });
   }
 
-  // Função para exibir as imagens associadas a um ambiente específico
   function displayImagesByAmbiente(ambiente) {
-    catalogoGrid.innerHTML = ""; // Limpa o grid para exibir as imagens do ambiente
+    catalogoGrid.innerHTML = "";
+    filteredItems = ambientesMap.get(ambiente) || [];
 
-    const items = ambientesMap.get(ambiente);
-
-    items.forEach((item) => {
+    filteredItems.forEach((item, index) => {
       const imgWrapper = document.createElement("div");
       imgWrapper.classList.add("image-wrapper");
 
@@ -82,10 +74,8 @@ document.addEventListener("DOMContentLoaded", function () {
       img.onerror = () => (img.src = placeholderPath);
       imgWrapper.appendChild(img);
 
-      // Evento de clique para abrir a imagem no modal
-      img.addEventListener("click", () => openModal(img.src));
+      img.addEventListener("click", () => openModal(index));
 
-      // Informações do produto
       const info = document.createElement("div");
       info.classList.add("image-info");
       info.innerHTML = `
@@ -99,7 +89,6 @@ document.addEventListener("DOMContentLoaded", function () {
       catalogoGrid.appendChild(imgWrapper);
     });
 
-    // Botão para voltar à visualização dos ambientes
     const backButton = document.createElement("button");
     backButton.textContent = "Voltar";
     backButton.classList.add("back-button");
@@ -107,16 +96,16 @@ document.addEventListener("DOMContentLoaded", function () {
     catalogoGrid.appendChild(backButton);
   }
 
-  // Função para exibir os itens que correspondem ao termo de pesquisa
-  function displayFilteredItems(filteredItems) {
-    catalogoGrid.innerHTML = ""; // Limpa o grid
+  function displayFilteredItems(filtered) {
+    catalogoGrid.innerHTML = "";
+    filteredItems = filtered;
 
     if (filteredItems.length === 0) {
       catalogoGrid.innerHTML = "<p>Nenhum resultado encontrado.</p>";
       return;
     }
 
-    filteredItems.forEach((item) => {
+    filteredItems.forEach((item, index) => {
       const imgWrapper = document.createElement("div");
       imgWrapper.classList.add("image-wrapper");
 
@@ -126,10 +115,8 @@ document.addEventListener("DOMContentLoaded", function () {
       img.onerror = () => (img.src = placeholderPath);
       imgWrapper.appendChild(img);
 
-      // Evento de clique para abrir a imagem no modal
-      img.addEventListener("click", () => openModal(img.src));
+      img.addEventListener("click", () => openModal(index));
 
-      // Informações do produto
       const info = document.createElement("div");
       info.classList.add("image-info");
       info.innerHTML = `
@@ -144,49 +131,42 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Função de pesquisa dinâmica com suporte a múltiplos termos
   function filterItems(query) {
     const terms = query
       .toLowerCase()
       .split(" ")
-      .filter((term) => term); // Divide em múltiplos termos e remove espaços em branco
-
-    const filteredItems = allItems.filter((item) => {
+      .filter((term) => term);
+    filteredItems = allItems.filter((item) => {
       const searchData = `${item.nome} ${item.tipo} ${
         item.material
       } ${item.ambientes.join(" ")}`.toLowerCase();
-
-      // Verifica se todos os termos estão presentes nos dados de pesquisa
       return terms.every((term) => searchData.includes(term));
     });
 
     if (query === "") {
-      displayAmbientes(); // Exibe a grid inicial se não houver termo de pesquisa
+      displayAmbientes();
     } else {
-      displayFilteredItems(filteredItems); // Exibe os itens filtrados pela pesquisa
+      displayFilteredItems(filteredItems);
     }
   }
 
-  // Carrega o JSON e prepara a exibição inicial
   fetch(catalogoJsonPath)
     .then((response) => response.json())
     .then((items) => {
-      allItems = items; // Guarda todos os itens para a pesquisa
+      allItems = items;
 
-      // Prepara os ambientes e suas imagens
       items.forEach((item) => {
         item.ambientes.forEach((ambiente) => {
           if (!ambientesMap.has(ambiente)) {
-            ambientesMap.set(ambiente, [item]); // Adiciona o ambiente com a primeira imagem
+            ambientesMap.set(ambiente, [item]);
           } else {
-            ambientesMap.get(ambiente).push(item); // Adiciona mais itens ao ambiente existente
+            ambientesMap.get(ambiente).push(item);
           }
         });
       });
 
-      displayAmbientes(); // Exibe a grid inicial com os ambientes
+      displayAmbientes();
 
-      // Evento de input para a pesquisa
       searchInput.addEventListener("input", (event) => {
         filterItems(event.target.value);
       });
@@ -195,4 +175,12 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error("Erro ao carregar o catálogo:", error);
       catalogoGrid.innerHTML = "<p>Erro ao carregar as imagens.</p>";
     });
+
+  // Navegação dos botões de próxima e anterior
+  document
+    .querySelector(".modal-button.left")
+    .addEventListener("click", () => navigateImage(-1));
+  document
+    .querySelector(".modal-button.right")
+    .addEventListener("click", () => navigateImage(1));
 });

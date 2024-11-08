@@ -32,7 +32,7 @@
 
       <!-- Grid de Imagens -->
       <section id="catalogo-grid" class="grid-container">
-        <!-- As imagens serão geradas dinamicamente aqui -->
+        <!-- As imagens serão geradas dinamicamente aqui pelo JavaScript -->
       </section>
 
       <!-- Footer -->
@@ -41,10 +41,22 @@
       </footer>
     </div>
 
+    <!-- Modal para Ampliar a Imagem -->
     <div id="image-modal" class="modal">
       <button class="modal-close" onclick="closeModal()">×</button>
       <div class="modal-content">
+        <!-- Botão Anterior -->
+        <button class="modal-button left" onclick="navigateImage(-1)">
+          <img src="../assets/icos/chevron_left.svg" alt="Anterior" />
+        </button>
+
+        <!-- Imagem Ampliada -->
         <img id="modal-image" src="" alt="Imagem ampliada" />
+
+        <!-- Botão Próximo -->
+        <button class="modal-button right" onclick="navigateImage(1)">
+          <img src="../assets/icos/chevron_right.svg" alt="Próximo" />
+        </button>
       </div>
     </div>
 
