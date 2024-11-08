@@ -1,3 +1,4 @@
+/* Configurações globais e variáveis */
 * {
   margin: 0;
   padding: 0;
@@ -14,6 +15,7 @@
   --border-radius: 0.5rem; /* 8px */
 }
 
+/* Estilos básicos para links */
 a {
   text-decoration: none;
   color: inherit;
@@ -24,6 +26,23 @@ a:hover {
   transform: scale(1.05);
 }
 
+/* Configuração para layout sticky footer */
+html,
+body {
+  height: 100%;
+}
+
+.page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1; /* O conteúdo principal ocupa o espaço disponível */
+}
+
+/* Estilo do Footer */
 footer {
   margin-top: var(--spacing-3);
   text-align: center;

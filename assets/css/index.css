@@ -1,0 +1,9 @@
+/* Importando CSS Global e Específico */
+@import url("global.css");
+@import url("header.css");
+@import url("footer.css");
+@import url("slide.css");
+@import url("maps.css");
+@import url("contacts.css");
+@import url("utility.css");
+@import url("portfolio.css"); /* CSS específico para a página de portfólio */
