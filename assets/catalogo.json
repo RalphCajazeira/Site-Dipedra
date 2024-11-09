@@ -18,10 +18,172 @@
     ]
   },
   {
-    "imagem": "bancada---granito---mont-blanc---varanda---1.jpg",
+    "imagem": "bancada---granito---mont-blanc---banheiro---3.jpg",
     "nome": "Bancada",
     "tipo": "Granito",
     "material": "Mont Blanc",
+    "ambientes": [
+      "Cozinha"
+    ]
+  },
+  {
+    "imagem": "cuba-esculpida---mármore---bege-bahia---banheiro---1.jpg",
+    "nome": "Cuba Esculpida",
+    "tipo": "Mármore",
+    "material": "Bege Bahia",
+    "ambientes": [
+      "Banheiro"
+    ]
+  },
+  {
+    "imagem": "bancada---mármore---travertino-romano-bruto---banheiro---1.jpg",
+    "nome": "Bancada e Cuba Esculpida",
+    "tipo": "Mármore",
+    "material": "Travertino Romano",
+    "ambientes": [
+      "Banheiro"
+    ]
+  },
+  {
+    "imagem": "cuba-esculpida---quartzito---quartzito-gris-satinato---banheiro---1.jpg",
+    "nome": "Bancada e Cuba Esculpida",
+    "tipo": "Quartzito",
+    "material": "Travertino Romano e Quartzito Gris Satinato",
+    "ambientes": [
+      "Banheiro"
+    ]
+  },
+  {
+    "imagem": "mesa---granito---titanium-gold---escritório---1.jpg",
+    "nome": "Mesa",
+    "tipo": "Granito",
+    "material": "Titanium Gold",
+    "ambientes": [
+      "Escritório"
+    ]
+  },
+  {
+    "imagem": "mesa---granito---titanium-gold---escritório---2.jpg",
+    "nome": "Mesa",
+    "tipo": "Granito",
+    "material": "Titanium Gold",
+    "ambientes": [
+      "Escritório"
+    ]
+  },
+  {
+    "imagem": "mesa---granito---titanium-gold---escritório---3.jpg",
+    "nome": "Mesa",
+    "tipo": "Granito",
+    "material": "Titanium Gold",
+    "ambientes": [
+      "Escritório"
+    ]
+  },
+  {
+    "imagem": "mesa---granito---titanium-gold---escritório---4.jpg",
+    "nome": "Mesa",
+    "tipo": "Granito",
+    "material": "Titanium Gold",
+    "ambientes": [
+      "Escritório"
+    ]
+  },
+  {
+    "imagem": "bancada-e-cuba-esculpida---mármore---travertino-romano---banheiro---1.jpg",
+    "nome": "Bancada e Cuba Esculpida",
+    "tipo": "Mármore",
+    "material": "Travertino Romano",
+    "ambientes": [
+      "Banheiro"
+    ]
+  },
+  {
+    "imagem": "bancada-e-cuba-esculpida---mármore---travertino-romano---banheiro---2.jpg",
+    "nome": "Bancada e Cuba Esculpida",
+    "tipo": "Mármore",
+    "material": "Travertino Romano",
+    "ambientes": [
+      "Banheiro"
+    ]
+  },
+  {
+    "imagem": "bancada-e-cuba-esculpida---mármore---travertino-romano---banheiro---3.jpg",
+    "nome": "Bancada e Cuba Esculpida",
+    "tipo": "Mármore",
+    "material": "Travertino Romano",
+    "ambientes": [
+      "Banheiro"
+    ]
+  },
+  {
+    "imagem": "revestimento---rocha-ornamental---pedra-moledo---externo---3.jpg",
+    "nome": "Revestimento",
+    "tipo": "Rocha Ornamental",
+    "material": "Pedra Moledo",
+    "ambientes": [
+      "Externo"
+    ]
+  },
+  {
+    "imagem": "revestimento---rocha-ornamental---pedra-moledo---externo---4.jpg",
+    "nome": "Revestimento",
+    "tipo": "Rocha Ornamental",
+    "material": "Pedra Moledo",
+    "ambientes": [
+      "Externo"
+    ]
+  },
+  {
+    "imagem": "revestimento---rocha-ornamental---pedra-moledo---externo---5.jpg",
+    "nome": "Revestimento",
+    "tipo": "Rocha Ornamental",
+    "material": "Pedra Moledo",
+    "ambientes": [
+      "Externo"
+    ]
+  },
+  {
+    "imagem": "revestimento---rocha-ornamental---pedra-moledo---externo---1.jpg",
+    "nome": "Revestimento",
+    "tipo": "Rocha Ornamental",
+    "material": "Pedra Moledo",
+    "ambientes": [
+      "Externo"
+    ]
+  },
+  {
+    "imagem": "revestimento---rocha-ornamental---pedra-moledo---externo---2.jpg",
+    "nome": "Revestimento",
+    "tipo": "Rocha Ornamental",
+    "material": "Pedra Moledo",
+    "ambientes": [
+      "Externo"
+    ]
+  },
+  {
+    "imagem": "bancada-ilha---granito---verde-guatemala---cozinha---1.jpg",
+    "nome": "Bancada Ilha",
+    "tipo": "Granito",
+    "material": "Verde Guatemala",
+    "ambientes": [
+      "Cozinha"
+    ]
+  },
+  {
+    "imagem": "bancada-ilha---granito---verde-guatemala---cozinha---2.jpg",
+    "nome": "Bancada Ilha",
+    "tipo": "Granito",
+    "material": "Verde Guatemala",
+    "ambientes": [
+      "Cozinha"
+    ]
+  },
+  {
+    "imagem": "balcão---quartzito---quartzito-baccarat---cozinha---1.jpg",
+    "nome": "Balcão",
+    "tipo": "Quartzito",
+    "material": "Quartzito Baccarat",
     "ambientes": [
       "Cozinha"
     ]
