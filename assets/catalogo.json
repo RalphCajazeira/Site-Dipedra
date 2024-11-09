@@ -331,5 +331,32 @@
     "ambientes": [
       "Varanda"
     ]
+  },
+  {
+    "imagem": "bancada-ilha---granito---preto-vulcano-escovado---cozinha-gourmet---1.jpg",
+    "nome": "Bancada Ilha",
+    "tipo": "Granito",
+    "material": "Preto Vulcano Escovado",
+    "ambientes": [
+      "Cozinha Gourmet"
+    ]
+  },
+  {
+    "imagem": "bancada-ilha---granito---preto-vulcano-escovado---cozinha-gourmet---2.jpg",
+    "nome": "Bancada Ilha",
+    "tipo": "Granito",
+    "material": "Preto Vulcano Escovado",
+    "ambientes": [
+      "Cozinha Gourmet"
+    ]
+  },
+  {
+    "imagem": "bancada---granito---preto-vulcano-escovado---cozinha-gourmet---1.jpg",
+    "nome": "Bancada",
+    "tipo": "Granito",
+    "material": "Preto Vulcano Escovado",
+    "ambientes": [
+      "Cozinha Gourmet"
+    ]
   }
 ]
