@@ -3,55 +3,134 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Administração do Catálogo - Upload</title>
+    <title>Administração do Catálogo - Dipedra</title>
     <link rel="stylesheet" href="../assets/css/index.css" />
   </head>
   <body>
-    <header>
-      <h1>Administração do Catálogo</h1>
-    </header>
+    <div class="page-container">
+      <!-- Cabeçalho direto, sem carregamento dinâmico -->
+      <header>
+        <div class="header-main container pady-1 flex-col align-center gap-1">
+          <img src="../assets/images/Logo.png" alt="Logo Dipedra" />
+          <ul class="menu">
+            <a href="index.html">Home</a>
+            <a href="catalogo.html">Catálogo</a>
+            <a href="criacao.html">Orçamento</a>
+            <a href="criacao.html">Sobre Nós</a>
+          </ul>
+        </div>
+      </header>
 
-    <main>
-      <form id="uploadForm" enctype="multipart/form-data">
-        <label for="productName">Nome do Produto:</label>
-        <input type="text" id="productName" name="productName" required />
+      <!-- Campo de Pesquisa -->
+      <section class="search-container">
+        <input
+          type="text"
+          id="search-input"
+          placeholder="Digite uma ou mais partes do nome, tipo, ou material..."
+        />
+      </section>
 
-        <label for="productType">Tipo do Produto:</label>
-        <input type="text" id="productType" name="productType" required />
-
-        <label for="productMaterial">Material:</label>
+      <!-- Formulário de Upload -->
+      <form id="uploadForm" method="POST" enctype="multipart/form-data">
+        <input
+          type="text"
+          id="productName"
+          name="productName"
+          placeholder="Nome do Produto"
+          required
+        />
+        <input
+          type="text"
+          id="productType"
+          name="productType"
+          placeholder="Tipo do Produto"
+          required
+        />
         <input
           type="text"
           id="productMaterial"
           name="productMaterial"
+          placeholder="Material"
           required
         />
-
-        <label for="productAmbientes"
-          >Ambientes (separados por vírgulas):</label
-        >
         <input
           type="text"
           id="productAmbientes"
           name="productAmbientes"
+          placeholder="Ambientes (separados por vírgula)"
           required
         />
-
-        <label for="productImage">Imagem:</label>
         <input
           type="file"
           id="productImage"
-          name="productImage"
-          accept="image/*"
+          name="productImages"
+          multiple
           required
         />
-
-        <button type="submit">Enviar</button>
+        <button type="submit">Fazer Upload</button>
       </form>
 
-      <div id="uploadStatus"></div>
-    </main>
+      <!-- Grid de Imagens com Botões de Excluir e Editar -->
+      <section id="admin-grid" class="grid-container">
+        <!-- As imagens e botões serão gerados dinamicamente pelo JavaScript -->
+      </section>
 
-    <script src="../scripts/upload.js"></script>
+      <!-- Rodapé direto, sem carregamento dinâmico -->
+      <footer>
+        <p>&copy; 2024 Dipedra</p>
+      </footer>
+    </div>
+
+    <!-- Modal para Ampliar a Imagem -->
+    <div id="image-modal" class="modal">
+      <button class="modal-close" onclick="closeModal()">×</button>
+      <div class="modal-content">
+        <button class="modal-button left" onclick="navigateImage(-1)">
+          <img src="../assets/icos/chevron_left.svg" alt="Anterior" />
+        </button>
+        <img id="modal-image" src="" alt="Imagem ampliada" />
+        <button class="modal-button right" onclick="navigateImage(1)">
+          <img src="../assets/icos/chevron_right.svg" alt="Próximo" />
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal de Confirmação de Exclusão -->
+    <div id="delete-confirm-modal" class="modal" style="display: none">
+      <div class="modal-content">
+        <p>Tem certeza de que deseja excluir este item?</p>
+        <button id="confirm-delete" class="button red">Sim</button>
+        <button id="cancel-delete" class="button">Não</button>
+      </div>
+    </div>
+
+    <!-- Modal de Edição -->
+    <div id="edit-modal" class="modal" style="display: none">
+      <div class="modal-content">
+        <h3>Editar Produto</h3>
+        <form id="editForm">
+          <label for="editName">Nome do Produto:</label>
+          <input type="text" id="editName" name="editName" required />
+
+          <label for="editType">Tipo do Produto:</label>
+          <input type="text" id="editType" name="editType" required />
+
+          <label for="editMaterial">Material:</label>
+          <input type="text" id="editMaterial" name="editMaterial" required />
+
+          <label for="editAmbientes">Ambientes (separados por vírgulas):</label>
+          <input type="text" id="editAmbientes" name="editAmbientes" required />
+
+          <label for="editImage">Nova Imagem (opcional):</label>
+          <input type="file" id="editImage" name="editImage" accept="image/*" />
+
+          <button type="submit">Salvar Alterações</button>
+          <button type="button" id="cancel-edit">Cancelar</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Script específico para o catálogo de administração -->
+    <script src="../scripts/admin.js"></script>
   </body>
 </html>

@@ -1,0 +1,131 @@
+[
+  {
+    "imagem": "bancada1.jpg",
+    "nome": "Bancada",
+    "tipo": "Granito",
+    "material": "Preto São Gabriel",
+    "ambientes": [
+      "Cozinha",
+      "Banheiro"
+    ]
+  },
+  {
+    "imagem": "mesa1.jpg",
+    "nome": "Mesa",
+    "tipo": "Mármore",
+    "material": "Carrara",
+    "ambientes": [
+      "Sala de Jantar"
+    ]
+  },
+  {
+    "imagem": "piso1.jpg",
+    "nome": "Piso",
+    "tipo": "Porcelanato",
+    "material": "Branco",
+    "ambientes": [
+      "Sala",
+      "Banheiro"
+    ]
+  },
+  {
+    "imagem": "Varanda1.jpg",
+    "nome": "Bancada",
+    "tipo": "Granito",
+    "material": "Branco",
+    "ambientes": [
+      "Área de Serviço",
+      "Banheiro"
+    ]
+  },
+  {
+    "imagem": "Piscina2.jpg",
+    "nome": "Piscina",
+    "tipo": "Marmore",
+    "material": "Branco",
+    "ambientes": [
+      "Piscina"
+    ]
+  },
+  {
+    "imagem": "2xg.jpg",
+    "nome": "Bancada Ilha",
+    "tipo": "Marmore",
+    "material": "Azul",
+    "ambientes": [
+      "Cozinha"
+    ]
+  },
+  {
+    "imagem": "Snapinsta.app_465082309_18464056879013933_1538628036958080932_n_1080.jpg",
+    "nome": "Bancada",
+    "tipo": "Granito",
+    "material": "Mont Blanc",
+    "ambientes": [
+      "Banheiro"
+    ]
+  },
+  {
+    "imagem": "bancada-granito-mont-blanc.jpg",
+    "nome": "Bancada",
+    "tipo": "Granito",
+    "material": "Mont Blanc",
+    "ambientes": [
+      "Banheiro"
+    ]
+  },
+  {
+    "imagem": "bancada---granito---mont-blanc---banheiro---1.jpg",
+    "nome": "Bancada",
+    "tipo": "Granito",
+    "material": "Mont Blanc",
+    "ambientes": [
+      "Banheiro"
+    ]
+  },
+  {
+    "imagem": "bancada---granito---mont-blanc---banheiro---1.jpg",
+    "nome": "Bancada",
+    "tipo": "Granito",
+    "material": "Mont Blanc",
+    "ambientes": [
+      "Banheiro"
+    ]
+  },
+  {
+    "imagem": "bancada---granito---mont-blanc---banheiro---2.jpg",
+    "nome": "Bancada",
+    "tipo": "Granito",
+    "material": "Mont Blanc",
+    "ambientes": [
+      "Banheiro"
+    ]
+  },
+  {
+    "imagem": "bancada---granito---mont-blanc---banheiro---3.jpg",
+    "nome": "Bancada",
+    "tipo": "Granito",
+    "material": "Mont Blanc",
+    "ambientes": [
+      "Banheiro"
+    ]
+  },
+  {
+    "imagem": "varanda---granito---preto-são-gabriel---bancada---1.jpg",
+    "nome": "Varanda",
+    "tipo": "Granito",
+    "material": "Preto São Gabriel",
+    "ambientes": [
+      "Bancada"
+    ]
+  },
+  {
+    "imagem": "bancada---granito---preto-são-gabriel---varanda---1.jpg",
+    "nome": "Bancada",
+    "tipo": "Granito",
+    "material": "Preto São Gabriel",
+    "ambientes": [
+      "Varanda"
+    ]
+  }
+]

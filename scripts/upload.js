@@ -20,14 +20,15 @@ document
       "productAmbientes",
       document.getElementById("productAmbientes").value
     );
-    formData.append(
-      "productImage",
-      document.getElementById("productImage").files[0]
-    );
+
+    // Adiciona todos os arquivos de imagem ao FormData
+    const files = document.getElementById("productImage").files;
+    for (let i = 0; i < files.length; i++) {
+      formData.append("productImages", files[i]);
+    }
 
     try {
       const response = await fetch("http://127.0.0.1:3000/upload", {
-        // Use a URL completa para o servidor Node.js
         method: "POST",
         body: formData,
       });
