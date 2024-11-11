@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Catálogo - Dipedra</title>
-    <link rel="stylesheet" href="../assets/css/index.css" />
+    <link rel="stylesheet" href="../assets/css/catalogo.css" />
   </head>
   <body>
     <div class="page-container">
@@ -30,6 +30,37 @@
         />
       </section>
 
+      <!-- Filtro -->
+      <section class="filter-container">
+        <div>
+          <label for="ambientes">Ambientes</label>
+          <input
+            type="radio"
+            id="ambientes"
+            name="filter-type"
+            value="ambientes"
+            checked
+          />
+        </div>
+        <div>
+          <label for="nome">Nome</label>
+          <input type="radio" id="nome" name="filter-type" value="nome" />
+        </div>
+        <div>
+          <label for="tipo">Tipo</label>
+          <input type="radio" id="tipo" name="filter-type" value="tipo" />
+        </div>
+        <div>
+          <label for="material">Material</label>
+          <input
+            type="radio"
+            id="material"
+            name="filter-type"
+            value="material"
+          />
+        </div>
+      </section>
+
       <!-- Grid de Imagens -->
       <section id="catalogo-grid" class="grid-container">
         <!-- As imagens serão geradas dinamicamente aqui pelo JavaScript -->
@@ -43,7 +74,7 @@
 
     <!-- Modal para Ampliar a Imagem -->
     <div id="image-modal" class="modal">
-      <button class="modal-close" onclick="closeModal()">×</button>
+      <button class="modal-close">×</button>
       <div class="modal-content">
         <!-- Botão Anterior -->
         <button class="modal-button left" onclick="navigateImage(-1)">
