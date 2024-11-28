@@ -34,14 +34,19 @@ document
       });
 
       if (!response.ok) {
-        throw new Error(`Erro HTTP! status: ${response.status}`);
+        console.error(
+          "Erro no servidor:",
+          response.status,
+          await response.text()
+        );
+        throw new Error(`Erro HTTP: ${response.status}`);
       }
 
       const result = await response.json();
-      document.getElementById("uploadStatus").innerText = result.message;
+      console.log("Upload bem-sucedido:", result.message);
+      alert("Upload bem-sucedido!");
     } catch (error) {
-      document.getElementById("uploadStatus").innerText =
-        "Erro ao fazer upload. Tente novamente.";
-      console.error("Erro:", error);
+      console.error("Erro ao enviar o formulário:", error);
+      alert("Erro ao enviar o formulário.");
     }
   });

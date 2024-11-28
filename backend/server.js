@@ -8,11 +8,11 @@ const { v4: uuidv4 } = require("uuid"); // Adicione a biblioteca UUID
 const app = express();
 const port = 3000;
 
-// Permitir CORS para requisições locais
+// Permitir o frontend rodando no Live Server (porta 5000)
 app.use(
   cors({
-    origin: "http://127.0.0.1:5500", // Permitir apenas o cliente rodando no localhost:5500
-    methods: ["GET", "POST", "PUT", "DELETE"], // Métodos HTTP permitidos
+    origin: "http://127.0.0.1:5500", // Permitir requisições do Live Server
+    methods: ["GET", "POST", "PUT", "DELETE"], // Métodos permitidos
     allowedHeaders: ["Content-Type", "Authorization"], // Cabeçalhos permitidos
   })
 );
