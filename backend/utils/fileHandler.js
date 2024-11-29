@@ -6,7 +6,8 @@ const storage = multer.diskStorage({
     cb(null, path.join(__dirname, "../../assets/images/catalogo"));
   },
   filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
+    const uniqueSuffix = `${Date.now()}-${file.originalname}`;
+    cb(null, uniqueSuffix); // Nome único para cada arquivo
   },
 });
 
@@ -14,6 +15,5 @@ const upload = multer({ storage });
 
 // Configuração para aceitar múltiplos arquivos
 module.exports = {
-  uploadSingle: upload.single("image"),
   uploadMultiple: upload.array("images", 10), // Aceita até 10 arquivos
 };

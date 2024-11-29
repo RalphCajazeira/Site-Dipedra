@@ -1,39 +1,32 @@
-document.addEventListener("DOMContentLoaded", function () {
-  const uploadForm = document.getElementById("uploadForm");
+document
+  .getElementById("uploadForm")
+  .addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-  // Enviar múltiplos arquivos
-  if (uploadForm) {
-    uploadForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
+    const formData = new FormData(event.target);
+    const files = document.getElementById("productImages").files;
 
-      const formData = new FormData(uploadForm);
-      const files = document.getElementById("productImages").files;
+    for (let i = 0; i < files.length; i++) {
+      formData.append("images", files[i]);
+    }
 
-      for (let i = 0; i < files.length; i++) {
-        formData.append("images", files[i]);
+    try {
+      const response = await fetch("http://127.0.0.1:3000/catalogo/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        alert(result.message);
+        event.target.reset();
+        loadItems(); // Atualiza o catálogo
+      } else {
+        console.error("Erro no upload:", result.message);
+        alert(result.message || "Erro ao enviar.");
       }
-
-      try {
-        const response = await fetch("http://127.0.0.1:3000/catalogo/upload", {
-          method: "POST",
-          body: formData,
-        });
-
-        const result = await response.json();
-        if (response.ok) {
-          alert(result.message);
-          uploadForm.reset();
-          loadItems(); // Reutiliza função do catalogo.js para carregar itens
-        } else {
-          alert(result.message || "Erro ao enviar.");
-        }
-      } catch (error) {
-        console.error("Erro ao enviar formulário:", error);
-        alert("Erro ao enviar.");
-      }
-    });
-  }
-
-  // Reutilizar função do catalogo.js para carregar a grid
-  loadItems(); // Certifique-se de que esta função existe no catalogo.js
-});
+    } catch (error) {
+      console.error("Erro ao enviar formulário:", error);
+      alert("Erro ao enviar.");
+    }
+  });
