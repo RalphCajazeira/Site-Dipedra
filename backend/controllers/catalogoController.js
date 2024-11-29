@@ -77,6 +77,8 @@ exports.editItem = (req, res) => {
     };
 
     fs.writeFileSync(catalogoPath, JSON.stringify(catalogo, null, 2));
+
+    console.log(`Item ${image} editado com sucesso.`);
     res.status(200).send({ message: "Item editado com sucesso!" });
   } catch (error) {
     console.error("Erro ao editar item:", error);
@@ -104,6 +106,7 @@ exports.deleteItem = (req, res) => {
       fs.unlinkSync(imagePathFull);
     }
 
+    console.log(`Imagem ${image} apagada com sucesso.`);
     res.status(200).send({ message: "Item apagado com sucesso!" });
   } catch (error) {
     console.error("Erro ao apagar item:", error);

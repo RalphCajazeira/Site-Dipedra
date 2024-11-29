@@ -38,7 +38,9 @@ document.addEventListener("DOMContentLoaded", function () {
     editModal.style.display = "none";
   });
 
-  async function loadItems() {
+  async function loadItems(retryCount = 3) {
+    const catalogoGrid = document.getElementById("catalogo-grid");
+
     try {
       const response = await fetch("../assets/catalogo.json");
 
@@ -47,7 +49,12 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       const data = await response.json();
-      catalogoGrid.innerHTML = "";
+
+      if (!data || data.length === 0) {
+        throw new Error("O catálogo está vazio ou inacessível.");
+      }
+
+      catalogoGrid.innerHTML = ""; // Limpa o grid antes de carregar novos itens
 
       data.forEach((item) => {
         const card = document.createElement("div");
@@ -76,7 +83,17 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     } catch (error) {
       console.error("Erro ao carregar o catálogo:", error);
-      alert("Erro ao carregar o catálogo.");
+
+      if (retryCount > 0) {
+        console.log(
+          `Tentando novamente... (${retryCount} tentativas restantes)`
+        );
+        setTimeout(() => loadItems(retryCount - 1), 1000);
+      } else {
+        alert(
+          "Não foi possível carregar o catálogo no momento. Tente novamente mais tarde."
+        );
+      }
     }
   }
 
@@ -113,7 +130,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (response.ok) {
         alert(result.message);
         editModal.style.display = "none"; // Fecha o modal
-        loadItems();
+        setTimeout(() => loadItems(), 1000); // Aguarda antes de recarregar
       } else {
         alert(result.message || "Erro ao editar.");
       }
@@ -137,7 +154,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const result = await response.json();
       if (response.ok) {
         alert(result.message);
-        loadItems();
+        setTimeout(() => loadItems(), 1000); // Aguarda antes de recarregar
       } else {
         alert(result.message || "Erro ao apagar.");
       }

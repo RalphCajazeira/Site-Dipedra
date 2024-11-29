@@ -19,7 +19,24 @@ const storage = multer.diskStorage({
     const existingFiles = fs
       .readdirSync(folderPath)
       .filter((file) => file.startsWith(baseName));
-    const nextNumber = existingFiles.length + 1;
+
+    // Identificar o próximo número disponível
+    const usedNumbers = existingFiles
+      .map((file) => {
+        const match = file.match(/---(\d+)\.jpg$/);
+        return match ? parseInt(match[1], 10) : null;
+      })
+      .filter((num) => num !== null);
+
+    const nextNumber =
+      usedNumbers.length > 0
+        ? Math.min(
+            ...Array.from(
+              { length: Math.max(...usedNumbers) + 2 },
+              (_, i) => i + 1
+            ).filter((n) => !usedNumbers.includes(n))
+          )
+        : 1;
 
     const fileName = `${baseName}---${nextNumber}.jpg`;
     cb(null, fileName);
