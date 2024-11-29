@@ -1,355 +1,218 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
   const catalogoGrid = document.getElementById("catalogo-grid");
   const searchInput = document.getElementById("search-input");
   const filterRadioButtons = document.querySelectorAll(
     'input[name="filter-type"]'
   );
   const closeButton = document.querySelector(".modal-close");
+  const leftButton = document.querySelector(".modal-button.left");
+  const rightButton = document.querySelector(".modal-button.right");
 
   const catalogoJsonPath = "../assets/catalogo.json";
   const imagePath = "../assets/images/catalogo/";
   const placeholderPath = "../assets/images/placeholder.jpg";
 
   let allItems = [];
-  let ambientesMap = new Map();
-  let nomeMap = new Map();
-  let tipoMap = new Map();
-  let materialMap = new Map();
   let filteredItems = [];
   let currentImageIndex = 0;
 
-  // Garantir que o botão de fechar funcione ao ser clicado
-  if (closeButton) {
-    closeButton.addEventListener("click", closeModal); // Fechar o modal ao clicar no botão "X"
-  }
+  const filterMaps = {
+    ambientes: new Map(),
+    nome: new Map(),
+    tipo: new Map(),
+    material: new Map(),
+  };
 
-  // Função para abrir o modal
-  function openModal(imageIndex) {
-    const modal = document.getElementById("image-modal");
-    const modalImage = document.getElementById("modal-image");
-    currentImageIndex = imageIndex;
+  // Função para carregar dados do catálogo
+  async function fetchCatalogData() {
+    try {
+      const response = await fetch(catalogoJsonPath);
+      if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
 
-    if (modal && modalImage) {
-      modalImage.src = `${imagePath}${filteredItems[imageIndex].imagem}`;
-      modal.style.display = "flex";
-
-      // Adiciona o evento de teclado ao abrir o modal
-      document.addEventListener("keydown", handleKeydown);
-    } else {
-      console.error("Elemento modal ou modal-image não encontrado.");
+      allItems = await response.json();
+      populateFilterMaps();
+      displayFilterItems("ambientes"); // Exibir "ambientes" por padrão
+    } catch (error) {
+      console.error("Erro ao carregar o catálogo:", error);
+      catalogoGrid.innerHTML = "<p>Erro ao carregar o catálogo.</p>";
     }
   }
 
-  function closeModal() {
-    const modal = document.getElementById("image-modal");
-    if (modal) {
-      modal.style.display = "none"; // Fecha o modal
-
-      // Remove o evento de teclado ao fechar o modal
-      document.removeEventListener("keydown", handleKeydown);
-    }
+  // Popula os mapas de filtros
+  function populateFilterMaps() {
+    allItems.forEach((item) => {
+      Object.keys(filterMaps).forEach((key) => {
+        const values = Array.isArray(item[key]) ? item[key] : [item[key]];
+        values.forEach((value) => {
+          if (!filterMaps[key].has(value)) {
+            filterMaps[key].set(value, []);
+          }
+          filterMaps[key].get(value).push(item);
+        });
+      });
+    });
   }
 
-  // Função para navegação entre as imagens
-  function navigateImage(direction) {
-    const modalImage = document.getElementById("modal-image");
-    if (modalImage) {
-      currentImageIndex += direction;
-      if (currentImageIndex < 0) {
-        currentImageIndex = filteredItems.length - 1;
-      } else if (currentImageIndex >= filteredItems.length) {
-        currentImageIndex = 0;
-      }
-      modalImage.src = `${imagePath}${filteredItems[currentImageIndex].imagem}`;
-    }
-  }
-
-  // Função para lidar com eventos de teclado
-  function handleKeydown(event) {
-    if (event.key === "Escape") {
-      closeModal(); // Fecha o modal ao pressionar "Esc"
-    } else if (event.key === "ArrowRight") {
-      navigateImage(1);
-    } else if (event.key === "ArrowLeft") {
-      navigateImage(-1);
-    }
-  }
-
-  // Função para exibir os filtros ordenados
+  // Função para exibir itens por filtro
   function displayFilterItems(filterType) {
+    const filterMap = filterMaps[filterType] || filterMaps.ambientes;
+    const sortedKeys = Array.from(filterMap.keys()).sort();
+
     catalogoGrid.innerHTML = "";
-    let filterMap;
-
-    switch (filterType) {
-      case "ambientes":
-        filterMap = ambientesMap;
-        break;
-      case "nome":
-        filterMap = nomeMap;
-        break;
-      case "tipo":
-        filterMap = tipoMap;
-        break;
-      case "material":
-        filterMap = materialMap;
-        break;
-      default:
-        filterMap = ambientesMap;
-    }
-
-    // Ordenar os grupos de forma alfabética
-    const sortedGroups = [...filterMap.keys()].sort();
-
-    sortedGroups.forEach((group) => {
-      let firstItem =
+    sortedKeys.forEach((group) => {
+      const firstItem =
         filterMap.get(group).find((item) => !item.capaUsada) ||
         filterMap.get(group)[0];
       firstItem.capaUsada = true;
 
-      const card = document.createElement("div");
-      card.classList.add("card");
-
-      const img = document.createElement("img");
-      img.src = `${imagePath}${firstItem.imagem}`;
-      img.alt = `Imagem de ${group}`;
-      img.onerror = () => (img.src = placeholderPath);
-      card.appendChild(img);
-
-      const title = document.createElement("div");
-      title.classList.add("card-title");
-      title.textContent = group;
-      card.appendChild(title);
-
+      const card = createCard(group, firstItem.imagem);
       card.addEventListener("click", () =>
         displayImagesByGroup(filterType, group)
       );
-
       catalogoGrid.appendChild(card);
     });
   }
 
-  // Função para exibir as imagens filtradas por grupo
+  // Função para exibir imagens por grupo
   function displayImagesByGroup(filterType, group) {
-    catalogoGrid.innerHTML = "";
-    let filterMap;
-    switch (filterType) {
-      case "ambientes":
-        filterMap = ambientesMap;
-        break;
-      case "nome":
-        filterMap = nomeMap;
-        break;
-      case "tipo":
-        filterMap = tipoMap;
-        break;
-      case "material":
-        filterMap = materialMap;
-        break;
-      default:
-        filterMap = ambientesMap;
-    }
-
+    const filterMap = filterMaps[filterType] || filterMaps.ambientes;
     filteredItems = filterMap.get(group) || [];
+    catalogoGrid.innerHTML = "";
+
     filteredItems.forEach((item, index) => {
-      const imgWrapper = document.createElement("div");
-      imgWrapper.classList.add("image-wrapper");
-
-      const img = document.createElement("img");
-      img.src = `${imagePath}${item.imagem}`;
-      img.alt = `Imagem de ${item.nome}`;
-      img.onerror = () => (img.src = placeholderPath);
-      imgWrapper.appendChild(img);
-
-      img.addEventListener("click", () => openModal(index));
-
-      const info = document.createElement("div");
-      info.classList.add("image-info");
-      info.innerHTML = `
-        <h3>${item.nome}</h3>
-        <p><strong>Tipo:</strong> ${item.tipo}</p>
-        <p><strong>Material:</strong> ${item.material}</p>
-        <p><strong>Ambientes:</strong> ${item.ambientes.join(", ")}</p>
-      `;
-      imgWrapper.appendChild(info);
-
+      const imgWrapper = createImageWrapper(item, index);
       catalogoGrid.appendChild(imgWrapper);
     });
 
-    const backButton = document.createElement("button");
-    backButton.textContent = "Voltar";
-    backButton.classList.add("back-button");
-    backButton.addEventListener("click", () => displayFilterItems(filterType));
-    catalogoGrid.appendChild(backButton);
+    catalogoGrid.appendChild(
+      createBackButton(() => displayFilterItems(filterType))
+    );
   }
 
-  // Função para filtrar os itens com múltiplas palavras
-  function filterItems(query, filterType) {
-    const terms = query
-      .toLowerCase()
-      .split(" ")
-      .filter((term) => term); // Divide a string em palavras, ignorando espaços
+  // Filtra itens por texto
+  function filterItems(query) {
+    const terms = query.toLowerCase().split(" ").filter(Boolean);
 
     filteredItems = allItems.filter((item) => {
       const searchData = `${item.nome} ${item.tipo} ${
         item.material
       } ${item.ambientes.join(" ")}`.toLowerCase();
-      return terms.every((term) => searchData.includes(term)); // Verifica se cada termo aparece
+      return terms.every((term) => searchData.includes(term));
     });
 
     displayFilteredItems(filteredItems);
   }
 
-  // Função para exibir os itens filtrados
+  // Exibir itens filtrados
   function displayFilteredItems(filtered) {
     catalogoGrid.innerHTML = "";
-    filteredItems = filtered;
 
-    if (filteredItems.length === 0) {
+    if (filtered.length === 0) {
       catalogoGrid.innerHTML = "<p>Nenhum resultado encontrado.</p>";
       return;
     }
 
-    filteredItems.forEach((item, index) => {
-      const imgWrapper = document.createElement("div");
-      imgWrapper.classList.add("image-wrapper");
-
-      const img = document.createElement("img");
-      img.src = `${imagePath}${item.imagem}`;
-      img.alt = `Imagem de ${item.nome}`;
-      img.onerror = () => (img.src = placeholderPath);
-      imgWrapper.appendChild(img);
-
-      img.addEventListener("click", () => openModal(index));
-
-      const info = document.createElement("div");
-      info.classList.add("image-info");
-      info.innerHTML = `
-        <h3>${item.nome}</h3>
-        <p><strong>Tipo:</strong> ${item.tipo}</p>
-        <p><strong>Material:</strong> ${item.material}</p>
-        <p><strong>Ambientes:</strong> ${item.ambientes.join(", ")}</p>
-      `;
-      imgWrapper.appendChild(info);
-
+    filtered.forEach((item, index) => {
+      const imgWrapper = createImageWrapper(item, index);
       catalogoGrid.appendChild(imgWrapper);
     });
   }
 
-  // Lê os dados do JSON e preenche os grupos
-  fetch(catalogoJsonPath)
-    .then((response) => response.json())
-    .then((items) => {
-      allItems = items;
+  // Função para criar um card
+  function createCard(title, image) {
+    const card = document.createElement("div");
+    card.classList.add("card");
 
-      items.forEach((item) => {
-        item.ambientes.forEach((ambiente) => {
-          if (!ambientesMap.has(ambiente)) {
-            ambientesMap.set(ambiente, [item]);
-          } else {
-            ambientesMap.get(ambiente).push(item);
-          }
-        });
+    const img = document.createElement("img");
+    img.src = `${imagePath}${image}`;
+    img.alt = title;
+    img.onerror = () => (img.src = placeholderPath);
 
-        // Populando outros filtros
-        if (!nomeMap.has(item.nome)) {
-          nomeMap.set(item.nome, [item]);
-        } else {
-          nomeMap.get(item.nome).push(item);
-        }
+    const titleDiv = document.createElement("div");
+    titleDiv.classList.add("card-title");
+    titleDiv.textContent = title;
 
-        if (!tipoMap.has(item.tipo)) {
-          tipoMap.set(item.tipo, [item]);
-        } else {
-          tipoMap.get(item.tipo).push(item);
-        }
-
-        if (!materialMap.has(item.material)) {
-          materialMap.set(item.material, [item]);
-        } else {
-          materialMap.get(item.material).push(item);
-        }
-      });
-
-      displayFilterItems("ambientes"); // Exibe os ambientes por padrão
-
-      // Filtro por radio buttons
-      filterRadioButtons.forEach((radio) => {
-        radio.addEventListener("change", (event) => {
-          const selectedFilter = event.target.value;
-          displayFilterItems(selectedFilter); // Exibe os filtros com base na opção selecionada
-        });
-      });
-
-      // Filtragem por texto
-      searchInput.addEventListener("input", (event) => {
-        const selectedFilter = Array.from(filterRadioButtons).find(
-          (radio) => radio.checked
-        ).value;
-        if (event.target.value === "") {
-          displayFilterItems(selectedFilter); // Quando o campo de pesquisa estiver vazio, mostra o filtro selecionado
-        } else {
-          filterItems(event.target.value, selectedFilter); // Filtra os itens conforme o texto digitado
-        }
-      });
-    })
-    .catch((error) => {
-      console.error("Erro ao carregar o catálogo:", error);
-      catalogoGrid.innerHTML = "<p>Erro ao carregar as imagens.</p>";
-    });
-
-  // Navegação dos botões de próxima e anterior
-  const leftButton = document.querySelector(".modal-button.left");
-  const rightButton = document.querySelector(".modal-button.right");
-
-  if (leftButton) {
-    leftButton.addEventListener("click", () => navigateImage(-1));
+    card.appendChild(img);
+    card.appendChild(titleDiv);
+    return card;
   }
-  if (rightButton) {
-    rightButton.addEventListener("click", () => navigateImage(1));
+
+  // Função para criar wrapper de imagem
+  function createImageWrapper(item, index) {
+    const imgWrapper = document.createElement("div");
+    imgWrapper.classList.add("image-wrapper");
+
+    const img = document.createElement("img");
+    img.src = `${imagePath}${item.imagem}`;
+    img.alt = `Imagem de ${item.nome}`;
+    img.onerror = () => (img.src = placeholderPath);
+    img.addEventListener("click", () => openModal(index));
+
+    const info = document.createElement("div");
+    info.classList.add("image-info");
+    info.innerHTML = `
+      <h3>${item.nome}</h3>
+      <p><strong>Tipo:</strong> ${item.tipo}</p>
+      <p><strong>Material:</strong> ${item.material}</p>
+      <p><strong>Ambientes:</strong> ${item.ambientes.join(", ")}</p>
+    `;
+
+    imgWrapper.appendChild(img);
+    imgWrapper.appendChild(info);
+    return imgWrapper;
   }
-});
 
-// catalogo.js
-async function loadItems() {
-  const catalogoGrid = document.getElementById("catalogo-grid");
-
-  try {
-    const response = await fetch("../assets/catalogo.json");
-
-    if (!response.ok) {
-      throw new Error(`Erro HTTP: ${response.status}`);
-    }
-
-    const data = await response.json();
-    catalogoGrid.innerHTML = ""; // Limpa o grid antes de carregar novos itens
-
-    data.forEach((item) => {
-      const card = document.createElement("div");
-      card.classList.add("card");
-
-      const img = document.createElement("img");
-      img.src = `../assets/images/catalogo/${item.imagem}`;
-      img.alt = item.nome;
-      card.appendChild(img);
-
-      const title = document.createElement("h3");
-      title.textContent = item.nome;
-      card.appendChild(title);
-
-      catalogoGrid.appendChild(card);
-    });
-  } catch (error) {
-    console.error("Erro ao carregar o catálogo:", error);
-    alert(
-      "Não foi possível carregar o catálogo no momento. Tente novamente mais tarde."
-    );
+  // Cria botão de voltar
+  function createBackButton(callback) {
+    const button = document.createElement("button");
+    button.classList.add("back-button");
+    button.textContent = "Voltar";
+    button.addEventListener("click", callback);
+    return button;
   }
-}
 
-// Garante que a função seja globalmente acessível
-window.loadItems = loadItems;
+  // Modal de imagem
+  function openModal(index) {
+    const modal = document.getElementById("image-modal");
+    const modalImage = document.getElementById("modal-image");
 
-// Carrega os itens ao carregar a página
-document.addEventListener("DOMContentLoaded", () => {
-  loadItems();
+    if (!modal || !modalImage) return console.error("Modal não encontrado.");
+
+    currentImageIndex = index;
+    modalImage.src = `${imagePath}${filteredItems[index].imagem}`;
+    modal.style.display = "flex";
+    document.addEventListener("keydown", handleModalNavigation);
+  }
+
+  function closeModal() {
+    const modal = document.getElementById("image-modal");
+    modal.style.display = "none";
+    document.removeEventListener("keydown", handleModalNavigation);
+  }
+
+  function navigateImage(direction) {
+    currentImageIndex =
+      (currentImageIndex + direction + filteredItems.length) %
+      filteredItems.length;
+    const modalImage = document.getElementById("modal-image");
+    modalImage.src = `${imagePath}${filteredItems[currentImageIndex].imagem}`;
+  }
+
+  function handleModalNavigation(event) {
+    if (event.key === "Escape") closeModal();
+    if (event.key === "ArrowRight") navigateImage(1);
+    if (event.key === "ArrowLeft") navigateImage(-1);
+  }
+
+  // Eventos
+  closeButton?.addEventListener("click", closeModal);
+  leftButton?.addEventListener("click", () => navigateImage(-1));
+  rightButton?.addEventListener("click", () => navigateImage(1));
+  searchInput?.addEventListener("input", (e) => filterItems(e.target.value));
+  filterRadioButtons.forEach((radio) =>
+    radio.addEventListener("change", (e) => displayFilterItems(e.target.value))
+  );
+
+  // Inicializa carregamento do catálogo
+  fetchCatalogData();
 });
