@@ -1,3 +1,15 @@
+const fs = require("fs");
+const path = require("path");
+
+// Caminho corrigido para o catalogo.json
+const catalogoPath = path.join(
+  __dirname,
+  "../",
+  "../",
+  "assets",
+  "catalogo.json"
+);
+
 exports.uploadImages = (req, res) => {
   try {
     const { nome, tipo, material, ambientes } = req.body;
@@ -9,11 +21,12 @@ exports.uploadImages = (req, res) => {
         .send({ message: "Pelo menos uma imagem é obrigatória." });
     }
 
+    // Lê o arquivo catalogo.json
     const catalogo = JSON.parse(fs.readFileSync(catalogoPath, "utf8"));
 
     images.forEach((image) => {
       const newEntry = {
-        imagem: image.filename, // Nome único gerado pelo multer
+        imagem: image.filename, // Nome gerado automaticamente pelo multer
         nome,
         tipo,
         material,
@@ -23,6 +36,7 @@ exports.uploadImages = (req, res) => {
       catalogo.push(newEntry);
     });
 
+    // Escreve de volta no catalogo.json
     fs.writeFileSync(catalogoPath, JSON.stringify(catalogo, null, 2));
 
     res.status(200).send({ message: "Imagens adicionadas com sucesso!" });
