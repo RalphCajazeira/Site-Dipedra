@@ -308,3 +308,36 @@ document.addEventListener("DOMContentLoaded", function () {
     rightButton.addEventListener("click", () => navigateImage(1));
   }
 });
+
+// catalogo.js
+async function loadItems() {
+  const catalogoGrid = document.getElementById("catalogo-grid");
+
+  try {
+    const response = await fetch("../assets/catalogo.json");
+    const data = await response.json();
+
+    catalogoGrid.innerHTML = ""; // Limpa o grid antes de carregar novos itens
+
+    data.forEach((item) => {
+      const card = document.createElement("div");
+      card.classList.add("card");
+
+      const img = document.createElement("img");
+      img.src = `../assets/images/catalogo/${item.imagem}`;
+      img.alt = item.nome;
+      card.appendChild(img);
+
+      const title = document.createElement("h3");
+      title.textContent = item.nome;
+      card.appendChild(title);
+
+      catalogoGrid.appendChild(card);
+    });
+  } catch (error) {
+    console.error("Erro ao carregar o catálogo:", error);
+  }
+}
+
+// Garante que a função é globalmente acessível
+window.loadItems = loadItems;
