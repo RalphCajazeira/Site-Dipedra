@@ -8,18 +8,60 @@
   </head>
   <body>
     <div class="page-container">
-      <!-- Cabeçalho direto, sem carregamento dinâmico -->
+      <!-- Cabeçalho -->
       <header>
         <div class="header-main container pady-1 flex-col align-center gap-1">
           <img src="../assets/images/Logo.png" alt="Logo Dipedra" />
           <ul class="menu">
             <a href="index.html">Home</a>
             <a href="catalogo.html">Catálogo</a>
-            <a href="criacao.html">Orçamento</a>
-            <a href="criacao.html">Sobre Nós</a>
+            <a href="catalogoadmin.html">Administração</a>
           </ul>
         </div>
       </header>
+
+      <!-- Campo de Gerenciamento -->
+      <section class="upload-container">
+        <form id="uploadForm" enctype="multipart/form-data" class="upload-form">
+          <input
+            type="text"
+            id="productName"
+            name="nome"
+            placeholder="Nome do Produto"
+            required
+          />
+          <input
+            type="text"
+            id="productType"
+            name="tipo"
+            placeholder="Tipo"
+            required
+          />
+          <input
+            type="text"
+            id="productMaterial"
+            name="material"
+            placeholder="Material"
+            required
+          />
+          <input
+            type="text"
+            id="productAmbientes"
+            name="ambientes"
+            placeholder="Ambientes (separados por vírgula)"
+            required
+          />
+          <input
+            type="file"
+            id="productImages"
+            name="images"
+            accept="image/*"
+            multiple
+            required
+          />
+          <button type="submit">Enviar</button>
+        </form>
+      </section>
 
       <!-- Campo de Pesquisa -->
       <section class="search-container">
@@ -30,107 +72,50 @@
         />
       </section>
 
-      <!-- Formulário de Upload -->
-      <form id="uploadForm" method="POST" enctype="multipart/form-data">
-        <input
-          type="text"
-          id="productName"
-          name="productName"
-          placeholder="Nome do Produto"
-          required
-        />
-        <input
-          type="text"
-          id="productType"
-          name="productType"
-          placeholder="Tipo do Produto"
-          required
-        />
-        <input
-          type="text"
-          id="productMaterial"
-          name="productMaterial"
-          placeholder="Material"
-          required
-        />
-        <input
-          type="text"
-          id="productAmbientes"
-          name="productAmbientes"
-          placeholder="Ambientes (separados por vírgula)"
-          required
-        />
-        <input
-          type="file"
-          id="productImage"
-          name="productImages"
-          multiple
-          required
-        />
-        <button type="submit">Fazer Upload</button>
-      </form>
-
-      <!-- Grid de Imagens com Botões de Excluir e Editar -->
-      <section id="catalogo-grid" class="grid-container">
-        <!-- As imagens e botões serão gerados dinamicamente pelo JavaScript -->
+      <!-- Campo de Filtros -->
+      <section class="filter-container">
+        <div>
+          <label for="ambientes">Ambientes</label>
+          <input
+            type="radio"
+            id="ambientes"
+            name="filter-type"
+            value="ambientes"
+            checked
+          />
+        </div>
+        <div>
+          <label for="nome">Nome</label>
+          <input type="radio" id="nome" name="filter-type" value="nome" />
+        </div>
+        <div>
+          <label for="tipo">Tipo</label>
+          <input type="radio" id="tipo" name="filter-type" value="tipo" />
+        </div>
+        <div>
+          <label for="material">Material</label>
+          <input
+            type="radio"
+            id="material"
+            name="filter-type"
+            value="material"
+          />
+        </div>
       </section>
 
-      <!-- Rodapé direto, sem carregamento dinâmico -->
+      <!-- Grid de Imagens -->
+      <section id="catalogo-grid" class="grid-container">
+        <!-- As imagens serão geradas dinamicamente aqui pelo JavaScript -->
+      </section>
+
+      <!-- Rodapé -->
       <footer>
         <p>&copy; 2024 Dipedra</p>
       </footer>
     </div>
 
-    <!-- Modal para Ampliar a Imagem -->
-    <div id="image-modal" class="modal">
-      <button class="modal-close" onclick="closeModal()">×</button>
-      <div class="modal-content">
-        <button class="modal-button left" onclick="navigateImage(-1)">
-          <img src="../assets/icos/chevron_left.svg" alt="Anterior" />
-        </button>
-        <img id="modal-image" src="" alt="Imagem ampliada" />
-        <button class="modal-button right" onclick="navigateImage(1)">
-          <img src="../assets/icos/chevron_right.svg" alt="Próximo" />
-        </button>
-      </div>
-    </div>
-
-    <!-- Modal de Confirmação de Exclusão -->
-    <div id="delete-confirm-modal" class="modal" style="display: none">
-      <div class="modal-content">
-        <p>Tem certeza de que deseja excluir este item?</p>
-        <button id="confirm-delete" class="button red">Sim</button>
-        <button id="cancel-delete" class="button">Não</button>
-      </div>
-    </div>
-
-    <!-- Modal de Edição -->
-    <div id="edit-modal" class="modal" style="display: none">
-      <div class="modal-content">
-        <h3>Editar Produto</h3>
-        <form id="editForm">
-          <label for="editName">Nome do Produto:</label>
-          <input type="text" id="editName" name="editName" required />
-
-          <label for="editType">Tipo do Produto:</label>
-          <input type="text" id="editType" name="editType" required />
-
-          <label for="editMaterial">Material:</label>
-          <input type="text" id="editMaterial" name="editMaterial" required />
-
-          <label for="editAmbientes">Ambientes (separados por vírgulas):</label>
-          <input type="text" id="editAmbientes" name="editAmbientes" required />
-
-          <label for="editImage">Nova Imagem (opcional):</label>
-          <input type="file" id="editImage" name="editImage" accept="image/*" />
-
-          <button type="submit">Salvar Alterações</button>
-          <button type="button" id="cancel-edit">Cancelar</button>
-        </form>
-      </div>
-    </div>
-
-    <!-- Script específico para o catálogo de administração -->
-    <script src="../scripts/admin.js"></script>
+    <!-- Scripts -->
+    <script src="../scripts/catalogo.js"></script>
+    <script src="../scripts/catalogoadmin.js"></script>
   </body>
 </html>

@@ -1,0 +1,20 @@
+/* Adiciona estilos específicos para o admin */
+
+.upload-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: var(--spacing-4) auto;
+  padding: var(--spacing-3);
+  background-color: var(--color-background-alt);
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  width: 100%;
+  max-width: 600px;
+}

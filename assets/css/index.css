@@ -4,3 +4,4 @@
 @import url("components.css"); /* Componentes comuns: header, footer, utilitários */
 @import url("home.css"); /* Estilos específicos para a página inicial */
 @import url("catalogo.css"); /* Estilos específicos para a página do catálogo */
+@import url("catalogoadmin.css"); /* Estilos específicos do admin */
