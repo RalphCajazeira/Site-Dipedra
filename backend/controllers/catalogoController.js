@@ -1,4 +1,4 @@
-const fs = require("fs"); // Correção: Importação do fs
+const fs = require("fs");
 const path = require("path");
 const catalogoPath = path.join(
   __dirname,
@@ -19,11 +19,12 @@ exports.uploadImages = (req, res) => {
         .send({ message: "Pelo menos uma imagem é obrigatória." });
     }
 
-    // Lê o arquivo catalogo.json
+    console.log("Arquivos recebidos:", images);
+    console.log("Dados do formulário:", req.body);
+
     const catalogo = JSON.parse(fs.readFileSync(catalogoPath, "utf8"));
 
     images.forEach((image) => {
-      // Verifica duplicidade
       const alreadyExists = catalogo.some(
         (item) => item.imagem === image.filename
       );
@@ -37,12 +38,14 @@ exports.uploadImages = (req, res) => {
           ambientes: ambientes.split(",").map((a) => a.trim()),
         };
         catalogo.push(newEntry);
+      } else {
+        console.log(`A imagem ${image.filename} já existe no catálogo.`);
       }
     });
 
-    // Salva de volta no catalogo.json
     fs.writeFileSync(catalogoPath, JSON.stringify(catalogo, null, 2));
 
+    console.log("JSON atualizado com sucesso.");
     res.status(200).send({ message: "Imagens adicionadas com sucesso!" });
   } catch (error) {
     console.error("Erro ao processar imagens:", error);

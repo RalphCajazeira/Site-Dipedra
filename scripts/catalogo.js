@@ -315,8 +315,12 @@ async function loadItems() {
 
   try {
     const response = await fetch("../assets/catalogo.json");
-    const data = await response.json();
 
+    if (!response.ok) {
+      throw new Error(`Erro HTTP: ${response.status}`);
+    }
+
+    const data = await response.json();
     catalogoGrid.innerHTML = ""; // Limpa o grid antes de carregar novos itens
 
     data.forEach((item) => {
@@ -336,8 +340,16 @@ async function loadItems() {
     });
   } catch (error) {
     console.error("Erro ao carregar o catálogo:", error);
+    alert(
+      "Não foi possível carregar o catálogo no momento. Tente novamente mais tarde."
+    );
   }
 }
 
-// Garante que a função é globalmente acessível
+// Garante que a função seja globalmente acessível
 window.loadItems = loadItems;
+
+// Carrega os itens ao carregar a página
+document.addEventListener("DOMContentLoaded", () => {
+  loadItems();
+});

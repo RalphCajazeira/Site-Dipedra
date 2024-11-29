@@ -5,7 +5,12 @@ document.addEventListener("DOMContentLoaded", function () {
     uploadForm.addEventListener("submit", async (event) => {
       event.preventDefault();
 
-      const formData = new FormData(uploadForm); // Captura o formulário inteiro
+      const formData = new FormData(uploadForm);
+
+      console.log(
+        "Arquivos selecionados para upload:",
+        formData.getAll("images")
+      );
 
       try {
         const response = await fetch("http://127.0.0.1:3000/catalogo/upload", {
@@ -17,16 +22,17 @@ document.addEventListener("DOMContentLoaded", function () {
         if (response.ok) {
           alert(result.message);
           uploadForm.reset();
-          loadItems(); // Atualiza o catálogo
+          // Aguarda 1 segundo antes de carregar o catálogo
+          setTimeout(loadItems, 1000);
         } else {
           alert(result.message || "Erro ao enviar.");
         }
       } catch (error) {
         console.error("Erro ao enviar formulário:", error);
-        alert("Erro ao enviar.");
+        alert("Erro ao enviar. Consulte o console para mais detalhes.");
       }
     });
   }
 
-  loadItems(); // Chama a função global definida no catalogo.js
+  loadItems(); // Carrega os itens ao carregar a página
 });
