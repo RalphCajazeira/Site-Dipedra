@@ -7,6 +7,14 @@ const catalogoPath = path.join(
   "assets",
   "catalogo.json"
 );
+const imagePath = path.join(
+  __dirname,
+  "../",
+  "../",
+  "assets",
+  "images",
+  "catalogo"
+);
 
 exports.uploadImages = (req, res) => {
   try {
@@ -18,9 +26,6 @@ exports.uploadImages = (req, res) => {
         .status(400)
         .send({ message: "Pelo menos uma imagem é obrigatória." });
     }
-
-    console.log("Arquivos recebidos:", images);
-    console.log("Dados do formulário:", req.body);
 
     const catalogo = JSON.parse(fs.readFileSync(catalogoPath, "utf8"));
 
@@ -38,17 +43,70 @@ exports.uploadImages = (req, res) => {
           ambientes: ambientes.split(",").map((a) => a.trim()),
         };
         catalogo.push(newEntry);
-      } else {
-        console.log(`A imagem ${image.filename} já existe no catálogo.`);
       }
     });
 
     fs.writeFileSync(catalogoPath, JSON.stringify(catalogo, null, 2));
-
-    console.log("JSON atualizado com sucesso.");
     res.status(200).send({ message: "Imagens adicionadas com sucesso!" });
   } catch (error) {
     console.error("Erro ao processar imagens:", error);
     res.status(500).send({ message: "Erro ao processar imagens.", error });
+  }
+};
+
+// Editar item no catálogo
+exports.editItem = (req, res) => {
+  try {
+    const image = req.params.image;
+    const { nome, tipo, material, ambientes } = req.body;
+
+    const catalogo = JSON.parse(fs.readFileSync(catalogoPath, "utf8"));
+
+    const itemIndex = catalogo.findIndex((item) => item.imagem === image);
+
+    if (itemIndex === -1) {
+      return res.status(404).send({ message: "Item não encontrado." });
+    }
+
+    catalogo[itemIndex] = {
+      ...catalogo[itemIndex],
+      nome,
+      tipo,
+      material,
+      ambientes: ambientes.split(",").map((a) => a.trim()),
+    };
+
+    fs.writeFileSync(catalogoPath, JSON.stringify(catalogo, null, 2));
+    res.status(200).send({ message: "Item editado com sucesso!" });
+  } catch (error) {
+    console.error("Erro ao editar item:", error);
+    res.status(500).send({ message: "Erro ao editar item.", error });
+  }
+};
+
+// Apagar item no catálogo
+exports.deleteItem = (req, res) => {
+  try {
+    const image = req.params.image;
+
+    const catalogo = JSON.parse(fs.readFileSync(catalogoPath, "utf8"));
+    const updatedCatalogo = catalogo.filter((item) => item.imagem !== image);
+
+    if (updatedCatalogo.length === catalogo.length) {
+      return res.status(404).send({ message: "Item não encontrado." });
+    }
+
+    fs.writeFileSync(catalogoPath, JSON.stringify(updatedCatalogo, null, 2));
+
+    // Apagar a imagem do disco
+    const imagePathFull = path.join(imagePath, image);
+    if (fs.existsSync(imagePathFull)) {
+      fs.unlinkSync(imagePathFull);
+    }
+
+    res.status(200).send({ message: "Item apagado com sucesso!" });
+  } catch (error) {
+    console.error("Erro ao apagar item:", error);
+    res.status(500).send({ message: "Erro ao apagar item.", error });
   }
 };

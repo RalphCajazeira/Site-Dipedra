@@ -108,6 +108,34 @@
         <!-- As imagens serão geradas dinamicamente aqui pelo JavaScript -->
       </section>
 
+      <section id="catalogo-admin-container">
+        <div id="catalogo-grid" class="grid">
+          <!-- Os itens serão carregados dinamicamente aqui -->
+        </div>
+      </section>
+
+      <div id="editModal" class="modal" style="display: none">
+        <div class="modal-content">
+          <span class="close-btn" id="closeModal">&times;</span>
+          <h3>Editar Item</h3>
+          <form id="editForm">
+            <label for="editNome">Nome</label>
+            <input type="text" id="editNome" name="nome" required />
+
+            <label for="editTipo">Tipo</label>
+            <input type="text" id="editTipo" name="tipo" required />
+
+            <label for="editMaterial">Material</label>
+            <input type="text" id="editMaterial" name="material" required />
+
+            <label for="editAmbientes">Ambientes (separados por vírgula)</label>
+            <input type="text" id="editAmbientes" name="ambientes" required />
+
+            <button type="submit">Salvar</button>
+          </form>
+        </div>
+      </div>
+
       <!-- Rodapé -->
       <footer>
         <p>&copy; 2024 Dipedra</p>
