@@ -1,5 +1,3 @@
-// catalogoadmin.js - Código do frontend
-
 document.addEventListener("DOMContentLoaded", function () {
   const uploadForm = document.getElementById("uploadForm");
 
@@ -7,12 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
     uploadForm.addEventListener("submit", async (event) => {
       event.preventDefault();
 
-      const formData = new FormData(uploadForm);
-      const files = document.getElementById("productImages").files;
-
-      for (let i = 0; i < files.length; i++) {
-        formData.append("images", files[i]);
-      }
+      const formData = new FormData(uploadForm); // Captura o formulário inteiro
 
       try {
         const response = await fetch("http://127.0.0.1:3000/catalogo/upload", {
@@ -24,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (response.ok) {
           alert(result.message);
           uploadForm.reset();
-          loadItems(); // Certifique-se de que essa função está definida no catalogo.js
+          loadItems(); // Atualiza o catálogo
         } else {
           alert(result.message || "Erro ao enviar.");
         }

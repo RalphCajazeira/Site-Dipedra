@@ -1,7 +1,5 @@
-const fs = require("fs");
+const fs = require("fs"); // Correção: Importação do fs
 const path = require("path");
-
-// Caminho corrigido para o catalogo.json
 const catalogoPath = path.join(
   __dirname,
   "../",
@@ -13,7 +11,7 @@ const catalogoPath = path.join(
 exports.uploadImages = (req, res) => {
   try {
     const { nome, tipo, material, ambientes } = req.body;
-    const images = req.files; // Array com os arquivos enviados
+    const images = req.files;
 
     if (!images || images.length === 0) {
       return res
@@ -25,18 +23,24 @@ exports.uploadImages = (req, res) => {
     const catalogo = JSON.parse(fs.readFileSync(catalogoPath, "utf8"));
 
     images.forEach((image) => {
-      const newEntry = {
-        imagem: image.filename, // Nome gerado automaticamente pelo multer
-        nome,
-        tipo,
-        material,
-        ambientes: ambientes.split(",").map((a) => a.trim()),
-      };
+      // Verifica duplicidade
+      const alreadyExists = catalogo.some(
+        (item) => item.imagem === image.filename
+      );
 
-      catalogo.push(newEntry);
+      if (!alreadyExists) {
+        const newEntry = {
+          imagem: image.filename,
+          nome,
+          tipo,
+          material,
+          ambientes: ambientes.split(",").map((a) => a.trim()),
+        };
+        catalogo.push(newEntry);
+      }
     });
 
-    // Escreve de volta no catalogo.json
+    // Salva de volta no catalogo.json
     fs.writeFileSync(catalogoPath, JSON.stringify(catalogo, null, 2));
 
     res.status(200).send({ message: "Imagens adicionadas com sucesso!" });
