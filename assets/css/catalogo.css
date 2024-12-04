@@ -166,3 +166,48 @@
 .filter-container input[type="radio"]:checked {
   background-color: var(--color-primary);
 }
+
+#generate-qrcode:hover {
+  opacity: 0.8;
+  transform: scale(1.1);
+}
+
+.search-container {
+  text-align: center;
+  margin: var(--spacing-4) auto;
+  width: 100%;
+  display: flex; /* Alinha os itens horizontalmente */
+  justify-content: center; /* Centraliza os itens */
+  align-items: center; /* Alinha os itens verticalmente */
+  gap: 10px; /* Espaçamento entre os itens */
+}
+
+#search-input {
+  width: 80%;
+  max-width: 600px;
+  padding: var(--spacing-3);
+  font-size: 1.1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  text-align: center;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box; /* Garante que o padding não afete o tamanho */
+}
+
+#generate-qrcode {
+  width: 32px; /* Define largura do ícone */
+  height: 32px; /* Define altura do ícone */
+  cursor: pointer;
+  vertical-align: middle; /* Alinha ao meio em relação ao input */
+}
+
+#copy-link {
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+}
+
+#copy-link:hover {
+  opacity: 0.8;
+  transform: scale(1.1);
+}
