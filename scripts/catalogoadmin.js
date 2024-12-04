@@ -134,8 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const formData = new FormData(uploadForm);
 
       try {
-        // const url = "http://127.0.0.1:3000/catalogo/upload";
-        const url = "https://dipedra-backend.onrender.com/catalogo/upload";
+        const url = "http://127.0.0.1:3000/catalogo/upload";
         const options = { method: "POST", body: formData };
 
         const result = await fetchData(url, options);
