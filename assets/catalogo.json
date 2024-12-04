@@ -577,5 +577,41 @@
     "ambientes": [
       "Cozinha"
     ]
+  },
+  {
+    "imagem": "bancada---quartzito---brilliant-black---banheiro---1.jpg",
+    "nome": "Bancada",
+    "tipo": "Quartzito",
+    "material": "Brilliant Black",
+    "ambientes": [
+      "Banheiro"
+    ]
+  },
+  {
+    "imagem": "bancada---quartzito---brilliant-black---banheiro---2.jpg",
+    "nome": "Bancada",
+    "tipo": "Quartzito",
+    "material": "Brilliant Black",
+    "ambientes": [
+      "Banheiro"
+    ]
+  },
+  {
+    "imagem": "bancada---quartzito---brilliant-black---banheiro---3.jpg",
+    "nome": "Bancada",
+    "tipo": "Quartzito",
+    "material": "Brilliant Black",
+    "ambientes": [
+      "Banheiro"
+    ]
+  },
+  {
+    "imagem": "bancada---granito---itaúnas-escovado---cozinha---1.jpg",
+    "nome": "Bancada",
+    "tipo": "Granito",
+    "material": "Itaúnas Escovado",
+    "ambientes": [
+      "Cozinha"
+    ]
   }
 ]
