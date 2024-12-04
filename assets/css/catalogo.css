@@ -53,9 +53,12 @@
   text-align: center;
 }
 
-/* Barra de Pesquisa */
+/* Estilo para desktop */
 .search-container {
-  text-align: center;
+  display: flex; /* Organiza os elementos em linha */
+  align-items: center; /* Alinha os elementos verticalmente */
+  justify-content: center; /* Centraliza o conteúdo horizontalmente */
+  gap: 10px; /* Espaçamento entre os elementos */
   margin: var(--spacing-4) auto;
   width: 100%;
 }
@@ -69,6 +72,7 @@
   border-radius: var(--border-radius);
   text-align: center;
   transition: border-color 0.3s ease;
+  box-sizing: border-box; /* Inclui padding no tamanho total */
 }
 
 #search-input:focus {
@@ -167,19 +171,14 @@
   background-color: var(--color-primary);
 }
 
-#generate-qrcode:hover {
-  opacity: 0.8;
-  transform: scale(1.1);
-}
-
+/* Estilo para desktop */
 .search-container {
-  text-align: center;
+  display: flex; /* Organiza os elementos em linha */
+  align-items: center; /* Alinha os elementos verticalmente */
+  justify-content: center; /* Centraliza o conteúdo horizontalmente */
+  gap: 10px; /* Espaçamento entre os elementos */
   margin: var(--spacing-4) auto;
   width: 100%;
-  display: flex; /* Alinha os itens horizontalmente */
-  justify-content: center; /* Centraliza os itens */
-  align-items: center; /* Alinha os itens verticalmente */
-  gap: 10px; /* Espaçamento entre os itens */
 }
 
 #search-input {
@@ -191,23 +190,33 @@
   border-radius: var(--border-radius);
   text-align: center;
   transition: border-color 0.3s ease;
-  box-sizing: border-box; /* Garante que o padding não afete o tamanho */
+  box-sizing: border-box; /* Inclui padding no tamanho total */
 }
 
-#generate-qrcode {
-  width: 32px; /* Define largura do ícone */
-  height: 32px; /* Define altura do ícone */
-  cursor: pointer;
-  vertical-align: middle; /* Alinha ao meio em relação ao input */
-}
-
+#generate-qrcode,
 #copy-link {
-  width: 32px;
+  width: 32px; /* Tamanho padrão dos botões */
   height: 32px;
   cursor: pointer;
 }
 
-#copy-link:hover {
-  opacity: 0.8;
-  transform: scale(1.1);
+/* Estilo para dispositivos móveis */
+@media (max-width: 768px) {
+  .search-container {
+    flex-direction: column; /* Organiza a barra de pesquisa e os botões em coluna */
+    align-items: center; /* Centraliza os elementos verticalmente */
+    gap: 10px; /* Espaçamento entre a barra de pesquisa e os botões */
+  }
+
+  .button-group {
+    display: flex; /* Organiza os botões lado a lado */
+    justify-content: center; /* Centraliza os botões */
+    gap: 10px; /* Espaçamento entre os botões */
+  }
+
+  #generate-qrcode,
+  #copy-link {
+    width: 25.6px; /* 20% menor */
+    height: 25.6px;
+  }
 }
