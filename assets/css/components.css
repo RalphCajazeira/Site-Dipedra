@@ -59,3 +59,7 @@ footer {
 .pady-1 {
   padding-block: var(--spacing-3);
 }
+
+.criacao {
+  margin-bottom: 2rem;
+}
