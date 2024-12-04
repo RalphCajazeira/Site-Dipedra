@@ -554,7 +554,7 @@
   {
     "imagem": "bancada---ultracompacto---pure-white---cozinha---1.jpg",
     "nome": "Bancada",
-    "tipo": "Ultracompacto",
+    "tipo": "UltraCompacto",
     "material": "Pure White",
     "ambientes": [
       "Cozinha"
@@ -563,7 +563,7 @@
   {
     "imagem": "bancada-ilha---ultracompacto---pure-white---cozinha---1.jpg",
     "nome": "Bancada Ilha",
-    "tipo": "Ultracompacto",
+    "tipo": "UltraCompacto",
     "material": "Pure White",
     "ambientes": [
       "Cozinha"
@@ -572,7 +572,7 @@
   {
     "imagem": "bancada-ilha---ultracompacto---pure-white---cozinha---2.jpg",
     "nome": "Bancada Ilha",
-    "tipo": "Ultracompacto",
+    "tipo": "UltraCompacto",
     "material": "Pure White",
     "ambientes": [
       "Cozinha"
