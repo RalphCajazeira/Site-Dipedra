@@ -144,15 +144,6 @@
     ]
   },
   {
-    "imagem": "revestimento---rocha-ornamental---pedra-moledo---externo---1.jpg",
-    "nome": "Revestimento",
-    "tipo": "Rocha Ornamental",
-    "material": "Pedra Moledo",
-    "ambientes": [
-      "Externo"
-    ]
-  },
-  {
     "imagem": "revestimento---rocha-ornamental---pedra-moledo---externo---2.jpg",
     "nome": "Revestimento",
     "tipo": "Rocha Ornamental",
@@ -357,6 +348,69 @@
     "material": "Preto Vulcano Escovado",
     "ambientes": [
       "Cozinha Gourmet"
+    ]
+  },
+  {
+    "imagem": "bancada---ultra-compacto---calacata-carrara-acetinado---cozinha---1.jpg",
+    "nome": "Bancada",
+    "tipo": "UltraCompacto",
+    "material": "Calacata Carrara Acetinado",
+    "ambientes": [
+      "Cozinha"
+    ]
+  },
+  {
+    "imagem": "bancada---ultra-compacto---calacata-carrara-acetinado---cozinha---2.jpg",
+    "nome": "Bancada",
+    "tipo": "UltraCompacto",
+    "material": "Calacata Carrara Acetinado",
+    "ambientes": [
+      "Cozinha"
+    ]
+  },
+  {
+    "imagem": "bancada-ilha---ultra-compacto---calacata-carrara-acetinado---cozinha---1.jpg",
+    "nome": "Bancada Ilha",
+    "tipo": "UltraCompacto",
+    "material": "Calacata Carrara Acetinado",
+    "ambientes": [
+      "Cozinha"
+    ]
+  },
+  {
+    "imagem": "bancada-ilha---ultra-compacto---calacata-carrara-acetinado---cozinha---2.jpg",
+    "nome": "Bancada Ilha",
+    "tipo": "UltraCompacto",
+    "material": "Calacata Carrara Acetinado",
+    "ambientes": [
+      "Cozinha"
+    ]
+  },
+  {
+    "imagem": "escada---ultracompacto---calacata-gold---sala---2.jpg",
+    "nome": "Escada",
+    "tipo": "UltraCompacto",
+    "material": "Calacata Gold",
+    "ambientes": [
+      "Sala"
+    ]
+  },
+  {
+    "imagem": "escada---ultracompacto---calacata-gold---sala---3.jpg",
+    "nome": "Escada",
+    "tipo": "UltraCompacto",
+    "material": "Calacata Gold",
+    "ambientes": [
+      "Sala"
+    ]
+  },
+  {
+    "imagem": "escada---ultracompacto---calacata-gold---sala---1.jpg",
+    "nome": "Escada",
+    "tipo": "UltraCompacto",
+    "material": "Calacata Gold",
+    "ambientes": [
+      "Sala"
     ]
   }
 ]
