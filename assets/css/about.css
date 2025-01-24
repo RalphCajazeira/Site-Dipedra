@@ -44,7 +44,7 @@
     background-color: var(--color-primary);
     color: var(--color-text-light);
     padding: 2rem;
-    width: 350px;
+    width: 21rem;
   }
 
   & h2 {
@@ -55,5 +55,27 @@
     line-height: 120%;
     padding-top: 2rem;
     text-align: justify;
+  }
+}
+
+@media (max-width: 480px) {
+  #about #about-geral,
+  #about #vision {
+    display: grid;
+    grid-template-columns: auto;
+    grid-auto-flow: row;
+  }
+}
+
+@media (max-width: 768px) {
+  #about #vision {
+    display: grid;
+    grid-template-columns: auto;
+    grid-auto-flow: row;
+
+    & div {
+      margin-inline: auto;
+      width: 90%;
+    }
   }
 }
