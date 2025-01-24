@@ -46,4 +46,14 @@
     padding: 2rem;
     width: 350px;
   }
+
+  & h2 {
+    text-align: center;
+  }
+  & p,
+  ul {
+    line-height: 120%;
+    padding-top: 2rem;
+    text-align: justify;
+  }
 }
