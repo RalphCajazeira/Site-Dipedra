@@ -61,5 +61,40 @@ footer {
 }
 
 .criacao {
-  margin-bottom: 2rem;
+  margin-block: 4rem;
+  text-align: center;
+  color: var(--color-primary);
+
+  & p {
+    margin-top: 2rem;
+    color: red;
+    font-weight: 600;
+  }
+}
+
+@media (min-width: 480px) {
+  #contacts {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    place-items: center;
+    margin-top: 1rem;
+    margin-inline: 5rem;
+
+    & > div {
+      width: 100%;
+    }
+
+    & .address {
+      justify-items: start;
+      text-align: left;
+    }
+    & .social-media {
+      justify-content: center;
+    }
+
+    & .phone {
+      justify-items: end;
+      text-align: right;
+    }
+  }
 }
