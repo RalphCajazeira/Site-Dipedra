@@ -3,7 +3,7 @@
     "imagem": "bancada---granito---mont-blanc---banheiro---1.jpg",
     "nome": "Bancada",
     "tipo": "Granito",
-    "material": "Mont Blanc",
+    "material": "Arabescatto",
     "ambientes": [
       "Banheiro"
     ]
@@ -12,7 +12,7 @@
     "imagem": "bancada---granito---mont-blanc---banheiro---2.jpg",
     "nome": "Bancada",
     "tipo": "Granito",
-    "material": "Mont Blanc",
+    "material": "Arabescatto",
     "ambientes": [
       "Cozinha"
     ]
@@ -21,7 +21,7 @@
     "imagem": "bancada---granito---mont-blanc---banheiro---3.jpg",
     "nome": "Bancada",
     "tipo": "Granito",
-    "material": "Mont Blanc",
+    "material": "Arabescatto",
     "ambientes": [
       "Cozinha"
     ]
@@ -603,6 +603,24 @@
     "material": "Itaúnas Escovado",
     "ambientes": [
       "Cozinha"
+    ]
+  },
+  {
+    "imagem": "bancada---quartzito---kouros---banheiro---1.jpg",
+    "nome": "Bancada",
+    "tipo": "Quartzito",
+    "material": "Kouros",
+    "ambientes": [
+      "Banheiro"
+    ]
+  },
+  {
+    "imagem": "bancada---quartzito---kouros---banheiro---2.jpg",
+    "nome": "Bancada",
+    "tipo": "Quartzito",
+    "material": "Kouros",
+    "ambientes": [
+      "Banheiro"
     ]
   }
 ]
