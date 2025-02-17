@@ -60,3 +60,7 @@ footer {
   background-color: #00234f;
   color: #ffffff;
 }
+
+.grid {
+  display: grid;
+}
