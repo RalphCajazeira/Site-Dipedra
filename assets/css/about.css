@@ -144,10 +144,6 @@
     grid-template-columns: auto;
     grid-auto-flow: row;
   }
-
-  .grid-container {
-    padding: 10px;
-  }
 }
 
 @media (max-width: 768px) {
