@@ -5,6 +5,8 @@ let arquivosGlobais = {};
 let metadadosGlobais = {};
 let fotosCapturadas = [];
 
+const API_BASE = "https://dipedraapi.loca.lt";
+
 async function loadFolder(path = currentPath) {
   const res = await fetch(`/api/blocos?path=${encodeURIComponent(path)}`);
   const data = await res.json();
@@ -37,7 +39,7 @@ async function loadFolder(path = currentPath) {
     renameBtn.onclick = async () => {
       const novoNome = prompt("Novo nome da pasta:", folder);
       if (!novoNome) return;
-      await fetch("/api/blocos/rename", {
+      await fetch(`${API_BASE}/api/blocos/rename`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -54,7 +56,7 @@ async function loadFolder(path = currentPath) {
     deleteBtn.title = "Excluir pasta";
     deleteBtn.onclick = async () => {
       if (confirm(`Tem certeza que deseja excluir a pasta "${folder}"?`)) {
-        await fetch("/api/blocos/delete", {
+        await fetch(`${API_BASE}/api/blocos/delete`, {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ path: currentPath, name: folder }),
@@ -94,7 +96,7 @@ async function loadFolder(path = currentPath) {
     deleteBtn.title = "Excluir arquivo";
     deleteBtn.onclick = async () => {
       if (confirm(`Deseja excluir o arquivo "${file}"?`)) {
-        await fetch("/api/blocos/delete", {
+        await fetch(`${API_BASE}/api/blocos/delete`, {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ path: currentPath, name: file }),
@@ -205,7 +207,7 @@ async function salvarModal() {
       return;
     }
 
-    await fetch("/api/blocos/atualizar-metadata", {
+    await fetch(`${API_BASE}/api/blocos/atualizar-metadata`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -237,7 +239,7 @@ async function salvarModal() {
   formData.append("codeInterno", codeInterno);
   formData.append("path", currentPath);
 
-  await fetch("/api/blocos/upload", {
+  await fetch(`${API_BASE}/api/blocos/upload`, {
     method: "POST",
     body: formData,
   });
@@ -268,7 +270,7 @@ window.onload = () => {
 async function createFolder() {
   const folderName = prompt("Nome da nova pasta:");
   if (!folderName) return;
-  await fetch("/api/blocos/folder", {
+  await fetch(`${API_BASE}/api/blocos/folder`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ path: currentPath, name: folderName }),
