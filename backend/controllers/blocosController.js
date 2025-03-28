@@ -62,11 +62,11 @@ function salvarImagens(destino, arquivos, meta) {
     const code = gerarCodeUnico(db);
     const ext = path.extname(arquivo.originalname);
 
-    const { nome, comprimento, largura, lote } = meta;
+    const { nome, comprimento, largura, codeInterno } = meta;
 
     let baseNome = nome || "";
     if (comprimento && largura) baseNome += ` ${comprimento}x${largura}`;
-    if (lote) baseNome += ` - Lote ${lote}`;
+    if (codeInterno) baseNome += ` - codeInterno ${codeInterno}`;
     baseNome = baseNome.trim().replace(/[\\/:"*?<>|]+/g, "");
 
     const nomeFinal = `${baseNome ? baseNome + " - " : ""}Code ${code}${ext}`;
@@ -82,7 +82,7 @@ function salvarImagens(destino, arquivos, meta) {
       nome: nome || "",
       comprimento,
       largura,
-      lote,
+      codeInterno,
     };
 
     salvos.push(nomeFinal);
@@ -105,7 +105,8 @@ function atualizarMetadadosPorCode(code, novosDados) {
     let novoNome = novosDados.nome || "";
     if (novosDados.comprimento && novosDados.largura)
       novoNome += ` ${novosDados.comprimento}x${novosDados.largura}`;
-    if (novosDados.lote) novoNome += ` - Lote ${novosDados.lote}`;
+    if (novosDados.codeInterno)
+      novoNome += ` - codeInterno ${novosDados.codeInterno}`;
     novoNome = `${novoNome ? novoNome + " - " : ""}Code ${code}${ext}`;
     const novoCaminho = `${pasta}/${novoNome}`;
 

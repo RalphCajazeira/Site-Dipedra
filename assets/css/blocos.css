@@ -4,145 +4,62 @@ body {
   margin: 0;
   background-color: #f9f9f9;
   color: #333;
-
-  h1 {
-    font-size: 1.8rem;
-    margin-bottom: 1rem;
-  }
-
-  button {
-    padding: 0.5rem 1rem;
-    margin: 0.25rem;
-    font-size: 1rem;
-    border: none;
-    border-radius: 5px;
-    background-color: #1976d2;
-    color: white;
-    cursor: pointer;
-    transition: background 0.3s ease;
-
-    &:hover {
-      background-color: #1565c0;
-    }
-  }
-
-  #blocos-container {
-    margin-top: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .folder,
-  .file {
-    padding: 0.6rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background 0.2s ease;
-
-    button {
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      margin-left: 0.5rem;
-      font-size: 1rem;
-    }
-  }
-
-  .folder {
-    background-color: #e3f2fd;
-
-    &:hover {
-      background-color: #bbdefb;
-    }
-  }
-
-  .file {
-    background-color: #e8f5e9;
-
-    &:hover {
-      background-color: #c8e6c9;
-    }
-
-    img {
-      width: 100%;
-      height: auto;
-      max-height: 300px;
-      object-fit: cover;
-      display: block;
-    }
-  }
-
-  .modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 999;
-
-    &.hidden {
-      display: none;
-    }
-
-    .modal-content {
-      background: white;
-      padding: 1rem;
-      border-radius: 8px;
-      width: 90%;
-      max-width: 400px;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-
-      input {
-        padding: 0.5rem;
-        font-size: 1rem;
-      }
-
-      .modal-actions {
-        display: flex;
-        justify-content: space-between;
-      }
-    }
-  }
-
-  .caminho {
-    margin-top: 0.5rem;
-
-    #caminho-atual {
-      margin-top: 5rem;
-      font-weight: bold;
-      color: #333;
-    }
-  }
-
-  .grid-view {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 0.5rem;
-  }
 }
 
+h1 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  margin: 0.25rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  background-color: #1976d2;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background-color: #1565c0;
+}
+
+#blocos-container {
+  margin-top: 1rem;
+}
+
+/* === FOLDER === */
 .folder {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  & .button-wrapper {
-    display: flex;
-    gap: 1rem;
-    & button {
-      all: unset;
-    }
-  }
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #e3f2fd;
+  transition: background 0.2s ease;
+  cursor: pointer;
 }
 
+.folder:hover {
+  background-color: #bbdefb;
+}
+
+.folder .button-wrapper {
+  display: flex;
+  gap: 1rem;
+}
+
+.folder .button-wrapper button {
+  all: unset;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+/* === FILE === */
 .file {
   background-color: #e8f5e9;
   padding: 0.6rem;
@@ -187,7 +104,94 @@ body {
   cursor: pointer;
 }
 
-/* Layout em lista */
+/* === MODAL === */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.modal-content input {
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* === BREADCRUMB === */
+.caminho {
+  margin-top: 0.5rem;
+}
+
+#caminho-atual {
+  margin-top: 5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+/* === GRID VIEW (Responsivo por largura) === */
+.grid-view {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 600px) {
+  .grid-view {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .grid-view {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1200px) {
+  .grid-view {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Empilhar span e botões no grid */
+.grid-view .file .description {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.5rem;
+}
+
+.grid-view .file .button-wrapper {
+  justify-content: center;
+}
+
+/* === LISTA VIEW === */
 .lista-view {
   display: flex;
   flex-direction: column;

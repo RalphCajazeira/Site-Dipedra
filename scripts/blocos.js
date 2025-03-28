@@ -23,12 +23,13 @@ async function loadFolder(path = currentPath) {
     const div = document.createElement("div");
     div.className = "folder";
 
-    const nameSpan = document.createElement("span");
-    nameSpan.textContent = folder;
-    nameSpan.onclick = () => {
+    div.onclick = () => {
       currentPath += `/${folder}`;
       loadFolder();
     };
+
+    const nameSpan = document.createElement("span");
+    nameSpan.textContent = folder;
 
     const renameBtn = document.createElement("button");
     renameBtn.textContent = "✏️";
@@ -155,12 +156,14 @@ function abrirModalNovaImagem() {
 
 function mostrarModalComFotos() {
   editandoArquivo = null;
-  document.getElementById("modal-titulo").textContent = `Preencher dados (${fotosCapturadas.length} foto${fotosCapturadas.length > 1 ? "s" : ""})`;
+  document.getElementById("modal-titulo").textContent = `Preencher dados (${
+    fotosCapturadas.length
+  } foto${fotosCapturadas.length > 1 ? "s" : ""})`;
   document.getElementById("modal-file").classList.add("hidden");
   document.getElementById("modal-nome").value = "";
   document.getElementById("modal-comprimento").value = "";
   document.getElementById("modal-largura").value = "";
-  document.getElementById("modal-lote").value = "";
+  document.getElementById("modal-codeInterno").value = "";
   document.getElementById("modal-imagem").classList.remove("hidden");
 }
 
@@ -174,7 +177,7 @@ function abrirModalEdicao(nomeArquivo) {
   document.getElementById("modal-nome").value = meta.nome || "";
   document.getElementById("modal-comprimento").value = meta.comprimento || "";
   document.getElementById("modal-largura").value = meta.largura || "";
-  document.getElementById("modal-lote").value = meta.lote || "";
+  document.getElementById("modal-codeInterno").value = meta.codeInterno || "";
   document.getElementById("modal-imagem").classList.remove("hidden");
 }
 
@@ -188,7 +191,7 @@ async function salvarModal() {
   const nome = document.getElementById("modal-nome").value;
   const comprimento = document.getElementById("modal-comprimento").value;
   const largura = document.getElementById("modal-largura").value;
-  const lote = document.getElementById("modal-lote").value;
+  const codeInterno = document.getElementById("modal-codeInterno").value;
 
   if (!comprimento || !largura) {
     alert("Comprimento e Largura são obrigatórios");
@@ -210,7 +213,7 @@ async function salvarModal() {
         nome,
         comprimento,
         largura,
-        lote,
+        codeInterno,
       }),
     });
 
@@ -231,7 +234,7 @@ async function salvarModal() {
   formData.append("nome", nome);
   formData.append("comprimento", comprimento);
   formData.append("largura", largura);
-  formData.append("lote", lote);
+  formData.append("codeInterno", codeInterno);
   formData.append("path", currentPath);
 
   await fetch("/api/blocos/upload", {

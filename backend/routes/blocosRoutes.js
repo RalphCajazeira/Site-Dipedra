@@ -54,7 +54,13 @@ router.post("/folder", (req, res) => {
 
 // Upload múltiplo
 router.post("/upload", upload.array("images"), (req, res) => {
-  const { nome, comprimento, largura, lote, path: folderPath } = req.body;
+  const {
+    nome,
+    comprimento,
+    largura,
+    codeInterno,
+    path: folderPath,
+  } = req.body;
   const destino = path.join(__dirname, "../../", folderPath);
 
   try {
@@ -62,7 +68,7 @@ router.post("/upload", upload.array("images"), (req, res) => {
       nome,
       comprimento,
       largura,
-      lote,
+      codeInterno,
     });
     res.status(201).json({ arquivos: nomes });
   } catch (err) {
@@ -72,12 +78,12 @@ router.post("/upload", upload.array("images"), (req, res) => {
 
 // Atualizar metadados + renomear arquivo
 router.put("/atualizar-metadata", (req, res) => {
-  const { code, nome, comprimento, largura, lote } = req.body;
+  const { code, nome, comprimento, largura, codeInterno } = req.body;
   const sucesso = atualizarMetadadosPorCode(code, {
     nome,
     comprimento,
     largura,
-    lote,
+    codeInterno,
   });
 
   if (sucesso) res.sendStatus(200);
