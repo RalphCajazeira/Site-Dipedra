@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blocos - Dipedra</title>
+    <link rel="stylesheet" href="../assets/css/blocos.css" />
+  </head>
+  <body>
+    <h1>API Fotos</h1>
+
+    <div>
+      <button id="voltar-inicio-btn">🏠 Início</button>
+      <button id="nova-pasta-btn">📁 Criar Pasta</button>
+      <button id="nova-foto-btn">📷 Tirar Foto</button>
+      <button id="alternar-visualizacao-btn">🧱 Modo Grid</button>
+    </div>
+
+    <div class="caminho">
+      <span>Caminho:</span>
+      <span id="caminho-atual">/</span>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal-imagem" class="modal hidden">
+      <div class="modal-content">
+        <h2 id="modal-titulo">Nova Foto</h2>
+
+        <input
+          type="file"
+          id="modal-file"
+          accept="image/*"
+          capture="environment"
+          multiple
+        />
+
+        <input type="text" id="modal-nome" placeholder="Nome" />
+        <input type="text" id="modal-comprimento" placeholder="Comprimento *" />
+        <input type="text" id="modal-largura" placeholder="Largura *" />
+        <input type="text" id="modal-lote" placeholder="Lote" />
+
+        <div class="modal-actions">
+          <button id="modal-cancelar-btn">Cancelar</button>
+          <button id="modal-salvar-btn">Salvar</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="blocos-container"></div>
+
+    <script src="../scripts/blocos.js"></script>
+  </body>
+</html>
