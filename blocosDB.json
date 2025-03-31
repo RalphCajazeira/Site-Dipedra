@@ -1,4 +1,45 @@
 {
-  "arquivos": {},
-  "pastas": []
+  "arquivos": {
+    "/assets/blocos/Bando 01/2,00x2,00 - Code 1.jpg": {
+      "code": 1,
+      "nome": "",
+      "comprimento": "2,00",
+      "largura": "2,00",
+      "codeInterno": ""
+    },
+    "/assets/blocos/Bando 01/Rachadas/1x1 - Code 2.jpg": {
+      "code": 2,
+      "nome": "",
+      "comprimento": "1",
+      "largura": "1",
+      "codeInterno": ""
+    },
+    "/assets/blocos/Bando 02/1x1 - Code 3.jpg": {
+      "code": 3,
+      "nome": "",
+      "comprimento": "1",
+      "largura": "1",
+      "codeInterno": ""
+    },
+    "/assets/blocos/Bando 01/Rachadas/Tratadas 01/2x2,00 - Code 4.jpg": {
+      "code": 4,
+      "nome": "",
+      "comprimento": "2",
+      "largura": "2,00",
+      "codeInterno": ""
+    },
+    "/assets/blocos/Bando 01/Rachadas/Tratadas 01/1x1 - Code 5.jpg": {
+      "code": 5,
+      "nome": "",
+      "comprimento": "1",
+      "largura": "1",
+      "codeInterno": ""
+    }
+  },
+  "pastas": [
+    "/assets/blocos/Bando 01",
+    "/assets/blocos/Teste 01/Teste raiz",
+    "/assets/blocos/Bando 02",
+    "/assets/blocos/Bando 01/Rachadas/Tratadas 01"
+  ]
 }
