@@ -14,7 +14,7 @@ function abrirModalMover(tipo, nome) {
   moverNome = nome;
   moverDestinoAtual = "/assets/blocos";
   document.getElementById("modal-mover").classList.remove("hidden");
-  renderizarPastasMover();
+  carregarPastasDisponiveis().then(renderizarPastasMover);
 }
 
 function fecharModalMover() {

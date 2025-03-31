@@ -156,4 +156,62 @@ router.put("/rename", async (req, res) => {
   }
 });
 
+// Mover arquivo ou pasta
+router.put("/mover", async (req, res) => {
+  const { tipo, origem, destino } = req.body;
+
+  const fs = require("fs");
+  const path = require("path");
+  const fsPromises = fs.promises;
+
+  const raiz = path.join(__dirname, "../../");
+  const dbPath = path.join(raiz, "blocosDB.json");
+
+  try {
+    const nomeItem = path.basename(origem);
+    const origemAbs = path.join(raiz, origem);
+    const destinoAbs = path.join(raiz, destino, nomeItem);
+    const dbRaw = await fsPromises.readFile(dbPath, "utf-8");
+    const db = JSON.parse(dbRaw);
+
+    await fsPromises.rename(origemAbs, destinoAbs);
+
+    const relOrigem = "/" + path.relative(raiz, origemAbs).replace(/\\/g, "/");
+    const relDestino =
+      "/" + path.relative(raiz, destinoAbs).replace(/\\/g, "/");
+
+    if (tipo === "arquivo") {
+      const dados = db.arquivos[relOrigem];
+      delete db.arquivos[relOrigem];
+      db.arquivos[relDestino] = dados;
+    } else if (tipo === "pasta") {
+      const subPastas = db.pastas.filter((p) => p.startsWith(relOrigem));
+      const novasPastas = subPastas.map((p) =>
+        p.replace(relOrigem, relDestino)
+      );
+      db.pastas = db.pastas
+        .filter((p) => !p.startsWith(relOrigem))
+        .concat(novasPastas);
+
+      const novosArquivos = {};
+      for (const [caminho, meta] of Object.entries(db.arquivos)) {
+        if (caminho.startsWith(relOrigem)) {
+          const novo = caminho.replace(relOrigem, relDestino);
+          novosArquivos[novo] = meta;
+        } else {
+          novosArquivos[caminho] = meta;
+        }
+      }
+
+      db.arquivos = novosArquivos;
+    }
+
+    await fsPromises.writeFile(dbPath, JSON.stringify(db, null, 2));
+    res.sendStatus(200);
+  } catch (error) {
+    console.error("Erro ao mover:", error);
+    res.status(500).json({ error: "Falha ao mover item." });
+  }
+});
+
 module.exports = router;
