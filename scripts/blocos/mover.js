@@ -1,16 +1,76 @@
-function abrirModalMover(tipo, nome) {
-  const destino = prompt("Para qual pasta deseja mover?");
-  if (!destino) return;
+let moverTipo = null;
+let moverNome = null;
+let moverDestinoAtual = "/assets/blocos";
+let todasPastasDisponiveis = [];
 
-  fetch(`${API_BASE}/mover`, {
+async function carregarPastasDisponiveis() {
+  const res = await fetch("/blocosDB.json");
+  const db = await res.json();
+  todasPastasDisponiveis = db.pastas || [];
+}
+
+function abrirModalMover(tipo, nome) {
+  moverTipo = tipo;
+  moverNome = nome;
+  moverDestinoAtual = "/assets/blocos";
+  document.getElementById("modal-mover").classList.remove("hidden");
+  renderizarPastasMover();
+}
+
+function fecharModalMover() {
+  moverTipo = null;
+  moverNome = null;
+  moverDestinoAtual = "/assets/blocos";
+  document.getElementById("modal-mover").classList.add("hidden");
+}
+
+function renderizarPastasMover() {
+  const container = document.getElementById("mover-pastas");
+  container.innerHTML = "";
+
+  const caminhoSpan = document.getElementById("mover-caminho");
+  caminhoSpan.textContent =
+    moverDestinoAtual.replace("/assets/blocos", "") || "/";
+
+  const subpastas = todasPastasDisponiveis
+    .filter((p) => {
+      return (
+        p.startsWith(moverDestinoAtual) &&
+        p !== moverDestinoAtual &&
+        p.replace(moverDestinoAtual + "/", "").indexOf("/") === -1
+      );
+    })
+    .sort();
+
+  for (const pasta of subpastas) {
+    const div = document.createElement("div");
+    div.className = "item mover-item";
+    div.textContent = pasta.replace(moverDestinoAtual + "/", "");
+    div.onclick = () => {
+      moverDestinoAtual = pasta;
+      renderizarPastasMover();
+    };
+    container.appendChild(div);
+  }
+}
+
+async function confirmarMover() {
+  if (!moverTipo || !moverNome || !moverDestinoAtual) return;
+
+  await fetch("/api/blocos/mover", {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      tipo,
-      origem: currentPath + "/" + nome,
-      destino: destino.startsWith("/assets/blocos")
-        ? destino
-        : "/assets/blocos/" + destino,
+      tipo: moverTipo,
+      origem: currentPath + "/" + moverNome,
+      destino: moverDestinoAtual,
     }),
-  }).then(() => loadFolder());
+  });
+
+  fecharModalMover();
+  loadFolder();
 }
+
+window.addEventListener("DOMContentLoaded", () => {
+  carregarPastasDisponiveis();
+});

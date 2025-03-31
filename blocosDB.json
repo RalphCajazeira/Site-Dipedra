@@ -1,30 +1,4 @@
 {
-  "arquivos": {
-    "/assets/blocos/Bando 02/3x1 - Code 2.jpg": {
-      "code": 2,
-      "nome": "",
-      "comprimento": "3",
-      "largura": "1",
-      "codeInterno": ""
-    },
-    "/assets/blocos/Bando 02/3x1 - Code 3.jpg": {
-      "code": 3,
-      "nome": "",
-      "comprimento": "3",
-      "largura": "1",
-      "codeInterno": ""
-    },
-    "/assets/blocos/Bando 01/ 2,75x2,00 - Code 1.jpg": {
-      "code": 1,
-      "nome": "",
-      "comprimento": "2,75",
-      "largura": "2,00",
-      "codeInterno": ""
-    }
-  },
-  "pastas": [
-    "/assets/blocos/Teste 01/Teste raiz",
-    "/assets/blocos/Bando 01",
-    "/assets/blocos/Bando 02"
-  ]
+  "arquivos": {},
+  "pastas": []
 }
