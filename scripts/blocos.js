@@ -10,6 +10,8 @@ let arquivosGlobais = {};
 let metadadosGlobais = {};
 let fotosCapturadas = [];
 
+const API_BASE = "https://dipedraapi.loca.lt";
+
 async function loadFolder(path = currentPath) {
   const res = await fetch(`/api/blocos?path=${encodeURIComponent(path)}`);
   const data = await res.json();
