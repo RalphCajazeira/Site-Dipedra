@@ -1,60 +1,88 @@
-const API_BASE =
-  location.hostname === "localhost"
-    ? "http://localhost:3000/api/blocos"
-    : "/api/blocos";
-
-// Caminho base do site (sem /api/blocos)
-const SITE_BASE = API_BASE.replace(/\/api\/blocos$/, "");
+const API_BASE = `${location.origin}/api/blocos`;
+const SITE_BASE = location.origin;
 
 async function carregarRelatorio() {
   const res = await fetch(`${SITE_BASE}/blocosDB.json`);
   const db = await res.json();
 
-  const dadosPorPasta = {};
+  const pastaTree = {};
 
-  for (const [caminho, meta] of Object.entries(db.arquivos)) {
-    const partes = caminho.split("/");
+  for (const caminhoCompleto in db.arquivos) {
+    const meta = db.arquivos[caminhoCompleto];
+    const partes = caminhoCompleto.split("/");
     const baseIndex = partes.indexOf("blocos");
     if (baseIndex === -1) continue;
 
-    const subcaminho = partes.slice(baseIndex + 1, -1).join("/");
-    for (let i = 1; i <= subcaminho.split("/").length; i++) {
-      const chave = subcaminho.split("/").slice(0, i).join("/");
-      if (!dadosPorPasta[chave]) {
-        dadosPorPasta[chave] = { total: 0, imagens: 0 };
+    const pasta = partes.slice(baseIndex + 1, -1).join("/");
+
+    const comp = parseFloat((meta.comprimento || "0").replace(",", "."));
+    const larg = parseFloat((meta.largura || "0").replace(",", "."));
+    const area = isNaN(comp) || isNaN(larg) ? 0 : comp * larg;
+
+    if (!pastaTree[pasta]) {
+      pastaTree[pasta] = { total: 0, imagens: 0, subpastas: {} };
+    }
+
+    pastaTree[pasta].total += area;
+    pastaTree[pasta].imagens += 1;
+  }
+
+  // Organiza em árvore
+  const estrutura = {};
+  for (const pasta of Object.keys(pastaTree)) {
+    const partes = pasta.split("/");
+    let atual = estrutura;
+    for (let i = 0; i < partes.length; i++) {
+      const parte = partes[i];
+      const caminho = partes.slice(0, i + 1).join("/");
+      if (!atual[parte]) {
+        atual[parte] = { caminho, total: 0, imagens: 0, subpastas: {} };
       }
-
-      const comp = parseFloat((meta.comprimento || "0").replace(",", "."));
-      const larg = parseFloat((meta.largura || "0").replace(",", "."));
-      const area = isNaN(comp) || isNaN(larg) ? 0 : comp * larg;
-
-      dadosPorPasta[chave].total += area;
-
-      // Conta a imagem apenas na pasta exata onde ela está
-      if (i === subcaminho.split("/").length) {
-        dadosPorPasta[chave].imagens += 1;
+      if (i === partes.length - 1) {
+        atual[parte].total = pastaTree[pasta].total;
+        atual[parte].imagens = pastaTree[pasta].imagens;
       }
+      atual = atual[parte].subpastas;
     }
   }
 
   const container = document.getElementById("relatorio-container");
   container.innerHTML = "";
 
-  Object.entries(dadosPorPasta).forEach(([pasta, dados]) => {
-    const div = document.createElement("div");
-    div.className = "item";
-    div.innerHTML = `
-      <strong>${pasta}</strong>
-      <div>📐 Área total: <b>${dados.total.toFixed(2)} m²</b></div>
-      <div>🖼️ Imagens: <b>${dados.imagens}</b></div>
-    `;
-    div.onclick = () => {
-      const path = "/assets/blocos/" + pasta;
-      window.location.href =
-        "/pages/blocos.html?path=" + encodeURIComponent(path);
-    };
-    container.appendChild(div);
-  });
+  function renderCard(obj, pai) {
+    const nomesOrdenados = Object.keys(obj).sort((a, b) => a.localeCompare(b));
+    for (const nome of nomesOrdenados) {
+      const pasta = obj[nome];
+      const div = document.createElement("div");
+      div.className = "item";
+      div.innerHTML = `
+        <strong>${pasta.caminho}</strong>
+        <div>📐 Área total: <b>${pasta.total.toFixed(2)} m²</b></div>
+        <div>🖼️ Chapas: <b>${pasta.imagens}</b></div>
+      `;
+      div.onclick = () => {
+        const path = "/assets/blocos/" + pasta.caminho;
+        window.location.href =
+          "/pages/blocos.html?path=" + encodeURIComponent(path);
+      };
+      if (pai) {
+        pai.appendChild(div);
+      } else {
+        container.appendChild(div);
+      }
+
+      if (Object.keys(pasta.subpastas).length) {
+        const subDiv = document.createElement("div");
+        subDiv.style.paddingLeft = "1.5rem";
+        subDiv.style.borderLeft = "2px solid #ddd";
+        subDiv.style.marginTop = "0.5rem";
+        renderCard(pasta.subpastas, subDiv);
+        div.appendChild(subDiv);
+      }
+    }
+  }
+
+  renderCard(estrutura);
 }
 
 function voltarParaBlocos() {
