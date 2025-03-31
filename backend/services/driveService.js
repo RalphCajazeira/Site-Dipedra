@@ -15,7 +15,7 @@ const drive = google.drive({ version: "v3", auth });
 const DB_FILE_ID = process.env.GOOGLE_DRIVE_DB_FILE_ID;
 const BLOCOS_FOLDER_ID = process.env.GOOGLE_DRIVE_PASTA_BLOCOS_ID;
 const isProd = process.env.NODE_ENV === "production";
-const LOCAL_DB_PATH = path.join(__dirname, "../../blocosDB.json");
+const localDBPath = path.join(__dirname, "../blocosDB.json"); // caminho correto na raiz
 
 async function baixarBlocosDB() {
   if (!isProd) {
