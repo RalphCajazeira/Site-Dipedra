@@ -1,10 +1,10 @@
-require("dotenv").config();
+// backend/services/driveService.js
 const { google } = require("googleapis");
-const fs = require("fs");
-const fsp = fs.promises;
+const fs = require("fs").promises;
+const fstream = require("fs");
 const path = require("path");
+require("dotenv").config();
 
-// Autenticação com conta de serviço
 const auth = new google.auth.GoogleAuth({
   keyFile: path.join(__dirname, "../chaves/drive-key.json"),
   scopes: ["https://www.googleapis.com/auth/drive"],
@@ -12,83 +12,72 @@ const auth = new google.auth.GoogleAuth({
 
 const drive = google.drive({ version: "v3", auth });
 
-// IDs fixos no .env
-const SITE_FOLDER_ID = process.env.GOOGLE_DRIVE_SITE_FOLDER_ID;
+const DB_FILE_ID = process.env.GOOGLE_DRIVE_DB_FILE_ID;
 const BLOCOS_FOLDER_ID = process.env.GOOGLE_DRIVE_PASTA_BLOCOS_ID;
+const isProd = process.env.NODE_ENV === "production";
+const LOCAL_DB_PATH = path.join(__dirname, "../../blocosDB.json");
 
-// Esse ID será preenchido dinamicamente
-let blocosDBFileId = null;
-
-// 🔍 Encontra ou cria o arquivo blocosDB.json na pasta Site-Dipedra
-async function encontrarOuCriarBlocosDB() {
-  const res = await drive.files.list({
-    q: `'${SITE_FOLDER_ID}' in parents and name = 'blocosDB.json' and trashed = false`,
-    fields: "files(id, name)",
-  });
-
-  if (res.data.files.length > 0) {
-    blocosDBFileId = res.data.files[0].id;
-    console.log("📄 blocosDB.json encontrado no Drive:", blocosDBFileId);
+async function baixarBlocosDB() {
+  if (!isProd) {
+    console.log("🛠️ Ambiente local: usando blocosDB.json local");
     return;
   }
 
-  // Se não encontrou, cria um novo arquivo
-  const conteudoInicial = JSON.stringify({ arquivos: {}, pastas: [] }, null, 2);
-  const tempPath = path.join(__dirname, "../../temp-blocosDB.json");
-  await fsp.writeFile(tempPath, conteudoInicial, "utf-8");
+  try {
+    const res = await drive.files.get({
+      fileId: DB_FILE_ID,
+      alt: "media",
+    });
 
-  const criado = await drive.files.create({
-    requestBody: {
-      name: "blocosDB.json",
-      mimeType: "application/json",
-      parents: [SITE_FOLDER_ID],
-    },
-    media: {
-      mimeType: "application/json",
-      body: fs.createReadStream(tempPath),
-    },
-    fields: "id",
-  });
+    const data = JSON.stringify(res.data, null, 2);
+    await fs.writeFile(LOCAL_DB_PATH, data, "utf-8");
 
-  blocosDBFileId = criado.data.id;
-  console.log("✅ blocosDB.json criado no Drive:", blocosDBFileId);
-  await fsp.unlink(tempPath);
+    console.log("📄 blocosDB.json encontrado no Drive:", DB_FILE_ID);
+    console.log("📥 blocosDB.json baixado para uso local.");
+  } catch (error) {
+    console.error("❌ Erro ao baixar blocosDB.json do Drive:", error.message);
+    throw error;
+  }
 }
 
-// 📥 Baixar o conteúdo do blocosDB.json
 async function getDBFileContent() {
-  if (!blocosDBFileId)
-    throw new Error("blocosDB.json ainda não foi identificado.");
+  if (!isProd) {
+    const localContent = await fs.readFile(LOCAL_DB_PATH, "utf-8");
+    return JSON.parse(localContent);
+  }
+
   const res = await drive.files.get({
-    fileId: blocosDBFileId,
+    fileId: DB_FILE_ID,
     alt: "media",
   });
   return res.data;
 }
 
-// 📤 Atualizar o conteúdo de blocosDB.json
 async function updateDBFileContent(newContent) {
-  if (!blocosDBFileId)
-    throw new Error("blocosDB.json ainda não foi identificado.");
+  const json = JSON.stringify(newContent, null, 2);
+
+  if (!isProd) {
+    await fs.writeFile(LOCAL_DB_PATH, json, "utf-8");
+    return;
+  }
 
   const tempPath = path.join(__dirname, "../../temp-blocosDB.json");
-  await fsp.writeFile(tempPath, JSON.stringify(newContent, null, 2), "utf-8");
+  await fs.writeFile(tempPath, json, "utf-8");
 
   await drive.files.update({
-    fileId: blocosDBFileId,
+    fileId: DB_FILE_ID,
     media: {
       mimeType: "application/json",
-      body: fs.createReadStream(tempPath),
+      body: fstream.createReadStream(tempPath),
     },
   });
 
-  await fsp.unlink(tempPath);
+  await fs.unlink(tempPath);
 }
 
-// 📁 Criar nova pasta dentro de outra pasta
 async function createFolder(name, parentId = BLOCOS_FOLDER_ID) {
   const res = await drive.files.create({
-    requestBody: {
+    resource: {
       name,
       mimeType: "application/vnd.google-apps.folder",
       parents: [parentId],
@@ -99,7 +88,6 @@ async function createFolder(name, parentId = BLOCOS_FOLDER_ID) {
   return res.data.id;
 }
 
-// 📷 Upload de imagem para uma pasta
 async function uploadImageToFolder(filePath, fileName, parentId) {
   const res = await drive.files.create({
     requestBody: {
@@ -108,7 +96,7 @@ async function uploadImageToFolder(filePath, fileName, parentId) {
     },
     media: {
       mimeType: "image/jpeg",
-      body: fs.createReadStream(filePath),
+      body: fstream.createReadStream(filePath),
     },
     fields: "id, name",
   });
@@ -116,7 +104,6 @@ async function uploadImageToFolder(filePath, fileName, parentId) {
   return res.data;
 }
 
-// 🔁 Mover arquivo ou pasta
 async function moveFileOrFolder(fileId, newParentId) {
   const file = await drive.files.get({
     fileId,
@@ -130,15 +117,6 @@ async function moveFileOrFolder(fileId, newParentId) {
     removeParents: previousParents,
     fields: "id, parents",
   });
-}
-
-// 🧠 Inicializa o banco (chamada no server.js)
-async function baixarBlocosDB() {
-  await encontrarOuCriarBlocosDB();
-  const db = await getDBFileContent();
-  const localPath = path.join(__dirname, "../../blocosDB.json");
-  await fsp.writeFile(localPath, JSON.stringify(db, null, 2), "utf-8");
-  console.log("📥 blocosDB.json baixado para uso local.");
 }
 
 module.exports = {
