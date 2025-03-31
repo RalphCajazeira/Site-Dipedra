@@ -1,87 +1,94 @@
 const { google } = require("googleapis");
-const fs = require("fs");
+const fs = require("fs").promises;
 const path = require("path");
 
+// Carrega as credenciais do JSON da conta de serviço
 const auth = new google.auth.GoogleAuth({
-  keyFile: path.join(
-    __dirname,
-    "../chaves/site-dipedra-455418-abbeb250dfd0.json"
-  ), // ajuste o nome da chave
+  keyFile: path.join(__dirname, "../../chaves/drive-key.json"),
   scopes: ["https://www.googleapis.com/auth/drive"],
 });
 
-const driveFolderId = "PASTA_ID_DO_DRIVE"; // Coloque aqui o ID da pasta no Drive onde o blocosDB.json está
-const blocosDBName = "blocosDB.json";
+const drive = google.drive({ version: "v3", auth });
 
-async function getDriveClient() {
-  const authClient = await auth.getClient();
-  return google.drive({ version: "v3", auth: authClient });
+const DB_FILE_ID = process.env.GOOGLE_DRIVE_DB_FILE_ID;
+const BLOCOS_FOLDER_ID = process.env.GOOGLE_DRIVE_PASTA_BLOCOS_ID;
+
+// ↓↓↓ 1. Ler blocosDB.json do Google Drive
+async function getDBFileContent() {
+  const res = await drive.files.get({
+    fileId: DB_FILE_ID,
+    alt: "media",
+  });
+  return res.data;
 }
 
-async function baixarBlocosDB() {
-  const drive = await getDriveClient();
+// ↓↓↓ 2. Atualizar blocosDB.json no Google Drive
+async function updateDBFileContent(newContent) {
+  const tempPath = path.join(__dirname, "../../temp-blocosDB.json");
+  await fs.writeFile(tempPath, JSON.stringify(newContent, null, 2), "utf-8");
 
-  const res = await drive.files.list({
-    q: `name='${blocosDBName}' and '${driveFolderId}' in parents`,
-    fields: "files(id, name)",
-    spaces: "drive",
+  await drive.files.update({
+    fileId: DB_FILE_ID,
+    media: {
+      mimeType: "application/json",
+      body: fs.createReadStream(tempPath),
+    },
   });
 
-  const file = res.data.files[0];
-  if (!file) throw new Error("blocosDB.json não encontrado no Drive");
-
-  const destPath = path.join(__dirname, "../blocosDB.json");
-  const dest = fs.createWriteStream(destPath);
-
-  const download = await drive.files.get(
-    { fileId: file.id, alt: "media" },
-    { responseType: "stream" }
-  );
-
-  await new Promise((resolve, reject) => {
-    download.data
-      .on("end", () => resolve())
-      .on("error", (err) => reject(err))
-      .pipe(dest);
-  });
-
-  return file.id;
+  await fs.unlink(tempPath); // remove o temporário
 }
 
-async function salvarBlocosDBNoDrive() {
-  const drive = await getDriveClient();
-  const localPath = path.join(__dirname, "../blocosDB.json");
-
-  const res = await drive.files.list({
-    q: `name='${blocosDBName}' and '${driveFolderId}' in parents`,
-    fields: "files(id, name)",
-    spaces: "drive",
+// ↓↓↓ 3. Criar nova pasta no Drive (retorna ID)
+async function createFolder(name, parentId = BLOCOS_FOLDER_ID) {
+  const res = await drive.files.create({
+    resource: {
+      name,
+      mimeType: "application/vnd.google-apps.folder",
+      parents: [parentId],
+    },
+    fields: "id",
   });
 
-  const file = res.data.files[0];
-  const fileMetadata = { name: blocosDBName, parents: [driveFolderId] };
-  const media = {
-    mimeType: "application/json",
-    body: fs.createReadStream(localPath),
-  };
+  return res.data.id;
+}
 
-  if (file) {
-    // Atualizar arquivo existente
-    await drive.files.update({
-      fileId: file.id,
-      media,
-    });
-  } else {
-    // Criar novo
-    await drive.files.create({
-      resource: fileMetadata,
-      media,
-      fields: "id",
-    });
-  }
+// ↓↓↓ 4. Fazer upload de imagem para uma pasta específica
+async function uploadImageToFolder(filePath, fileName, parentId) {
+  const res = await drive.files.create({
+    requestBody: {
+      name: fileName,
+      parents: [parentId],
+    },
+    media: {
+      mimeType: "image/jpeg", // ajuste conforme necessário
+      body: fs.createReadStream(filePath),
+    },
+    fields: "id, name",
+  });
+
+  return res.data;
+}
+
+// ↓↓↓ 5. Mover um item para outra pasta
+async function moveFileOrFolder(fileId, newParentId) {
+  const file = await drive.files.get({
+    fileId,
+    fields: "parents",
+  });
+
+  const previousParents = file.data.parents.join(",");
+  await drive.files.update({
+    fileId,
+    addParents: newParentId,
+    removeParents: previousParents,
+    fields: "id, parents",
+  });
 }
 
 module.exports = {
-  baixarBlocosDB,
-  salvarBlocosDBNoDrive,
+  getDBFileContent,
+  updateDBFileContent,
+  createFolder,
+  uploadImageToFolder,
+  moveFileOrFolder,
 };
