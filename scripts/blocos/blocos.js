@@ -70,9 +70,17 @@ async function loadFolder(path = currentPath) {
       }
     };
 
+    const moverBtn = document.createElement("button");
+    moverBtn.textContent = "📁";
+    moverBtn.title = "Mover pasta";
+    moverBtn.onclick = (event) => {
+      event.stopPropagation();
+      abrirModalMover("pasta", folder);
+    };
+
     const buttonWrapper = document.createElement("div");
     buttonWrapper.className = "button-wrapper";
-    buttonWrapper.append(renameBtn, deleteBtn);
+    buttonWrapper.append(renameBtn, deleteBtn, moverBtn);
 
     div.append(nameSpan, buttonWrapper);
     container.appendChild(div);
@@ -110,9 +118,14 @@ async function loadFolder(path = currentPath) {
       }
     };
 
+    const moverBtn = document.createElement("button");
+    moverBtn.textContent = "📁";
+    moverBtn.title = "Mover arquivo";
+    moverBtn.onclick = () => abrirModalMover("arquivo", file);
+
     const buttonWrapper = document.createElement("div");
     buttonWrapper.className = "button-wrapper";
-    buttonWrapper.append(editBtn, deleteBtn);
+    buttonWrapper.append(editBtn, deleteBtn, moverBtn);
 
     const description = document.createElement("div");
     description.className = "description";

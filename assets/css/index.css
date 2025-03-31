@@ -6,3 +6,4 @@
 @import url("catalogo.css"); /* Estilos específicos para a página do catálogo */
 @import url("catalogoadmin.css"); /* Estilos específicos do admin */
 @import url(about.css);
+@import url(blocos/index.css);

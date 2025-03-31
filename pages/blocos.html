@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Blocos - Dipedra</title>
-    <link rel="stylesheet" href="../assets/css/blocos.css" />
+    <link rel="stylesheet" href="../assets/css/index.css" />
   </head>
   <body>
     <h1>API Fotos</h1>
@@ -51,8 +51,22 @@
       </div>
     </div>
 
+    <!-- Modal de Mover -->
+    <div id="modal-mover" class="modal hidden">
+      <div class="modal-content">
+        <h2>Mover para outra pasta</h2>
+        <p>Caminho: <strong id="mover-caminho"></strong></p>
+        <div id="mover-pastas"></div>
+        <div class="modal-actions">
+          <button onclick="fecharModalMover()">Cancelar</button>
+          <button onclick="confirmarMover()">Mover Aqui</button>
+        </div>
+      </div>
+    </div>
+
     <div id="blocos-container"></div>
 
-    <script src="../scripts/blocos.js"></script>
+    <script src="../scripts/blocos/blocos.js"></script>
+    <script src="../scripts/blocos/mover.js"></script>
   </body>
 </html>
