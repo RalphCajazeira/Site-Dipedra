@@ -4,7 +4,7 @@ let moverDestinoAtual = "/assets/blocos";
 let todasPastasDisponiveis = [];
 
 async function carregarPastasDisponiveis() {
-  const res = await fetch("/blocosDB.json");
+  const res = await fetch(`${SITE_BASE}/blocosDB.json`);
   const db = await res.json();
   todasPastasDisponiveis = db.pastas || [];
 }
