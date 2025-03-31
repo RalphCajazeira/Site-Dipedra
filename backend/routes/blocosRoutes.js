@@ -1,6 +1,8 @@
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs").promises;
+
 const {
   listarConteudo,
   criarPasta,
@@ -100,6 +102,57 @@ router.delete("/delete", (req, res) => {
     res.sendStatus(200);
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+// Renomear pasta e atualizar blocosDB.json (arquivos + pastas)
+router.put("/rename", async (req, res) => {
+  const { path: currentPath, oldName, newName } = req.body;
+  const basePath = path.join(__dirname, "../../", currentPath);
+  const oldPath = path.join(basePath, oldName);
+  const newPath = path.join(basePath, newName);
+
+  const dbPath = path.join(__dirname, "../../blocosDB.json");
+
+  try {
+    // 1. Renomear a pasta no sistema de arquivos
+    await fs.rename(oldPath, newPath);
+
+    // 2. Carregar o banco
+    const dbRaw = await fs.readFile(dbPath, "utf-8");
+    const db = JSON.parse(dbRaw);
+
+    const novaEstruturaArquivos = {};
+    const caminhoAntigo = path.join(currentPath, oldName).replace(/\\/g, "/");
+    const caminhoNovo = path.join(currentPath, newName).replace(/\\/g, "/");
+
+    // 3. Atualizar caminhos dos arquivos
+    for (const [caminho, dados] of Object.entries(db.arquivos)) {
+      if (caminho.startsWith(caminhoAntigo)) {
+        const novoCaminho = caminho.replace(caminhoAntigo, caminhoNovo);
+        novaEstruturaArquivos[novoCaminho] = dados;
+      } else {
+        novaEstruturaArquivos[caminho] = dados;
+      }
+    }
+
+    db.arquivos = novaEstruturaArquivos;
+
+    // 4. Atualizar caminho da pasta
+    if (Array.isArray(db.pastas)) {
+      const index = db.pastas.indexOf(caminhoAntigo);
+      if (index !== -1) {
+        db.pastas[index] = caminhoNovo;
+      }
+    }
+
+    // 5. Salvar banco atualizado
+    await fs.writeFile(dbPath, JSON.stringify(db, null, 2), "utf-8");
+
+    res.sendStatus(200);
+  } catch (err) {
+    console.error("Erro ao renomear pasta:", err);
+    res.status(500).json({ error: "Falha ao renomear a pasta" });
   }
 });
 

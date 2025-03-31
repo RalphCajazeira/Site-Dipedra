@@ -1,3 +1,8 @@
+const API_BASE =
+  location.hostname === "localhost"
+    ? "http://localhost:3000/api/blocos"
+    : "/api/blocos";
+
 let currentPath = "/assets/blocos";
 let modoGrid = true;
 let editandoArquivo = null;
@@ -34,10 +39,11 @@ async function loadFolder(path = currentPath) {
     const renameBtn = document.createElement("button");
     renameBtn.textContent = "✏️";
     renameBtn.title = "Renomear pasta";
-    renameBtn.onclick = async () => {
+    renameBtn.onclick = async (event) => {
+      event.stopPropagation(); // Evita que o clique vá para a div da pasta
       const novoNome = prompt("Novo nome da pasta:", folder);
       if (!novoNome) return;
-      await fetch("/api/blocos/rename", {
+      await fetch(`${API_BASE}/rename`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -52,9 +58,10 @@ async function loadFolder(path = currentPath) {
     const deleteBtn = document.createElement("button");
     deleteBtn.textContent = "🗑️";
     deleteBtn.title = "Excluir pasta";
-    deleteBtn.onclick = async () => {
+    deleteBtn.onclick = async (event) => {
+      event.stopPropagation(); // Evita que o clique vá para a div da pasta
       if (confirm(`Tem certeza que deseja excluir a pasta "${folder}"?`)) {
-        await fetch("/api/blocos/delete", {
+        await fetch(`${API_BASE}/delete`, {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ path: currentPath, name: folder }),
@@ -94,7 +101,7 @@ async function loadFolder(path = currentPath) {
     deleteBtn.title = "Excluir arquivo";
     deleteBtn.onclick = async () => {
       if (confirm(`Deseja excluir o arquivo "${file}"?`)) {
-        await fetch("/api/blocos/delete", {
+        await fetch(`${API_BASE}/delete`, {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ path: currentPath, name: file }),
@@ -205,7 +212,7 @@ async function salvarModal() {
       return;
     }
 
-    await fetch("/api/blocos/atualizar-metadata", {
+    await fetch(`${API_BASE}/atualizar-metadata`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -237,7 +244,7 @@ async function salvarModal() {
   formData.append("codeInterno", codeInterno);
   formData.append("path", currentPath);
 
-  await fetch("/api/blocos/upload", {
+  await fetch(`${API_BASE}/upload`, {
     method: "POST",
     body: formData,
   });
@@ -262,13 +269,21 @@ window.onload = () => {
       : "🗂️ Modo Lista";
     loadFolder();
   };
+
+  //Botão de Relatório
+  document.getElementById("relatorio-btn").onclick = () => {
+    window.location.href = `relatorio.html?path=${encodeURIComponent(
+      currentPath
+    )}`;
+  };
+
   loadFolder();
 };
 
 async function createFolder() {
   const folderName = prompt("Nome da nova pasta:");
   if (!folderName) return;
-  await fetch("/api/blocos/folder", {
+  await fetch(`${API_BASE}/folder`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ path: currentPath, name: folderName }),

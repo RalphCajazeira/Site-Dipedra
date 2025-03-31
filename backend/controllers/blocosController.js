@@ -37,9 +37,11 @@ function listarConteudo(dir) {
 }
 
 function criarPasta(dir) {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+  if (fs.existsSync(dir)) {
+    throw new Error("Uma pasta com esse nome já existe nesse diretório.");
   }
+
+  fs.mkdirSync(dir, { recursive: true });
 
   const db = carregarDB();
   const relPath = path
