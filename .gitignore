@@ -1,3 +1,4 @@
 /backend/node_modules
-/backend/chaves
-/backend/.env
+backend/.env
+backend/chaves/drive-key.json
+backend/uploads/
