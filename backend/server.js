@@ -14,6 +14,7 @@ app.use(bodyParser.json());
 app.use("/assets", express.static(path.join(__dirname, "../assets")));
 app.use("/pages", express.static(path.join(__dirname, "../pages")));
 app.use("/scripts", express.static(path.join(__dirname, "../scripts")));
+app.use(express.static(path.join(__dirname, "../")));
 
 app.use("/catalogo", catalogoRoutes);
 app.use("/api/blocos", blocosRoutes);

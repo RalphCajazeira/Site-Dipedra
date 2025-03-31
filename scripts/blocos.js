@@ -269,12 +269,8 @@ window.onload = () => {
       : "🗂️ Modo Lista";
     loadFolder();
   };
-
-  //Botão de Relatório
   document.getElementById("relatorio-btn").onclick = () => {
-    window.location.href = `relatorio.html?path=${encodeURIComponent(
-      currentPath
-    )}`;
+    window.location.href = "relatorio.html";
   };
 
   loadFolder();
