@@ -3,10 +3,16 @@ const fs = require("fs");
 const fsPromises = require("fs/promises");
 const path = require("path");
 
-const auth = new google.auth.GoogleAuth({
-  keyFile: path.join(__dirname, "../chaves/drive-key.json"),
-  scopes: ["https://www.googleapis.com/auth/drive"],
-});
+const auth =
+  process.env.NODE_ENV === "production"
+    ? new google.auth.GoogleAuth({
+        credentials: JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON),
+        scopes: ["https://www.googleapis.com/auth/drive"],
+      })
+    : new google.auth.GoogleAuth({
+        keyFile: path.join(__dirname, "../chaves/drive-key.json"),
+        scopes: ["https://www.googleapis.com/auth/drive"],
+      });
 
 const drive = google.drive({ version: "v3", auth });
 
