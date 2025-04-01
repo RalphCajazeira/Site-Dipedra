@@ -1,146 +1,166 @@
-const { google } = require("googleapis");
 const fs = require("fs");
-const fsp = require("fs").promises;
 const path = require("path");
+const { google } = require("googleapis");
 
-let credentials;
+const DB_PATH = path.join(__dirname, "../blocosDB.json");
+const FOLDER_ID = process.env.GOOGLE_DRIVE_SITE_FOLDER_ID;
 
-if (process.env.NODE_ENV === "production") {
+let drive;
+let pastaBlocosID = null;
+
+function autenticarGoogle() {
+  if (drive) return drive;
+
   try {
-    credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
+    const json = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
+    const auth = new google.auth.GoogleAuth({
+      credentials: json,
+      scopes: ["https://www.googleapis.com/auth/drive"],
+    });
+
+    drive = google.drive({ version: "v3", auth });
+    return drive;
   } catch (err) {
     console.error(
       "❌ Erro ao carregar GOOGLE_SERVICE_ACCOUNT_JSON:",
       err.message
     );
-    process.exit(1);
-  }
-} else {
-  try {
-    credentials = require("../chaves/drive-key.json");
-  } catch (err) {
-    console.error("❌ Erro ao carregar chaves locais do Google:", err.message);
-    process.exit(1);
+    throw err;
   }
 }
 
-const auth = new google.auth.GoogleAuth({
-  credentials,
-  scopes: ["https://www.googleapis.com/auth/drive"],
-});
+async function encontrarOuCriarPasta(nome, paiID) {
+  const drive = autenticarGoogle();
 
-const drive = google.drive({ version: "v3", auth });
-
-const SITE_FOLDER_ID = process.env.GOOGLE_DRIVE_SITE_FOLDER_ID;
-const BLOCOS_FOLDER_ID = process.env.GOOGLE_DRIVE_PASTA_BLOCOS_ID;
-
-let DB_FILE_ID = null;
-
-// ↓↓↓ 1. Baixar blocosDB.json do Drive
-async function baixarBlocosDB() {
-  const res = await drive.files.list({
-    q: `'${SITE_FOLDER_ID}' in parents and name='blocosDB.json' and trashed=false`,
+  const resposta = await drive.files.list({
+    q: `'${paiID}' in parents and name = '${nome}' and mimeType = 'application/vnd.google-apps.folder' and trashed = false`,
     fields: "files(id, name)",
   });
 
-  if (!res.data.files.length) {
-    throw new Error("blocosDB.json não encontrado no Drive.");
+  if (resposta.data.files.length > 0) {
+    return resposta.data.files[0].id;
   }
 
-  DB_FILE_ID = res.data.files[0].id;
-
-  const destPath = path.join(__dirname, "../blocosDB.json");
-  const dest = fs.createWriteStream(destPath);
-
-  await new Promise((resolve, reject) => {
-    drive.files.get(
-      { fileId: DB_FILE_ID, alt: "media" },
-      { responseType: "stream" },
-      (err, res) => {
-        if (err) return reject(err);
-        res.data
-          .on("end", () => {
-            console.log("📥 blocosDB.json baixado do Drive.");
-            resolve();
-          })
-          .on("error", reject)
-          .pipe(dest);
-      }
-    );
+  const novaPasta = await drive.files.create({
+    resource: {
+      name: nome,
+      mimeType: "application/vnd.google-apps.folder",
+      parents: [paiID],
+    },
+    fields: "id",
   });
+
+  return novaPasta.data.id;
 }
 
-// ↓↓↓ 2. Salvar blocosDB.json no Drive
-async function salvarBlocosDBNoDrive() {
-  if (!DB_FILE_ID) {
-    throw new Error("DB_FILE_ID não definido. Verifique se baixou do Drive.");
+async function baixarBlocosDB() {
+  if (process.env.NODE_ENV !== "production") return;
+
+  const drive = autenticarGoogle();
+
+  const resposta = await drive.files.list({
+    q: `'${FOLDER_ID}' in parents and name = 'blocosDB.json' and trashed = false`,
+    fields: "files(id, name)",
+  });
+
+  if (resposta.data.files.length === 0) {
+    console.warn("⚠️ blocosDB.json não encontrado no Drive.");
+    return;
   }
 
-  const dbPath = path.join(__dirname, "../blocosDB.json");
+  const fileId = resposta.data.files[0].id;
 
-  await drive.files.update({
-    fileId: DB_FILE_ID,
-    media: {
-      mimeType: "application/json",
-      body: fs.createReadStream(dbPath),
-    },
+  const dest = fs.createWriteStream(DB_PATH);
+  await drive.files
+    .get({ fileId, alt: "media" }, { responseType: "stream" })
+    .then(
+      (res) =>
+        new Promise((resolve, reject) => {
+          res.data
+            .on("end", () => {
+              console.log("📥 blocosDB.json baixado para uso local.");
+              resolve();
+            })
+            .on("error", reject)
+            .pipe(dest);
+        })
+    );
+}
+
+async function salvarBlocosDBNoDrive() {
+  if (process.env.NODE_ENV !== "production") return;
+
+  const drive = autenticarGoogle();
+
+  const resposta = await drive.files.list({
+    q: `'${FOLDER_ID}' in parents and name = 'blocosDB.json' and trashed = false`,
+    fields: "files(id, name)",
   });
+
+  const fileMetadata = {
+    name: "blocosDB.json",
+    parents: [FOLDER_ID],
+  };
+
+  const media = {
+    mimeType: "application/json",
+    body: fs.createReadStream(DB_PATH),
+  };
+
+  if (resposta.data.files.length > 0) {
+    const fileId = resposta.data.files[0].id;
+    await drive.files.update({ fileId, media });
+  } else {
+    await drive.files.create({ resource: fileMetadata, media, fields: "id" });
+  }
 
   console.log("📤 blocosDB.json atualizado no Drive.");
 }
 
-// ↓↓↓ 3. Criar pastas recursivamente no Drive
-async function criarPastaNoDrive(caminhoRelativo) {
+async function enviarArquivoParaDrive(localPath, caminhoRelativo) {
+  if (process.env.NODE_ENV !== "production") return;
+
+  const drive = autenticarGoogle();
+
+  // Garante que a pasta blocos está criada
+  if (!pastaBlocosID) {
+    pastaBlocosID = await encontrarOuCriarPasta("blocos", FOLDER_ID);
+  }
+
   const partes = caminhoRelativo
-    .replace(/^\/assets\/blocos\/?/, "")
+    .replace(/^\/?assets\/blocos\//, "")
     .split("/")
     .filter(Boolean);
 
-  let parentId = BLOCOS_FOLDER_ID;
+  let parentId = pastaBlocosID;
 
-  for (const parte of partes) {
-    const query = `'${parentId}' in parents and name='${parte}' and mimeType='application/vnd.google-apps.folder' and trashed=false`;
-    const res = await drive.files.list({ q: query, fields: "files(id)" });
-
-    if (res.data.files.length) {
-      parentId = res.data.files[0].id;
-    } else {
-      const novaPasta = await drive.files.create({
-        resource: {
-          name: parte,
-          mimeType: "application/vnd.google-apps.folder",
-          parents: [parentId],
-        },
-        fields: "id",
-      });
-      parentId = novaPasta.data.id;
-    }
+  for (let i = 0; i < partes.length - 1; i++) {
+    const nomePasta = partes[i];
+    parentId = await encontrarOuCriarPasta(nomePasta, parentId);
   }
 
-  return parentId;
-}
+  const nomeArquivo = partes[partes.length - 1];
 
-// ↓↓↓ 4. Enviar imagem para o Drive
-async function uploadImagemParaDrive(caminhoRelativo, file, nomeFinal) {
-  const parentId = await criarPastaNoDrive(caminhoRelativo);
+  const fileMetadata = {
+    name: nomeArquivo,
+    parents: [parentId],
+  };
+
+  const media = {
+    body: fs.createReadStream(localPath),
+  };
 
   await drive.files.create({
-    requestBody: {
-      name: nomeFinal,
-      parents: [parentId],
-    },
-    media: {
-      mimeType: file.mimetype,
-      body: fs.createReadStream(file.path),
-    },
+    resource: fileMetadata,
+    media,
+    fields: "id",
   });
 
-  await fsp.unlink(file.path);
+  console.log(`✅ Arquivo ${nomeArquivo} enviado ao Drive.`);
 }
 
 module.exports = {
   baixarBlocosDB,
   salvarBlocosDBNoDrive,
-  criarPastaNoDrive,
-  uploadImagemParaDrive,
+  enviarArquivoParaDrive,
 };
