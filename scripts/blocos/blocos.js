@@ -37,7 +37,8 @@ async function loadFolder(path = currentPath) {
 
     const caminhoAtual = document.getElementById("caminho-atual");
     if (caminhoAtual) {
-      caminhoAtual.textContent = currentPath.replace("/assets/blocos", "") || "/";
+      caminhoAtual.textContent =
+        currentPath.replace("/assets/blocos", "") || "/";
     }
   } catch (err) {
     console.error("Erro ao carregar pasta:", err);
@@ -113,11 +114,14 @@ function renderFiles(files) {
 
     if (/\.(jpg|jpeg|png|gif)$/i.test(file)) {
       const img = document.createElement("img");
-      img.src = `${currentPath}/${file}`;
+      img.src = metadadosGlobais[file]?.url || `${currentPath}/${file}`;
+
       div.prepend(img);
     }
 
-    const editBtn = createIconButton("✏️", "Editar dados", () => abrirModalEdicao(file));
+    const editBtn = createIconButton("✏️", "Editar dados", () =>
+      abrirModalEdicao(file)
+    );
 
     const deleteBtn = createIconButton("🗑️", "Excluir arquivo", async () => {
       if (confirm(`Deseja excluir o arquivo "${file}"?`)) {
@@ -130,7 +134,9 @@ function renderFiles(files) {
       }
     });
 
-    const moverBtn = createIconButton("📁", "Mover arquivo", () => abrirModalMover("arquivo", file));
+    const moverBtn = createIconButton("📁", "Mover arquivo", () =>
+      abrirModalMover("arquivo", file)
+    );
 
     const buttonWrapper = document.createElement("div");
     buttonWrapper.className = "button-wrapper";
@@ -165,7 +171,9 @@ function abrirModalNovaImagem() {
 
     fotosCapturadas.push(file);
 
-    const continuar = confirm("Deseja tirar outra foto?\n\nOK = Sim\nCancelar = Preencher dados");
+    const continuar = confirm(
+      "Deseja tirar outra foto?\n\nOK = Sim\nCancelar = Preencher dados"
+    );
     if (continuar) {
       abrirModalNovaImagem();
     } else {
@@ -178,7 +186,9 @@ function abrirModalNovaImagem() {
 
 function mostrarModalComFotos() {
   editandoArquivo = null;
-  document.getElementById("modal-titulo").textContent = `Preencher dados (${fotosCapturadas.length} foto${fotosCapturadas.length > 1 ? "s" : ""})`;
+  document.getElementById("modal-titulo").textContent = `Preencher dados (${
+    fotosCapturadas.length
+  } foto${fotosCapturadas.length > 1 ? "s" : ""})`;
   document.getElementById("modal-file").classList.add("hidden");
   document.getElementById("modal-nome").value = "";
   document.getElementById("modal-comprimento").value = "";
