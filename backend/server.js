@@ -9,7 +9,7 @@ const blocosRoutes = require("./routes/blocosRoutes");
 const { baixarBlocosDB } = require("./services/driveService");
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Middleware de CORS com verificação por ambiente
 const allowedOrigins = [
