@@ -1,7 +1,11 @@
 const fs = require("fs");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
-const { salvarBlocosDBNoDrive } = require("../services/driveService");
+const {
+  salvarBlocosDBNoDrive,
+  criarPastaNoDrive,
+  uploadImagemParaDrive,
+} = require("../services/driveService");
 
 const DB_PATH = path.join(__dirname, "../blocosDB.json");
 
@@ -12,7 +16,6 @@ function carregarDB() {
 
 function salvarDB(db) {
   fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), "utf-8");
-
   if (process.env.NODE_ENV === "production") {
     salvarBlocosDBNoDrive().catch(console.error);
   }
@@ -32,37 +35,58 @@ function listarConteudo(dirPath) {
   return { files, folders };
 }
 
-function criarPasta(fullPath) {
-  if (!fs.existsSync(fullPath)) {
-    fs.mkdirSync(fullPath, { recursive: true });
+async function criarPasta(fullPath) {
+  const db = carregarDB();
 
-    const db = carregarDB();
-    const caminho = fullPath
-      .replace(path.resolve(__dirname, "../../"), "")
-      .replace(/\\/g, "/");
+  const caminho = fullPath
+    .replace(path.resolve(__dirname, "../../"), "")
+    .replace(/\\/g, "/");
 
-    if (!db.pastas.includes(caminho)) {
-      db.pastas.push(caminho);
-      salvarDB(db);
+  if (!db.pastas.includes(caminho)) {
+    db.pastas.push(caminho);
+    salvarDB(db);
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    // Criar no Google Drive
+    await criarPastaNoDrive(caminho);
+  } else {
+    // Criar localmente
+    if (!fs.existsSync(fullPath)) {
+      fs.mkdirSync(fullPath, { recursive: true });
     }
   }
 }
 
-function salvarImagens(destino, arquivos, dadosImagem) {
+async function salvarImagens(destino, arquivos, dadosImagem) {
   const db = carregarDB();
   const nomesSalvos = [];
 
-  arquivos.forEach((file) => {
+  for (const file of arquivos) {
     const code = Date.now() + Math.floor(Math.random() * 10000);
     const ext = path.extname(file.originalname);
     const nomeFinal = `${dadosImagem.comprimento}x${dadosImagem.largura} - Code ${code}${ext}`;
-    const destinoFinal = path.join(destino, nomeFinal);
 
-    fs.renameSync(file.path, destinoFinal);
+    let caminho;
 
-    const caminho = destinoFinal
-      .replace(path.resolve(__dirname, "../../"), "")
-      .replace(/\\/g, "/");
+    if (process.env.NODE_ENV === "production") {
+      // Upload para o Google Drive
+      const caminhoRelativo = destino
+        .replace(path.resolve(__dirname, "../../"), "")
+        .replace(/\\/g, "/");
+      const drivePath = caminhoRelativo.replace(/^\/assets\/blocos\/?/, "");
+      await uploadImagemParaDrive(drivePath, file, nomeFinal);
+
+      caminho = `/assets/blocos/${drivePath}/${nomeFinal}`;
+    } else {
+      // Salva localmente
+      const destinoFinal = path.join(destino, nomeFinal);
+      fs.renameSync(file.path, destinoFinal);
+
+      caminho = destinoFinal
+        .replace(path.resolve(__dirname, "../../"), "")
+        .replace(/\\/g, "/");
+    }
 
     db.arquivos[caminho] = {
       code,
@@ -73,7 +97,7 @@ function salvarImagens(destino, arquivos, dadosImagem) {
     };
 
     nomesSalvos.push(nomeFinal);
-  });
+  }
 
   salvarDB(db);
   return nomesSalvos;
@@ -90,10 +114,12 @@ function atualizarMetadadosPorCode(code, novosDados) {
       const novoNome = `${novosDados.comprimento}x${novosDados.largura} - Code ${code}${ext}`;
       const novoCaminho = `${pasta}/${novoNome}`;
 
-      const antigoPath = path.join(__dirname, "../../", caminho);
-      const novoPath = path.join(__dirname, "../../", novoCaminho);
-
-      fs.renameSync(antigoPath, novoPath);
+      if (process.env.NODE_ENV !== "production") {
+        // Renomeia arquivo localmente
+        const antigoPath = path.join(__dirname, "../../", caminho);
+        const novoPath = path.join(__dirname, "../../", novoCaminho);
+        fs.renameSync(antigoPath, novoPath);
+      }
 
       delete db.arquivos[caminho];
       db.arquivos[novoCaminho] = {
@@ -115,15 +141,14 @@ function deletarPorCaminhoCompleto(fullPath) {
     .replace(path.resolve(__dirname, "../../"), "")
     .replace(/\\/g, "/");
 
-  if (fs.lstatSync(fullPath).isDirectory()) {
+  if (fs.existsSync(fullPath) && fs.lstatSync(fullPath).isDirectory()) {
     fs.rmSync(fullPath, { recursive: true, force: true });
-
     db.pastas = db.pastas.filter((p) => !p.startsWith(relPath));
     for (const arquivo of Object.keys(db.arquivos)) {
       if (arquivo.startsWith(relPath)) delete db.arquivos[arquivo];
     }
   } else {
-    fs.unlinkSync(fullPath);
+    if (fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
     delete db.arquivos[relPath];
   }
 
