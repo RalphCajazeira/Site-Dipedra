@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
+const { salvarBlocosDBNoDrive } = require("../services/driveService");
 
 const DB_PATH = path.join(__dirname, "../blocosDB.json");
 
@@ -12,9 +13,7 @@ function carregarDB() {
 function salvarDB(db) {
   fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), "utf-8");
 
-  // Somente em produção, atualiza o banco no Google Drive
   if (process.env.NODE_ENV === "production") {
-    const { salvarBlocosDBNoDrive } = require("../services/driveService");
     salvarBlocosDBNoDrive().catch(console.error);
   }
 }

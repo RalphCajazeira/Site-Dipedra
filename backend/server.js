@@ -11,28 +11,36 @@ const { baixarBlocosDB } = require("./services/driveService");
 const app = express();
 const PORT = 3000;
 
+// Middlewares
 app.use(cors());
 app.use(bodyParser.json());
 
-// Servir arquivos estáticos
+// Arquivos estáticos
 app.use("/assets", express.static(path.join(__dirname, "../assets")));
 app.use("/pages", express.static(path.join(__dirname, "../pages")));
 app.use("/scripts", express.static(path.join(__dirname, "../scripts")));
 app.use("/assets/css", express.static(path.join(__dirname, "../assets/css")));
 app.use(express.static(path.join(__dirname, "../"))); // raiz
 
-// Rotas
+// Rotas principais
 app.use("/catalogo", catalogoRoutes);
 app.use("/api/blocos", blocosRoutes);
 
-// Iniciar servidor apenas após baixar o blocosDB.json
-baixarBlocosDB()
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log(`✅ Backend rodando em http://localhost:${PORT}`);
+// ↓↓↓ Modo produção: baixar blocosDB do Drive antes de subir
+if (process.env.NODE_ENV === "production") {
+  baixarBlocosDB()
+    .then(() => {
+      app.listen(PORT, () => {
+        console.log(`🚀 [PROD] Backend rodando em http://localhost:${PORT}`);
+      });
+    })
+    .catch((err) => {
+      console.error("❌ Erro ao baixar blocosDB.json do Drive:", err.message);
+      process.exit(1); // impede iniciar com erro
     });
-  })
-  .catch((err) => {
-    console.error("❌ Erro ao baixar blocosDB.json do Drive:", err.message);
-    process.exit(1); // força parada para não rodar com erro
+} else {
+  // ↓↓↓ Modo desenvolvimento: sobe direto
+  app.listen(PORT, () => {
+    console.log(`🛠️  [DEV] Backend rodando em http://localhost:${PORT}`);
   });
+}

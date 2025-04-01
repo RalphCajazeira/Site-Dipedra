@@ -1,8 +1,5 @@
-const API_BASE = `${location.origin}/api/blocos`;
-const SITE_BASE = location.origin;
-
 async function carregarRelatorio() {
-  const res = await fetch(`${SITE_BASE}/blocosDB.json`);
+  const res = await fetch(`${API_BASE}/db`);
   const db = await res.json();
 
   const pastaTree = {};

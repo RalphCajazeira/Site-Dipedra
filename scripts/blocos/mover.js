@@ -4,9 +4,9 @@ let moverDestinoAtual = "/assets/blocos";
 let todasPastasDisponiveis = [];
 
 async function carregarPastasDisponiveis() {
-  const res = await fetch(`${API_BASE}`);
-  const data = await res.json();
-  todasPastasDisponiveis = data.folders || [];
+  const res = await fetch(`${API_BASE}/db`);
+  const db = await res.json();
+  todasPastasDisponiveis = db.pastas || [];
 }
 
 function abrirModalMover(tipo, nome) {
