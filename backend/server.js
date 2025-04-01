@@ -9,54 +9,57 @@ const blocosRoutes = require("./routes/blocosRoutes");
 const { baixarBlocosDB } = require("./services/driveService");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
-// Middleware CORS com origens permitidas
+// Middleware de CORS com verificação por ambiente
 const allowedOrigins = [
   "http://localhost:3000",
   "http://127.0.0.1:3000",
+  "http://192.168.3.91:3000",
   "https://www.dipedra.com.br",
 ];
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        return callback(null, true);
+const corsOptions =
+  process.env.NODE_ENV === "production"
+    ? {
+        origin: (origin, callback) => {
+          if (!origin || allowedOrigins.includes(origin)) {
+            return callback(null, true);
+          }
+          callback(new Error("Not allowed by CORS"));
+        },
       }
-      callback(new Error("Not allowed by CORS"));
-    },
-  })
-);
+    : {}; // Em dev, libera geral
 
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
-// Servir arquivos estáticos
+// Arquivos estáticos
 app.use("/assets", express.static(path.join(__dirname, "../assets")));
 app.use("/pages", express.static(path.join(__dirname, "../pages")));
 app.use("/scripts", express.static(path.join(__dirname, "../scripts")));
 app.use("/assets/css", express.static(path.join(__dirname, "../assets/css")));
-app.use(express.static(path.join(__dirname, "../"))); // raiz do projeto
+app.use(express.static(path.join(__dirname, "../"))); // raiz
 
-// Rotas
+// Rotas principais
 app.use("/catalogo", catalogoRoutes);
 app.use("/api/blocos", blocosRoutes);
 
-// Ambiente de produção: baixar blocosDB do Google Drive antes de subir
+// ↓↓↓ Modo produção: baixar blocosDB do Drive antes de subir
 if (process.env.NODE_ENV === "production") {
   baixarBlocosDB()
     .then(() => {
       app.listen(PORT, () => {
-        console.log(`🚀 [PROD] Backend rodando na porta ${PORT}`);
+        console.log(`🚀 [PROD] Backend rodando em http://localhost:${PORT}`);
       });
     })
     .catch((err) => {
       console.error("❌ Erro ao baixar blocosDB.json do Drive:", err.message);
-      process.exit(1);
+      process.exit(1); // impede iniciar com erro
     });
 } else {
-  // Ambiente de desenvolvimento: sobe direto
+  // ↓↓↓ Modo desenvolvimento: sobe direto
   app.listen(PORT, () => {
-    console.log(`🛠️ [DEV] Backend rodando em http://localhost:${PORT}`);
+    console.log(`🛠️  [DEV] Backend rodando em http://localhost:${PORT}`);
   });
 }
