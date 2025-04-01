@@ -3,19 +3,12 @@ const path = require("path");
 const { salvarBlocosDBNoDrive } = require("../services/driveService");
 
 const ROOT = path.resolve(__dirname, "../../");
-
 const DB_PATH = path.join(ROOT, "blocosDB.json");
 
 function carregarDB() {
   if (!fs.existsSync(DB_PATH)) return { arquivos: {}, pastas: [] };
-
-  try {
-    const raw = fs.readFileSync(DB_PATH, "utf-8");
-    return JSON.parse(raw);
-  } catch (e) {
-    console.error("Erro ao carregar blocosDB.json:", e.message);
-    return { arquivos: {}, pastas: [] };
-  }
+  const raw = fs.readFileSync(DB_PATH, "utf-8");
+  return JSON.parse(raw);
 }
 
 function salvarDB(db) {
@@ -48,6 +41,13 @@ function listarConteudo(dirRelativo) {
 }
 
 function criarPasta(pathRelativo) {
+  if (
+    !pathRelativo ||
+    pathRelativo === "/assets/blocos" ||
+    pathRelativo === "assets/blocos"
+  )
+    return;
+
   const db = carregarDB();
   const caminhoCompleto = path.join(ROOT, pathRelativo);
 
@@ -55,9 +55,8 @@ function criarPasta(pathRelativo) {
     fs.mkdirSync(caminhoCompleto, { recursive: true });
   }
 
-  const normalizado = pathRelativo.replace(/\\/g, "/");
-  if (!db.pastas.includes(normalizado)) {
-    db.pastas.push(normalizado);
+  if (!db.pastas.includes(pathRelativo)) {
+    db.pastas.push(pathRelativo);
     salvarDB(db);
   }
 }
@@ -128,6 +127,14 @@ function atualizarMetadadosPorCode(code, novosDados) {
 }
 
 function deletarPorCaminhoCompleto(caminhoRelativo) {
+  if (
+    !caminhoRelativo ||
+    caminhoRelativo === "assets/blocos" ||
+    caminhoRelativo === "/assets/blocos"
+  ) {
+    throw new Error("A pasta raiz não pode ser excluída.");
+  }
+
   const db = carregarDB();
   const fullPath = path.join(ROOT, caminhoRelativo);
 
@@ -183,6 +190,37 @@ function moverItem(origemRel, destinoRel, tipo) {
   salvarDB(db);
 }
 
+function renomearPasta(pathRelativo, oldName, newName) {
+  const db = carregarDB();
+  const base = path.join(ROOT, pathRelativo);
+  const oldPath = path.join(base, oldName);
+  const newPath = path.join(base, newName);
+
+  if (!fs.existsSync(oldPath)) throw new Error("Pasta não encontrada");
+
+  fs.renameSync(oldPath, newPath);
+
+  const caminhoAntigo = path.join(pathRelativo, oldName).replace(/\\/g, "/");
+  const caminhoNovo = path.join(pathRelativo, newName).replace(/\\/g, "/");
+
+  db.pastas = db.pastas.map((p) =>
+    p.startsWith(caminhoAntigo) ? p.replace(caminhoAntigo, caminhoNovo) : p
+  );
+
+  const novosArquivos = {};
+  for (const [caminho, dados] of Object.entries(db.arquivos)) {
+    if (caminho.startsWith(caminhoAntigo)) {
+      const novo = caminho.replace(caminhoAntigo, caminhoNovo);
+      novosArquivos[novo] = dados;
+    } else {
+      novosArquivos[caminho] = dados;
+    }
+  }
+
+  db.arquivos = novosArquivos;
+  salvarDB(db);
+}
+
 module.exports = {
   listarConteudo,
   criarPasta,
@@ -190,6 +228,6 @@ module.exports = {
   atualizarMetadadosPorCode,
   deletarPorCaminhoCompleto,
   carregarDB,
-  salvarDB,
   moverItem,
+  renomearPasta,
 };

@@ -56,8 +56,15 @@ async function loadFolder(path = currentPath) {
     const deleteBtn = document.createElement("button");
     deleteBtn.textContent = "🗑️";
     deleteBtn.title = "Excluir pasta";
-    deleteBtn.onclick = async (e) => {
-      e.stopPropagation();
+    deleteBtn.onclick = async (event) => {
+      event.stopPropagation();
+
+      const caminhoCompleto = currentPath + "/" + folder;
+      if (caminhoCompleto === "/assets/blocos") {
+        alert("A pasta raiz não pode ser excluída.");
+        return;
+      }
+
       if (confirm(`Tem certeza que deseja excluir a pasta "${folder}"?`)) {
         await fetch(`${API_BASE}/delete`, {
           method: "DELETE",
