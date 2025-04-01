@@ -1,12 +1,18 @@
+// Requer config.js importado antes
+
 let moverTipo = null;
 let moverNome = null;
 let moverDestinoAtual = "/assets/blocos";
 let todasPastasDisponiveis = [];
 
 async function carregarPastasDisponiveis() {
-  const res = await fetch(`${API_BASE}/db`);
-  const db = await res.json();
-  todasPastasDisponiveis = db.pastas || [];
+  try {
+    const res = await fetch(`${API_BASE}/db`);
+    const db = await res.json();
+    todasPastasDisponiveis = db.pastas || [];
+  } catch (error) {
+    console.error("Erro ao carregar pastas disponíveis:", error);
+  }
 }
 
 function abrirModalMover(tipo, nome) {
@@ -57,18 +63,22 @@ function renderizarPastasMover() {
 async function confirmarMover() {
   if (!moverTipo || !moverNome || !moverDestinoAtual) return;
 
-  await fetch(`${API_BASE}/mover`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      tipo: moverTipo,
-      origem: currentPath + "/" + moverNome,
-      destino: moverDestinoAtual,
-    }),
-  });
-
-  fecharModalMover();
-  loadFolder();
+  try {
+    await fetch(`${API_BASE}/mover`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        tipo: moverTipo,
+        origem: currentPath + "/" + moverNome,
+        destino: moverDestinoAtual,
+      }),
+    });
+    fecharModalMover();
+    loadFolder();
+  } catch (error) {
+    alert("Erro ao mover item: " + error.message);
+    console.error("Erro ao mover:", error);
+  }
 }
 
 window.addEventListener("DOMContentLoaded", () => {

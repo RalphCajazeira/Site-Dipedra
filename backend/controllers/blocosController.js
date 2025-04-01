@@ -1,70 +1,88 @@
 const fs = require("fs");
 const path = require("path");
-const { google } = require("googleapis");
-const { v4: uuidv4 } = require("uuid");
+const { salvarBlocosDBNoDrive } = require("../services/driveService");
 
-const DB_PATH = path.join(__dirname, "../blocosDB.json");
+const ROOT = path.resolve(__dirname, "../../");
+
+const DB_PATH = path.join(ROOT, "blocosDB.json");
 
 function carregarDB() {
-  const data = fs.readFileSync(DB_PATH, "utf-8");
-  return JSON.parse(data);
+  if (!fs.existsSync(DB_PATH)) return { arquivos: {}, pastas: [] };
+
+  try {
+    const raw = fs.readFileSync(DB_PATH, "utf-8");
+    return JSON.parse(raw);
+  } catch (e) {
+    console.error("Erro ao carregar blocosDB.json:", e.message);
+    return { arquivos: {}, pastas: [] };
+  }
 }
 
 function salvarDB(db) {
-  fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), "utf-8");
+  fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
   if (process.env.NODE_ENV === "production") {
-    const { salvarBlocosDBNoDrive } = require("../services/driveService");
     salvarBlocosDBNoDrive().catch(console.error);
   }
 }
 
-function listarConteudo(dirPath) {
-  const files = [];
-  const folders = [];
+function listarConteudo(dirRelativo) {
+  const db = carregarDB();
+  const prefixo = dirRelativo.replace(/\/$/, "");
 
-  if (!fs.existsSync(dirPath)) return { files, folders };
+  const folders = db.pastas
+    .filter((p) => path.dirname(p) === prefixo)
+    .map((p) => path.basename(p));
 
-  fs.readdirSync(dirPath, { withFileTypes: true }).forEach((entry) => {
-    if (entry.isDirectory()) folders.push(entry.name);
-    else files.push(entry.name);
-  });
+  const files = Object.keys(db.arquivos)
+    .filter((filePath) => path.dirname(filePath) === prefixo)
+    .map((p) => path.basename(p));
 
-  return { files, folders };
+  const metadados = {};
+  for (const [caminho, dados] of Object.entries(db.arquivos)) {
+    if (path.dirname(caminho) === prefixo) {
+      metadados[path.basename(caminho)] = dados;
+    }
+  }
+
+  return { folders, files, metadados };
 }
 
-function criarPasta(fullPath) {
-  if (!fs.existsSync(fullPath)) {
-    fs.mkdirSync(fullPath, { recursive: true });
+function criarPasta(pathRelativo) {
+  const db = carregarDB();
+  const caminhoCompleto = path.join(ROOT, pathRelativo);
 
-    const db = carregarDB();
-    const caminho = fullPath
-      .replace(path.resolve(__dirname, "../../"), "")
-      .replace(/\\/g, "/");
+  if (!fs.existsSync(caminhoCompleto)) {
+    fs.mkdirSync(caminhoCompleto, { recursive: true });
+  }
 
-    if (!db.pastas.includes(caminho)) {
-      db.pastas.push(caminho);
-      salvarDB(db);
-    }
+  const normalizado = pathRelativo.replace(/\\/g, "/");
+  if (!db.pastas.includes(normalizado)) {
+    db.pastas.push(normalizado);
+    salvarDB(db);
   }
 }
 
-function salvarImagens(destino, arquivos, dadosImagem) {
+function salvarImagens(destinoRelativo, arquivos, dadosImagem) {
   const db = carregarDB();
   const nomesSalvos = [];
+
+  const destinoFisico = path.join(ROOT, destinoRelativo);
+  if (!fs.existsSync(destinoFisico)) {
+    fs.mkdirSync(destinoFisico, { recursive: true });
+  }
 
   arquivos.forEach((file) => {
     const code = Date.now() + Math.floor(Math.random() * 10000);
     const ext = path.extname(file.originalname);
     const nomeFinal = `${dadosImagem.comprimento}x${dadosImagem.largura} - Code ${code}${ext}`;
-    const destinoFinal = path.join(destino, nomeFinal);
-
-    fs.renameSync(file.path, destinoFinal);
-
-    const caminho = destinoFinal
-      .replace(path.resolve(__dirname, "../../"), "")
+    const destinoCompleto = path.join(destinoFisico, nomeFinal);
+    const caminhoNoDB = path
+      .join(destinoRelativo, nomeFinal)
       .replace(/\\/g, "/");
 
-    db.arquivos[caminho] = {
+    fs.renameSync(file.path, destinoCompleto);
+
+    db.arquivos[caminhoNoDB] = {
       code,
       nome: dadosImagem.nome || "",
       comprimento: dadosImagem.comprimento,
@@ -88,13 +106,12 @@ function atualizarMetadadosPorCode(code, novosDados) {
       const pasta = path.dirname(caminho);
       const ext = path.extname(caminho);
       const novoNome = `${novosDados.comprimento}x${novosDados.largura} - Code ${code}${ext}`;
-      const novoCaminho = `${pasta}/${novoNome}`;
+      const novoCaminho = `${pasta}/${novoNome}`.replace(/\\/g, "/");
 
-      // Renomear arquivo
-      const antigoPath = path.join(__dirname, "../../", caminho);
-      const novoPath = path.join(__dirname, "../../", novoCaminho);
+      const oldPath = path.join(ROOT, caminho);
+      const newPath = path.join(ROOT, novoCaminho);
 
-      fs.renameSync(antigoPath, novoPath);
+      fs.renameSync(oldPath, newPath);
 
       delete db.arquivos[caminho];
       db.arquivos[novoCaminho] = {
@@ -110,61 +127,57 @@ function atualizarMetadadosPorCode(code, novosDados) {
   return false;
 }
 
-function deletarPorCaminhoCompleto(fullPath) {
+function deletarPorCaminhoCompleto(caminhoRelativo) {
   const db = carregarDB();
-  const relPath = fullPath
-    .replace(path.resolve(__dirname, "../../"), "")
-    .replace(/\\/g, "/");
+  const fullPath = path.join(ROOT, caminhoRelativo);
 
-  if (fs.lstatSync(fullPath).isDirectory()) {
-    fs.rmSync(fullPath, { recursive: true, force: true });
+  if (fs.existsSync(fullPath)) {
+    const stats = fs.statSync(fullPath);
 
-    db.pastas = db.pastas.filter((p) => !p.startsWith(relPath));
-    for (const arquivo of Object.keys(db.arquivos)) {
-      if (arquivo.startsWith(relPath)) delete db.arquivos[arquivo];
+    if (stats.isDirectory()) {
+      fs.rmSync(fullPath, { recursive: true, force: true });
+
+      db.pastas = db.pastas.filter((p) => !p.startsWith(caminhoRelativo));
+      for (const key of Object.keys(db.arquivos)) {
+        if (key.startsWith(caminhoRelativo)) delete db.arquivos[key];
+      }
+    } else {
+      fs.unlinkSync(fullPath);
+      delete db.arquivos[caminhoRelativo];
     }
-  } else {
-    fs.unlinkSync(fullPath);
-    delete db.arquivos[relPath];
-  }
 
-  salvarDB(db);
+    salvarDB(db);
+  }
 }
 
-function moverItem(origem, destino, tipo) {
+function moverItem(origemRel, destinoRel, tipo) {
   const db = carregarDB();
-  const nome = path.basename(origem);
-  const novoCaminho = `${destino}/${nome}`;
-  const origemAbs = path.join(__dirname, "../../", origem);
-  const destinoAbs = path.join(__dirname, "../../", novoCaminho);
+  const nome = path.basename(origemRel);
+  const novoRel = `${destinoRel}/${nome}`.replace(/\\/g, "/");
+
+  const origemAbs = path.join(ROOT, origemRel);
+  const destinoAbs = path.join(ROOT, novoRel);
 
   fs.renameSync(origemAbs, destinoAbs);
 
-  const relOrigem = origem;
-  const relDestino = novoCaminho;
-
   if (tipo === "pasta") {
-    // Atualizar estrutura de pastas e arquivos que começam com a origem
     db.pastas = db.pastas.map((p) =>
-      p.startsWith(relOrigem) ? p.replace(relOrigem, relDestino) : p
+      p.startsWith(origemRel) ? p.replace(origemRel, novoRel) : p
     );
 
     const novosArquivos = {};
     for (const [caminho, dados] of Object.entries(db.arquivos)) {
-      if (caminho.startsWith(relOrigem)) {
-        const novoPath = caminho.replace(relOrigem, relDestino);
-        novosArquivos[novoPath] = dados;
+      if (caminho.startsWith(origemRel)) {
+        const novo = caminho.replace(origemRel, novoRel);
+        novosArquivos[novo] = dados;
       } else {
         novosArquivos[caminho] = dados;
       }
     }
     db.arquivos = novosArquivos;
   } else {
-    // Tipo arquivo
-    if (db.arquivos[relOrigem]) {
-      db.arquivos[relDestino] = db.arquivos[relOrigem];
-      delete db.arquivos[relOrigem];
-    }
+    db.arquivos[novoRel] = db.arquivos[origemRel];
+    delete db.arquivos[origemRel];
   }
 
   salvarDB(db);
@@ -177,5 +190,6 @@ module.exports = {
   atualizarMetadadosPorCode,
   deletarPorCaminhoCompleto,
   carregarDB,
+  salvarDB,
   moverItem,
 };

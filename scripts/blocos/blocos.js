@@ -1,3 +1,5 @@
+// Requer config.js importado antes deste script
+
 let currentPath = "/assets/blocos";
 let modoGrid = true;
 let editandoArquivo = null;
@@ -5,53 +7,23 @@ let arquivosGlobais = {};
 let metadadosGlobais = {};
 let fotosCapturadas = [];
 
-const urlParams = new URLSearchParams(window.location.search);
-if (urlParams.has("path")) {
-  currentPath = urlParams.get("path");
-}
-
 async function loadFolder(path = currentPath) {
-  try {
-    const res = await fetch(`${API_BASE}?path=${encodeURIComponent(path)}`);
-    if (!res.ok) throw new Error("Erro ao carregar pastas/arquivos.");
-    const data = await res.json();
+  const res = await fetch(`${API_BASE}?path=${encodeURIComponent(path)}`);
+  const data = await res.json();
 
-    const container = document.getElementById("blocos-container");
-    container.innerHTML = "";
-    container.classList.remove("grid-view", "lista-view");
-    container.classList.add(modoGrid ? "grid-view" : "lista-view");
-
-    arquivosGlobais = data.files;
-    metadadosGlobais = data.metadados || {};
-
-    renderFolders(data.folders);
-    renderFiles(data.files);
-
-    if (data.folders.length === 0 && data.files.length === 0) {
-      const vazio = document.createElement("div");
-      vazio.textContent = "📂 Pasta Vazia";
-      vazio.style.opacity = "0.6";
-      vazio.style.padding = "0.5rem";
-      container.appendChild(vazio);
-    }
-
-    const caminhoAtual = document.getElementById("caminho-atual");
-    if (caminhoAtual) {
-      caminhoAtual.textContent =
-        currentPath.replace("/assets/blocos", "") || "/";
-    }
-  } catch (err) {
-    console.error("Erro ao carregar pasta:", err);
-  }
-}
-
-function renderFolders(folders) {
   const container = document.getElementById("blocos-container");
+  container.innerHTML = "";
 
-  folders.forEach((folder) => {
+  container.classList.remove("grid-view", "lista-view");
+  container.classList.add(modoGrid ? "grid-view" : "lista-view");
+
+  arquivosGlobais = data.files;
+  metadadosGlobais = data.metadados || {};
+
+  // Folders
+  data.folders.forEach((folder) => {
     const div = document.createElement("div");
     div.className = "folder";
-
     div.onclick = () => {
       currentPath += `/${folder}`;
       loadFolder();
@@ -60,10 +32,14 @@ function renderFolders(folders) {
     const nameSpan = document.createElement("span");
     nameSpan.textContent = folder;
 
-    const renameBtn = createIconButton("✏️", "Renomear pasta", async (e) => {
-      e.stopPropagation();
+    const renameBtn = document.createElement("button");
+    renameBtn.textContent = "✏️";
+    renameBtn.title = "Renomear pasta";
+    renameBtn.onclick = async (event) => {
+      event.stopPropagation();
       const novoNome = prompt("Novo nome da pasta:", folder);
-      if (!novoNome) return;
+      if (!novoNome || novoNome === folder) return;
+
       await fetch(`${API_BASE}/rename`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -73,10 +49,14 @@ function renderFolders(folders) {
           newName: novoNome,
         }),
       });
-      loadFolder();
-    });
 
-    const deleteBtn = createIconButton("🗑️", "Excluir pasta", async (e) => {
+      loadFolder();
+    };
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "🗑️";
+    deleteBtn.title = "Excluir pasta";
+    deleteBtn.onclick = async (e) => {
       e.stopPropagation();
       if (confirm(`Tem certeza que deseja excluir a pasta "${folder}"?`)) {
         await fetch(`${API_BASE}/delete`, {
@@ -86,26 +66,26 @@ function renderFolders(folders) {
         });
         loadFolder();
       }
-    });
+    };
 
-    const moverBtn = createIconButton("📁", "Mover pasta", (e) => {
+    const moverBtn = document.createElement("button");
+    moverBtn.textContent = "📁";
+    moverBtn.title = "Mover pasta";
+    moverBtn.onclick = (e) => {
       e.stopPropagation();
       abrirModalMover("pasta", folder);
-    });
+    };
 
-    const buttonWrapper = document.createElement("div");
-    buttonWrapper.className = "button-wrapper";
-    buttonWrapper.append(renameBtn, deleteBtn, moverBtn);
+    const btnWrap = document.createElement("div");
+    btnWrap.className = "button-wrapper";
+    btnWrap.append(renameBtn, deleteBtn, moverBtn);
 
-    div.append(nameSpan, buttonWrapper);
+    div.append(nameSpan, btnWrap);
     container.appendChild(div);
   });
-}
 
-function renderFiles(files) {
-  const container = document.getElementById("blocos-container");
-
-  files.forEach((file) => {
+  // Arquivos
+  data.files.forEach((file) => {
     const div = document.createElement("div");
     div.className = "file";
 
@@ -114,16 +94,19 @@ function renderFiles(files) {
 
     if (/\.(jpg|jpeg|png|gif)$/i.test(file)) {
       const img = document.createElement("img");
-      img.src = metadadosGlobais[file]?.url || `${currentPath}/${file}`;
-
+      img.src = `${currentPath}/${file}`;
       div.prepend(img);
     }
 
-    const editBtn = createIconButton("✏️", "Editar dados", () =>
-      abrirModalEdicao(file)
-    );
+    const editBtn = document.createElement("button");
+    editBtn.textContent = "✏️";
+    editBtn.title = "Editar dados";
+    editBtn.onclick = () => abrirModalEdicao(file);
 
-    const deleteBtn = createIconButton("🗑️", "Excluir arquivo", async () => {
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "🗑️";
+    deleteBtn.title = "Excluir arquivo";
+    deleteBtn.onclick = async () => {
       if (confirm(`Deseja excluir o arquivo "${file}"?`)) {
         await fetch(`${API_BASE}/delete`, {
           method: "DELETE",
@@ -132,31 +115,48 @@ function renderFiles(files) {
         });
         loadFolder();
       }
-    });
+    };
 
-    const moverBtn = createIconButton("📁", "Mover arquivo", () =>
-      abrirModalMover("arquivo", file)
-    );
+    const moverBtn = document.createElement("button");
+    moverBtn.textContent = "📁";
+    moverBtn.title = "Mover arquivo";
+    moverBtn.onclick = () => abrirModalMover("arquivo", file);
 
-    const buttonWrapper = document.createElement("div");
-    buttonWrapper.className = "button-wrapper";
-    buttonWrapper.append(editBtn, deleteBtn, moverBtn);
+    const btnWrap = document.createElement("div");
+    btnWrap.className = "button-wrapper";
+    btnWrap.append(editBtn, deleteBtn, moverBtn);
 
-    const description = document.createElement("div");
-    description.className = "description";
-    description.append(nameSpan, buttonWrapper);
+    const desc = document.createElement("div");
+    desc.className = "description";
+    desc.append(nameSpan, btnWrap);
 
-    div.append(description);
+    div.append(desc);
     container.appendChild(div);
   });
+
+  if (data.folders.length === 0 && data.files.length === 0) {
+    const vazio = document.createElement("div");
+    vazio.textContent = "📂 Pasta Vazia";
+    vazio.style.opacity = "0.6";
+    vazio.style.padding = "0.5rem";
+    container.appendChild(vazio);
+  }
+
+  const caminhoAtual = document.getElementById("caminho-atual");
+  if (caminhoAtual) {
+    caminhoAtual.textContent = currentPath.replace("/assets/blocos", "") || "/";
+  }
 }
 
-function createIconButton(text, title, onClick) {
-  const btn = document.createElement("button");
-  btn.textContent = text;
-  btn.title = title;
-  btn.onclick = onClick;
-  return btn;
+async function createFolder() {
+  const name = prompt("Nome da nova pasta:");
+  if (!name) return;
+  await fetch(`${API_BASE}/folder`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ path: currentPath, name }),
+  });
+  loadFolder();
 }
 
 function abrirModalNovaImagem() {
@@ -168,17 +168,13 @@ function abrirModalNovaImagem() {
   input.onchange = () => {
     const file = input.files[0];
     if (!file) return;
-
     fotosCapturadas.push(file);
 
     const continuar = confirm(
-      "Deseja tirar outra foto?\n\nOK = Sim\nCancelar = Preencher dados"
+      "Deseja tirar outra foto?\nOK = Sim\nCancelar = Preencher dados"
     );
-    if (continuar) {
-      abrirModalNovaImagem();
-    } else {
-      mostrarModalComFotos();
-    }
+    if (continuar) abrirModalNovaImagem();
+    else mostrarModalComFotos();
   };
 
   input.click();
@@ -200,8 +196,8 @@ function mostrarModalComFotos() {
 function abrirModalEdicao(nomeArquivo) {
   const meta = metadadosGlobais[nomeArquivo];
   if (!meta) return alert("Dados da imagem não encontrados.");
-
   editandoArquivo = nomeArquivo;
+
   document.getElementById("modal-titulo").textContent = "Editar Imagem";
   document.getElementById("modal-file").classList.add("hidden");
   document.getElementById("modal-nome").value = meta.nome || "";
@@ -230,10 +226,7 @@ async function salvarModal() {
 
   if (editandoArquivo) {
     const meta = metadadosGlobais[editandoArquivo];
-    if (!meta?.code) {
-      alert("Código da imagem não encontrado.");
-      return;
-    }
+    if (!meta?.code) return alert("Código da imagem não encontrado.");
 
     await fetch(`${API_BASE}/atualizar-metadata`, {
       method: "PUT",
@@ -298,14 +291,3 @@ window.onload = () => {
 
   loadFolder();
 };
-
-async function createFolder() {
-  const folderName = prompt("Nome da nova pasta:");
-  if (!folderName) return;
-  await fetch(`${API_BASE}/folder`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ path: currentPath, name: folderName }),
-  });
-  loadFolder();
-}
