@@ -3,6 +3,7 @@ const fs = require("fs");
 const fsPromises = require("fs/promises");
 const path = require("path");
 
+// Local e Romoto
 const auth =
   process.env.NODE_ENV === "production"
     ? new google.auth.GoogleAuth({
