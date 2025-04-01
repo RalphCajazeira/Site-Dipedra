@@ -4,9 +4,9 @@ let moverDestinoAtual = "/assets/blocos";
 let todasPastasDisponiveis = [];
 
 async function carregarPastasDisponiveis() {
-  const res = await fetch(`${SITE_BASE}/blocosDB.json`);
-  const db = await res.json();
-  todasPastasDisponiveis = db.pastas || [];
+  const res = await fetch(`${API_BASE}`);
+  const data = await res.json();
+  todasPastasDisponiveis = data.folders || [];
 }
 
 function abrirModalMover(tipo, nome) {
@@ -57,7 +57,7 @@ function renderizarPastasMover() {
 async function confirmarMover() {
   if (!moverTipo || !moverNome || !moverDestinoAtual) return;
 
-  await fetch("/api/blocos/mover", {
+  await fetch(`${API_BASE}/mover`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

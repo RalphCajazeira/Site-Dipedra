@@ -287,10 +287,19 @@ window.onload = () => {
 async function createFolder() {
   const folderName = prompt("Nome da nova pasta:");
   if (!folderName) return;
-  await fetch(`${API_BASE}/folder`, {
+
+  const res = await fetch(`${API_BASE}/folder`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ path: currentPath, name: folderName }),
   });
+
+  if (!res.ok) {
+    const err = await res.json();
+    console.error("Erro ao criar pasta:", err);
+    alert("Erro ao criar pasta.");
+    return;
+  }
+
   loadFolder();
 }

@@ -1,36 +1,10 @@
 {
-  "arquivos": {
-    "/assets/blocos/Bando 01/2,x2,00 - Code 1.jpg": {
-      "code": 1,
-      "nome": "",
-      "comprimento": "2,",
-      "largura": "2,00",
-      "codeInterno": ""
-    },
-    "/assets/blocos/Bando 01/2,x2,00 - Code 2.jpg": {
-      "code": 2,
-      "nome": "",
-      "comprimento": "2,",
-      "largura": "2,00",
-      "codeInterno": ""
-    },
-    "/assets/blocos/Bando 02/1x1 - Code 3.jpg": {
-      "code": 3,
-      "nome": "",
-      "comprimento": "1",
-      "largura": "1",
-      "codeInterno": ""
-    },
-    "/assets/blocos/Bando 01/3x3 - Code 4.jpg": {
-      "code": 4,
-      "nome": "",
-      "comprimento": "3",
-      "largura": "3",
-      "codeInterno": ""
-    }
-  },
+  "arquivos": {},
   "pastas": [
+    "/assets/blocos/Pasta 02",
+    "/assets/blocos/Pasta Teste",
     "/assets/blocos/Bando 01",
-    "/assets/blocos/Bando 02"
+    "/assets/blocos/Pasta 01",
+    "/assets/blocos/Teste 001"
   ]
 }

@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
-const { salvarBlocosDBNoDrive } = require("../services/driveService");
 
 const DB_PATH = path.join(__dirname, "../blocosDB.json");
 
@@ -12,7 +11,12 @@ function carregarDB() {
 
 function salvarDB(db) {
   fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), "utf-8");
-  salvarBlocosDBNoDrive().catch(console.error); // Atualiza no Drive
+
+  // Somente em produção, atualiza o banco no Google Drive
+  if (process.env.NODE_ENV === "production") {
+    const { salvarBlocosDBNoDrive } = require("../services/driveService");
+    salvarBlocosDBNoDrive().catch(console.error);
+  }
 }
 
 function listarConteudo(dirPath) {
@@ -87,7 +91,6 @@ function atualizarMetadadosPorCode(code, novosDados) {
       const novoNome = `${novosDados.comprimento}x${novosDados.largura} - Code ${code}${ext}`;
       const novoCaminho = `${pasta}/${novoNome}`;
 
-      // Renomear arquivo
       const antigoPath = path.join(__dirname, "../../", caminho);
       const novoPath = path.join(__dirname, "../../", novoCaminho);
 
@@ -141,7 +144,6 @@ function moverItem(origem, destino, tipo) {
   const relDestino = novoCaminho;
 
   if (tipo === "pasta") {
-    // Atualizar estrutura de pastas e arquivos que começam com a origem
     db.pastas = db.pastas.map((p) =>
       p.startsWith(relOrigem) ? p.replace(relOrigem, relDestino) : p
     );
@@ -157,7 +159,6 @@ function moverItem(origem, destino, tipo) {
     }
     db.arquivos = novosArquivos;
   } else {
-    // Tipo arquivo
     if (db.arquivos[relOrigem]) {
       db.arquivos[relDestino] = db.arquivos[relOrigem];
       delete db.arquivos[relOrigem];

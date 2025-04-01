@@ -4,7 +4,6 @@ const path = require("path");
 const fs = require("fs").promises;
 
 const {
-  listarConteudo,
   criarPasta,
   salvarImagens,
   atualizarMetadadosPorCode,
@@ -15,25 +14,35 @@ const {
 const router = express.Router();
 const upload = multer({ dest: "uploads/" });
 
-// Listar arquivos + metadados
+// ✅ NOVO: Listar conteúdo da pasta com base no blocosDB.json
 router.get("/", (req, res) => {
   const dirPath = req.query.path || "/assets/blocos";
-  const fullPath = path.join(__dirname, "../../", dirPath);
 
   try {
-    const conteudo = listarConteudo(fullPath);
     const db = carregarDB();
 
+    const arquivosNaPasta = [];
+    const subpastas = [];
     const metadados = {};
+
     for (const [caminho, dados] of Object.entries(db.arquivos)) {
-      if (caminho.startsWith(dirPath)) {
+      if (path.dirname(caminho) === dirPath) {
         const nomeArquivo = path.basename(caminho);
+        arquivosNaPasta.push(nomeArquivo);
         metadados[nomeArquivo] = dados;
       }
     }
 
+    for (const pasta of db.pastas || []) {
+      const base = pasta.replace(dirPath + "/", "");
+      if (pasta.startsWith(dirPath) && base.indexOf("/") === -1) {
+        subpastas.push(base);
+      }
+    }
+
     res.json({
-      ...conteudo,
+      files: arquivosNaPasta,
+      folders: subpastas,
       metadados,
     });
   } catch (err) {
@@ -41,15 +50,35 @@ router.get("/", (req, res) => {
   }
 });
 
+// ✅ NOVO: Listar todas as pastas (para mover.js)
+router.get("/listar-pastas", (req, res) => {
+  try {
+    const db = carregarDB();
+    res.json({ pastas: db.pastas || [] });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Criar pasta
 router.post("/folder", (req, res) => {
+  console.log("📦 Requisição recebida para criar pasta");
+  console.log("Body:", req.body);
+
   const { path: currentPath, name } = req.body;
+
+  if (!currentPath || !name) {
+    return res.status(400).json({ error: "Parâmetros inválidos" });
+  }
+
   const fullPath = path.join(__dirname, "../../", currentPath, name);
+  console.log("➡️ Caminho completo para nova pasta:", fullPath);
 
   try {
     criarPasta(fullPath);
     res.sendStatus(201);
   } catch (err) {
+    console.error("❌ Erro ao criar pasta:", err.message);
     res.status(500).json({ error: err.message });
   }
 });
@@ -105,20 +134,18 @@ router.delete("/delete", (req, res) => {
   }
 });
 
-// Renomear pasta e atualizar blocosDB.json (arquivos + pastas)
+// Renomear pasta
 router.put("/rename", async (req, res) => {
   const { path: currentPath, oldName, newName } = req.body;
   const basePath = path.join(__dirname, "../../", currentPath);
   const oldPath = path.join(basePath, oldName);
   const newPath = path.join(basePath, newName);
 
-  const dbPath = path.join(__dirname, "../../blocosDB.json");
+  const dbPath = path.join(__dirname, "../../backend/blocosDB.json");
 
   try {
-    // 1. Renomear a pasta no sistema de arquivos
     await fs.rename(oldPath, newPath);
 
-    // 2. Carregar o banco
     const dbRaw = await fs.readFile(dbPath, "utf-8");
     const db = JSON.parse(dbRaw);
 
@@ -126,7 +153,6 @@ router.put("/rename", async (req, res) => {
     const caminhoAntigo = path.join(currentPath, oldName).replace(/\\/g, "/");
     const caminhoNovo = path.join(currentPath, newName).replace(/\\/g, "/");
 
-    // 3. Atualizar caminhos dos arquivos
     for (const [caminho, dados] of Object.entries(db.arquivos)) {
       if (caminho.startsWith(caminhoAntigo)) {
         const novoCaminho = caminho.replace(caminhoAntigo, caminhoNovo);
@@ -138,7 +164,6 @@ router.put("/rename", async (req, res) => {
 
     db.arquivos = novaEstruturaArquivos;
 
-    // 4. Atualizar caminho da pasta
     if (Array.isArray(db.pastas)) {
       const index = db.pastas.indexOf(caminhoAntigo);
       if (index !== -1) {
@@ -146,7 +171,6 @@ router.put("/rename", async (req, res) => {
       }
     }
 
-    // 5. Salvar banco atualizado
     await fs.writeFile(dbPath, JSON.stringify(db, null, 2), "utf-8");
 
     res.sendStatus(200);
@@ -156,16 +180,12 @@ router.put("/rename", async (req, res) => {
   }
 });
 
-// Mover arquivo ou pasta
+// Mover
 router.put("/mover", async (req, res) => {
   const { tipo, origem, destino } = req.body;
-
-  const fs = require("fs");
-  const path = require("path");
-  const fsPromises = fs.promises;
-
   const raiz = path.join(__dirname, "../../");
-  const dbPath = path.join(raiz, "blocosDB.json");
+  const dbPath = path.join(raiz, "backend/blocosDB.json");
+  const fsPromises = fs;
 
   try {
     const nomeItem = path.basename(origem);
@@ -211,6 +231,16 @@ router.put("/mover", async (req, res) => {
   } catch (error) {
     console.error("Erro ao mover:", error);
     res.status(500).json({ error: "Falha ao mover item." });
+  }
+});
+
+// Rota de debug (opcional)
+router.get("/db", (req, res) => {
+  try {
+    const db = carregarDB();
+    res.json(db);
+  } catch (err) {
+    res.status(500).json({ error: "Erro ao carregar blocosDB.json" });
   }
 });
 
