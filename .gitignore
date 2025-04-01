@@ -2,3 +2,4 @@
 backend/.env
 backend/chaves/drive-key.json
 backend/uploads/
+assets/blocos
