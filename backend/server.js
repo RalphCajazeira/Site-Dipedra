@@ -11,8 +11,27 @@ const { baixarBlocosDB } = require("./services/driveService");
 const app = express();
 const PORT = 3000;
 
-// Middlewares
-app.use(cors());
+// Middleware de CORS com verificação por ambiente
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+  "http://192.168.3.91:3000",
+  "https://www.dipedra.com.br",
+];
+
+const corsOptions =
+  process.env.NODE_ENV === "production"
+    ? {
+        origin: (origin, callback) => {
+          if (!origin || allowedOrigins.includes(origin)) {
+            return callback(null, true);
+          }
+          callback(new Error("Not allowed by CORS"));
+        },
+      }
+    : {}; // Em dev, libera geral
+
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
 // Arquivos estáticos
