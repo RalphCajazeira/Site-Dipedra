@@ -9,7 +9,12 @@ const catalogoRoutes = require("./routes/catalogoRoutes");
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://www.dipedra.com.br",
+  })
+);
+
 app.use(express.json());
 
 // Servindo arquivos estáticos em desenvolvimento
