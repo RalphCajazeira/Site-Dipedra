@@ -1,4 +1,4 @@
-// Requer config.js importado antes deste script
+// scripts/blocos/blocos.js
 
 let currentPath = "/assets/blocos";
 let modoGrid = true;
@@ -7,21 +7,33 @@ let arquivosGlobais = {};
 let metadadosGlobais = {};
 let fotosCapturadas = [];
 
+/**
+ * Carrega a pasta do backend
+ */
 async function loadFolder(path = currentPath) {
+  // Faz requisição GET: /blocos?path=...
   const res = await fetch(`${API_BASE}?path=${encodeURIComponent(path)}`);
   const data = await res.json();
 
+  // data deve ter { folders: [...], files: [...], metadados: {...} }
+  // Se por acaso vier erro, data pode ser {error: "..."}.
+  if (data.error) {
+    console.error("Erro ao carregar pasta:", data.error);
+    return;
+  }
+
   const container = document.getElementById("blocos-container");
   container.innerHTML = "";
-
   container.classList.remove("grid-view", "lista-view");
   container.classList.add(modoGrid ? "grid-view" : "lista-view");
 
-  arquivosGlobais = data.files;
+  // Se a controller retorna "data.files" ou "data.folders", OK
+  const folders = data.folders || [];
+  const files = data.files || [];
   metadadosGlobais = data.metadados || {};
 
   // Folders
-  data.folders.forEach((folder) => {
+  folders.forEach((folder) => {
     const div = document.createElement("div");
     div.className = "folder";
     div.onclick = () => {
@@ -49,7 +61,6 @@ async function loadFolder(path = currentPath) {
           newName: novoNome,
         }),
       });
-
       loadFolder();
     };
 
@@ -58,7 +69,6 @@ async function loadFolder(path = currentPath) {
     deleteBtn.title = "Excluir pasta";
     deleteBtn.onclick = async (event) => {
       event.stopPropagation();
-
       const caminhoCompleto = currentPath + "/" + folder;
       if (caminhoCompleto === "/assets/blocos") {
         alert("A pasta raiz não pode ser excluída.");
@@ -91,8 +101,8 @@ async function loadFolder(path = currentPath) {
     container.appendChild(div);
   });
 
-  // Arquivos
-  data.files.forEach((file) => {
+  // Files
+  files.forEach((file) => {
     const div = document.createElement("div");
     div.className = "file";
 
@@ -141,7 +151,7 @@ async function loadFolder(path = currentPath) {
     container.appendChild(div);
   });
 
-  if (data.folders.length === 0 && data.files.length === 0) {
+  if (folders.length === 0 && files.length === 0) {
     const vazio = document.createElement("div");
     vazio.textContent = "📂 Pasta Vazia";
     vazio.style.opacity = "0.6";
@@ -151,7 +161,8 @@ async function loadFolder(path = currentPath) {
 
   const caminhoAtual = document.getElementById("caminho-atual");
   if (caminhoAtual) {
-    caminhoAtual.textContent = currentPath.replace("/assets/blocos", "") || "/";
+    const displayPath = currentPath.replace("/assets/blocos", "") || "/";
+    caminhoAtual.textContent = displayPath;
   }
 }
 
@@ -165,6 +176,8 @@ async function createFolder() {
   });
   loadFolder();
 }
+
+// Abaixo, modal e funções de edição, etc. (do seu código original)
 
 function abrirModalNovaImagem() {
   const input = document.createElement("input");
@@ -192,7 +205,7 @@ function mostrarModalComFotos() {
   document.getElementById("modal-titulo").textContent = `Preencher dados (${
     fotosCapturadas.length
   } foto${fotosCapturadas.length > 1 ? "s" : ""})`;
-  document.getElementById("modal-file").classList.add("hidden");
+  document.getElementById("modal-file").classList?.add("hidden");
   document.getElementById("modal-nome").value = "";
   document.getElementById("modal-comprimento").value = "";
   document.getElementById("modal-largura").value = "";
@@ -206,7 +219,7 @@ function abrirModalEdicao(nomeArquivo) {
   editandoArquivo = nomeArquivo;
 
   document.getElementById("modal-titulo").textContent = "Editar Imagem";
-  document.getElementById("modal-file").classList.add("hidden");
+  document.getElementById("modal-file").classList?.add("hidden");
   document.getElementById("modal-nome").value = meta.nome || "";
   document.getElementById("modal-comprimento").value = meta.comprimento || "";
   document.getElementById("modal-largura").value = meta.largura || "";
@@ -276,6 +289,9 @@ async function salvarModal() {
   loadFolder();
 }
 
+// Se tiver a função "abrirModalMover", coloque aqui
+
+// Iniciar
 window.onload = () => {
   document.getElementById("nova-pasta-btn").onclick = createFolder;
   document.getElementById("nova-foto-btn").onclick = abrirModalNovaImagem;

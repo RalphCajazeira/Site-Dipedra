@@ -1,226 +1,517 @@
+// backend/controllers/blocosController.js
+
 const fs = require("fs");
 const path = require("path");
-const { salvarBlocosDBNoDrive } = require("../services/driveService");
+const {
+  baixarBlocosDB,
+  salvarBlocosDBNoDrive,
+  carregarBlocosDBDoDrive,
+  criarPastaNoDrive,
+  uploadArquivoParaDrive,
+  renomearItemNoDrive,
+  moverItemNoDrive,
+  deletarItemNoDrive,
+} = require("../services/driveService");
 
-const ROOT = path.resolve(__dirname, "../../");
-const DB_PATH = path.join(ROOT, "blocosDB.json");
+const isProduction = process.env.NODE_ENV === "production";
 
-function carregarDB() {
-  if (!fs.existsSync(DB_PATH)) return { arquivos: {}, pastas: [] };
-  const raw = fs.readFileSync(DB_PATH, "utf-8");
-  return JSON.parse(raw);
-}
+// Vamos guardar o caminho do blocosDB.json local
+const DB_PATH = path.join(__dirname, "..", "blocosDB.json");
 
-function salvarDB(db) {
-  fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
-  if (process.env.NODE_ENV === "production") {
-    salvarBlocosDBNoDrive().catch(console.error);
+// -------------------------
+// Carregar DB local
+// -------------------------
+function lerBlocosLocal() {
+  try {
+    const raw = fs.readFileSync(DB_PATH, "utf-8");
+    return JSON.parse(raw);
+  } catch (err) {
+    return {}; // se não existir ou der erro, retorna objeto vazio
   }
 }
 
-function listarConteudo(dirRelativo) {
-  const db = carregarDB();
-  const prefixo = dirRelativo.replace(/\/$/, "");
+function salvarBlocosLocal(db) {
+  fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), "utf-8");
+}
 
-  const folders = db.pastas
-    .filter((p) => path.dirname(p) === prefixo)
-    .map((p) => path.basename(p));
+// -------------------------
+// Carregar DB (dev ou prod)
+// -------------------------
+async function carregarDB() {
+  if (isProduction) {
+    // Em produção, puxa do Drive
+    return await carregarBlocosDBDoDrive();
+  } else {
+    // Em desenvolvimento
+    return lerBlocosLocal();
+  }
+}
 
-  const files = Object.keys(db.arquivos)
-    .filter((filePath) => path.dirname(filePath) === prefixo)
-    .map((p) => path.basename(p));
+// -------------------------
+// Salvar DB (dev ou prod)
+// -------------------------
+async function salvarDB(db) {
+  if (isProduction) {
+    // Salva localmente e envia pro Drive
+    salvarBlocosLocal(db);
+    await salvarBlocosDBNoDrive();
+  } else {
+    salvarBlocosLocal(db);
+  }
+}
 
-  const metadados = {};
-  for (const [caminho, dados] of Object.entries(db.arquivos)) {
-    if (path.dirname(caminho) === prefixo) {
-      metadados[path.basename(caminho)] = dados;
+// Garante que o path no DB exista
+function garantirEntradaNoDB(db, dirPath) {
+  if (!db[dirPath]) {
+    db[dirPath] = {
+      folders: [],
+      files: [],
+      metadados: {},
+    };
+  }
+}
+
+// -------------------------
+// Listar conteúdo
+// -------------------------
+async function listarConteudo(dirPath) {
+  if (!dirPath) dirPath = "assets/blocos";
+
+  const db = await carregarDB();
+  garantirEntradaNoDB(db, dirPath);
+
+  // Retorna { folders, files, metadados }
+  return {
+    folders: db[dirPath].folders,
+    files: db[dirPath].files,
+    metadados: db[dirPath].metadados || {},
+  };
+}
+
+// -------------------------
+// Criar pasta
+// -------------------------
+async function criarPasta(novoCaminho) {
+  if (!novoCaminho) return;
+
+  if (!isProduction) {
+    // 1) Cria fisicamente no disco
+    const absPath = path.join(__dirname, "..", "..", novoCaminho);
+    fs.mkdirSync(absPath, { recursive: true });
+
+    // 2) Atualiza DB local
+    const db = lerBlocosLocal();
+
+    // Garante que o pai exista no DB
+    const pai = path.dirname(novoCaminho);
+    garantirEntradaNoDB(db, pai);
+
+    // Garante que a própria pasta tenha entrada
+    garantirEntradaNoDB(db, novoCaminho);
+
+    // Adiciona na lista de folders do pai
+    const nomePasta = path.basename(novoCaminho);
+    if (!db[pai].folders.includes(nomePasta)) {
+      db[pai].folders.push(nomePasta);
     }
-  }
 
-  return { folders, files, metadados };
-}
+    await salvarDB(db);
+  } else {
+    // PRODUÇÃO => Drive
+    await criarPastaNoDrive(novoCaminho);
+    // Atualiza DB no Drive
+    const db = await carregarDB();
 
-function criarPasta(pathRelativo) {
-  if (
-    !pathRelativo ||
-    pathRelativo === "/assets/blocos" ||
-    pathRelativo === "assets/blocos"
-  )
-    return;
+    // Mesmo esquema de atualizar pai
+    const pai = path.dirname(novoCaminho);
+    garantirEntradaNoDB(db, pai);
+    garantirEntradaNoDB(db, novoCaminho);
 
-  const db = carregarDB();
-  const caminhoCompleto = path.join(ROOT, pathRelativo);
+    const nomePasta = path.basename(novoCaminho);
+    if (!db[pai].folders.includes(nomePasta)) {
+      db[pai].folders.push(nomePasta);
+    }
 
-  if (!fs.existsSync(caminhoCompleto)) {
-    fs.mkdirSync(caminhoCompleto, { recursive: true });
-  }
-
-  if (!db.pastas.includes(pathRelativo)) {
-    db.pastas.push(pathRelativo);
-    salvarDB(db);
+    await salvarDB(db);
   }
 }
 
-function salvarImagens(destinoRelativo, arquivos, dadosImagem) {
-  const db = carregarDB();
-  const nomesSalvos = [];
+// -------------------------
+// Salvar imagens (upload)
+// -------------------------
+// Atualiza a funcao salvarImagens no blocosController.js
+// Substituir a antiga salvarImagens por essa nova
 
-  const destinoFisico = path.join(ROOT, destinoRelativo);
-  if (!fs.existsSync(destinoFisico)) {
-    fs.mkdirSync(destinoFisico, { recursive: true });
+const salvarImagens = async (folderPath, files, meta = {}) => {
+  if (!folderPath) return [];
+
+  const { nome = "", comprimento, largura, codeInterno = "" } = meta;
+
+  if (!comprimento || !largura) {
+    throw new Error("Comprimento e Largura são obrigatórios");
   }
 
-  arquivos.forEach((file) => {
-    const code = Date.now() + Math.floor(Math.random() * 10000);
-    const ext = path.extname(file.originalname);
-    const nomeFinal = `${dadosImagem.comprimento}x${dadosImagem.largura} - Code ${code}${ext}`;
-    const destinoCompleto = path.join(destinoFisico, nomeFinal);
-    const caminhoNoDB = path
-      .join(destinoRelativo, nomeFinal)
-      .replace(/\\/g, "/");
+  const formatarMedida = (valor) => {
+    const num = parseFloat(valor.toString().replace(",", "."));
+    return num.toFixed(2).replace(".", ",");
+  };
 
-    fs.renameSync(file.path, destinoCompleto);
+  const compFormatado = formatarMedida(comprimento);
+  const largFormatado = formatarMedida(largura);
 
-    db.arquivos[caminhoNoDB] = {
+  // Carregar banco de dados atual
+  const db = await carregarDB();
+  garantirEntradaNoDB(db, folderPath);
+
+  // Inicializar controle de código se não existir
+  if (!db.__ultimoCodigo__) db.__ultimoCodigo__ = 0;
+
+  const nomesGerados = [];
+
+  for (const file of files) {
+    // Gerar novo código
+    db.__ultimoCodigo__++;
+    const code = db.__ultimoCodigo__.toString().padStart(4, "0");
+
+    // Construir nome final do arquivo com campos válidos
+    const partesNome = [];
+    if (nome.trim()) partesNome.push(nome.trim());
+    partesNome.push(`${compFormatado}x${largFormatado}`);
+    if (codeInterno.trim()) partesNome.push(codeInterno.trim());
+    partesNome.push(`Id ${code}`);
+
+    const nomeArquivo = partesNome.join(" - ") + ".jpg";
+
+    // Caminho absoluto local (somente em desenvolvimento)
+    if (!isProduction) {
+      const destino = path.join(__dirname, "..", "..", folderPath, nomeArquivo);
+      fs.mkdirSync(path.dirname(destino), { recursive: true });
+      fs.renameSync(file.path, destino);
+    } else {
+      // Upload para o Drive com nome final
+      await uploadArquivoParaDrive(file, folderPath, nomeArquivo);
+    }
+
+    // Atualizar banco de dados
+    db[folderPath].files.push(nomeArquivo);
+    if (!db[folderPath].metadados) db[folderPath].metadados = {};
+    db[folderPath].metadados[nomeArquivo] = {
+      nome: nome.trim(),
+      comprimento: compFormatado,
+      largura: largFormatado,
+      codeInterno: codeInterno.trim(),
       code,
-      nome: dadosImagem.nome || "",
-      comprimento: dadosImagem.comprimento,
-      largura: dadosImagem.largura,
-      codeInterno: dadosImagem.codeInterno || "",
     };
 
-    nomesSalvos.push(nomeFinal);
-  });
-
-  salvarDB(db);
-  return nomesSalvos;
-}
-
-function atualizarMetadadosPorCode(code, novosDados) {
-  const db = carregarDB();
-  const entradas = Object.entries(db.arquivos);
-
-  for (const [caminho, meta] of entradas) {
-    if (meta.code == code) {
-      const pasta = path.dirname(caminho);
-      const ext = path.extname(caminho);
-      const novoNome = `${novosDados.comprimento}x${novosDados.largura} - Code ${code}${ext}`;
-      const novoCaminho = `${pasta}/${novoNome}`.replace(/\\/g, "/");
-
-      const oldPath = path.join(ROOT, caminho);
-      const newPath = path.join(ROOT, novoCaminho);
-
-      fs.renameSync(oldPath, newPath);
-
-      delete db.arquivos[caminho];
-      db.arquivos[novoCaminho] = {
-        ...meta,
-        ...novosDados,
-      };
-
-      salvarDB(db);
-      return true;
-    }
+    nomesGerados.push(nomeArquivo);
   }
 
-  return false;
-}
+  await salvarDB(db);
+  return nomesGerados;
+};
 
-function deletarPorCaminhoCompleto(caminhoRelativo) {
-  if (
-    !caminhoRelativo ||
-    caminhoRelativo === "assets/blocos" ||
-    caminhoRelativo === "/assets/blocos"
-  ) {
-    throw new Error("A pasta raiz não pode ser excluída.");
-  }
+module.exports = {
+  // ... outros exports
+  salvarImagens,
+};
 
-  const db = carregarDB();
-  const fullPath = path.join(ROOT, caminhoRelativo);
+// -------------------------
+// Atualizar metadados
+// -------------------------
+async function atualizarMetadadosPorCode(
+  code,
+  { nome, comprimento, largura, codeInterno }
+) {
+  // Supondo que você tenha "db[algumPath].metadados[arquivo]" = { code:..., nome:..., ... }
+  // Para simplificar, iremos varrer o DB e procurar o code. Ajuste ao seu gosto.
 
-  if (fs.existsSync(fullPath)) {
-    const stats = fs.statSync(fullPath);
+  const db = await carregarDB();
+  let encontrado = false;
 
-    if (stats.isDirectory()) {
-      fs.rmSync(fullPath, { recursive: true, force: true });
-
-      db.pastas = db.pastas.filter((p) => !p.startsWith(caminhoRelativo));
-      for (const key of Object.keys(db.arquivos)) {
-        if (key.startsWith(caminhoRelativo)) delete db.arquivos[key];
+  for (const dirPath in db) {
+    for (const arq in db[dirPath].metadados) {
+      if (db[dirPath].metadados[arq].code === code) {
+        // Atualiza
+        db[dirPath].metadados[arq].nome = nome;
+        db[dirPath].metadados[arq].comprimento = comprimento;
+        db[dirPath].metadados[arq].largura = largura;
+        db[dirPath].metadados[arq].codeInterno = codeInterno;
+        encontrado = true;
+        break;
       }
-    } else {
-      fs.unlinkSync(fullPath);
-      delete db.arquivos[caminhoRelativo];
     }
-
-    salvarDB(db);
+    if (encontrado) break;
   }
+
+  if (encontrado) {
+    await salvarDB(db);
+  }
+  return encontrado;
 }
 
-function moverItem(origemRel, destinoRel, tipo) {
-  const db = carregarDB();
-  const nome = path.basename(origemRel);
-  const novoRel = `${destinoRel}/${nome}`.replace(/\\/g, "/");
+// -------------------------
+// Deletar
+// -------------------------
+async function deletarPorCaminhoCompleto(fullPath) {
+  if (!fullPath) return;
 
-  const origemAbs = path.join(ROOT, origemRel);
-  const destinoAbs = path.join(ROOT, novoRel);
-
-  fs.renameSync(origemAbs, destinoAbs);
-
-  if (tipo === "pasta") {
-    db.pastas = db.pastas.map((p) =>
-      p.startsWith(origemRel) ? p.replace(origemRel, novoRel) : p
-    );
-
-    const novosArquivos = {};
-    for (const [caminho, dados] of Object.entries(db.arquivos)) {
-      if (caminho.startsWith(origemRel)) {
-        const novo = caminho.replace(origemRel, novoRel);
-        novosArquivos[novo] = dados;
+  if (!isProduction) {
+    // 1) Deleta fisicamente (arquivo ou pasta)
+    const abs = path.join(__dirname, "..", "..", fullPath);
+    if (fs.existsSync(abs)) {
+      const stat = fs.statSync(abs);
+      if (stat.isDirectory()) {
+        fs.rmdirSync(abs, { recursive: true });
       } else {
-        novosArquivos[caminho] = dados;
+        fs.unlinkSync(abs);
       }
     }
-    db.arquivos = novosArquivos;
-  } else {
-    db.arquivos[novoRel] = db.arquivos[origemRel];
-    delete db.arquivos[origemRel];
-  }
 
-  salvarDB(db);
+    // 2) Atualiza DB
+    const db = lerBlocosLocal();
+    const pai = path.dirname(fullPath);
+    const nome = path.basename(fullPath);
+
+    // Se for pasta
+    if (db[pai]?.folders.includes(nome)) {
+      // Remover da lista de folders
+      db[pai].folders = db[pai].folders.filter((f) => f !== nome);
+
+      // Também remover todo o “subtree” do DB (ex: se existiam subpastas)
+      removerSubcaminhosDoDB(db, fullPath);
+    } else {
+      // Se for arquivo
+      if (db[pai]?.files.includes(nome)) {
+        db[pai].files = db[pai].files.filter((f) => f !== nome);
+        // Se houver metadados, remover
+        delete db[pai].metadados?.[nome];
+      }
+    }
+
+    await salvarDB(db);
+  } else {
+    // PROD => Drive
+    await deletarItemNoDrive(fullPath);
+
+    const db = await carregarDB();
+    const pai = path.dirname(fullPath);
+    const nome = path.basename(fullPath);
+
+    // Remover do DB (mesmo esquema)
+    if (db[pai]?.folders.includes(nome)) {
+      db[pai].folders = db[pai].folders.filter((f) => f !== nome);
+      removerSubcaminhosDoDB(db, fullPath);
+    } else if (db[pai]?.files.includes(nome)) {
+      db[pai].files = db[pai].files.filter((f) => f !== nome);
+      delete db[pai].metadados?.[nome];
+    }
+
+    await salvarDB(db);
+  }
 }
 
-function renomearPasta(pathRelativo, oldName, newName) {
-  const db = carregarDB();
-  const base = path.join(ROOT, pathRelativo);
-  const oldPath = path.join(base, oldName);
-  const newPath = path.join(base, newName);
-
-  if (!fs.existsSync(oldPath)) throw new Error("Pasta não encontrada");
-
-  fs.renameSync(oldPath, newPath);
-
-  const caminhoAntigo = path.join(pathRelativo, oldName).replace(/\\/g, "/");
-  const caminhoNovo = path.join(pathRelativo, newName).replace(/\\/g, "/");
-
-  db.pastas = db.pastas.map((p) =>
-    p.startsWith(caminhoAntigo) ? p.replace(caminhoAntigo, caminhoNovo) : p
-  );
-
-  const novosArquivos = {};
-  for (const [caminho, dados] of Object.entries(db.arquivos)) {
-    if (caminho.startsWith(caminhoAntigo)) {
-      const novo = caminho.replace(caminhoAntigo, caminhoNovo);
-      novosArquivos[novo] = dados;
-    } else {
-      novosArquivos[caminho] = dados;
+// Função auxiliar que remove todos os caminhos que começam com `raiz`
+function removerSubcaminhosDoDB(db, raiz) {
+  for (const key of Object.keys(db)) {
+    if (key === raiz || key.startsWith(raiz + "/")) {
+      delete db[key];
     }
   }
-
-  db.arquivos = novosArquivos;
-  salvarDB(db);
 }
 
+// -------------------------
+// Mover item
+// -------------------------
+async function moverItem(origem, destino, tipo) {
+  // tipo pode ser "arquivo" ou "pasta" (segundo seu front)
+
+  if (!isProduction) {
+    // 1) Fisicamente
+    const absOrigem = path.join(__dirname, "..", "..", origem);
+    const nomeBase = path.basename(origem);
+    const absDestino = path.join(__dirname, "..", "..", destino, nomeBase);
+    fs.renameSync(absOrigem, absDestino);
+
+    // 2) Atualiza DB
+    const db = lerBlocosLocal();
+    const paiOrigem = path.dirname(origem);
+    const paiDestino = destino;
+
+    garantirEntradaNoDB(db, paiOrigem);
+    garantirEntradaNoDB(db, paiDestino);
+
+    if (tipo === "pasta") {
+      // remover da lista de folders do paiOrigem
+      db[paiOrigem].folders = db[paiOrigem].folders.filter(
+        (f) => f !== nomeBase
+      );
+
+      // adicionar na lista do paiDestino
+      if (!db[paiDestino].folders.includes(nomeBase)) {
+        db[paiDestino].folders.push(nomeBase);
+      }
+
+      // Precisamos também mover toda a subárvore no DB:
+      const oldRoot = origem; // ex: /assets/blocos/oldFolder
+      const newRoot = path.join(destino, nomeBase).replace(/\\/g, "/");
+
+      moverSubcaminhosNoDB(db, oldRoot, newRoot);
+    } else {
+      // tipo === "arquivo"
+      db[paiOrigem].files = db[paiOrigem].files.filter((f) => f !== nomeBase);
+
+      if (!db[paiDestino].files.includes(nomeBase)) {
+        db[paiDestino].files.push(nomeBase);
+      }
+
+      // Se houver metadados, transfere
+      const meta = db[paiOrigem].metadados?.[nomeBase];
+      if (meta) {
+        db[paiDestino].metadados = db[paiDestino].metadados || {};
+        db[paiDestino].metadados[nomeBase] = meta;
+        delete db[paiOrigem].metadados[nomeBase];
+      }
+    }
+
+    await salvarDB(db);
+  } else {
+    // PROD => Drive
+    await moverItemNoDrive(origem, destino);
+
+    // 2) Atualiza DB do Drive
+    const db = await carregarDB();
+    const nomeBase = path.basename(origem);
+    const paiOrigem = path.dirname(origem);
+    const paiDestino = destino;
+
+    garantirEntradaNoDB(db, paiOrigem);
+    garantirEntradaNoDB(db, paiDestino);
+
+    if (tipo === "pasta") {
+      db[paiOrigem].folders = db[paiOrigem].folders.filter(
+        (f) => f !== nomeBase
+      );
+      if (!db[paiDestino].folders.includes(nomeBase)) {
+        db[paiDestino].folders.push(nomeBase);
+      }
+
+      const oldRoot = origem;
+      const newRoot = path.join(destino, nomeBase).replace(/\\/g, "/");
+      moverSubcaminhosNoDB(db, oldRoot, newRoot);
+    } else {
+      db[paiOrigem].files = db[paiOrigem].files.filter((f) => f !== nomeBase);
+      if (!db[paiDestino].files.includes(nomeBase)) {
+        db[paiDestino].files.push(nomeBase);
+      }
+      const meta = db[paiOrigem].metadados?.[nomeBase];
+      if (meta) {
+        db[paiDestino].metadados = db[paiDestino].metadados || {};
+        db[paiDestino].metadados[nomeBase] = meta;
+        delete db[paiOrigem].metadados[nomeBase];
+      }
+    }
+
+    await salvarDB(db);
+  }
+}
+
+// -------------------------
+// Mover subcaminhos no DB
+// -------------------------
+function moverSubcaminhosNoDB(db, oldRoot, newRoot) {
+  // Precisamos renomear todas as entradas cujo key inicia com oldRoot
+  // Ex: /assets/blocos/folder => /assets/blocos/outroFolder
+
+  const keys = Object.keys(db);
+  for (const key of keys) {
+    if (key === oldRoot || key.startsWith(oldRoot + "/")) {
+      const relative = key.substring(oldRoot.length); // ex: "" ou "/sub1"...
+      const newKey = (newRoot + relative).replace(/\\/g, "/");
+      // Se a newKey já existe, mesclar? Vamos sobrescrever
+      db[newKey] = db[key];
+      delete db[key];
+    }
+  }
+}
+
+// -------------------------
+// Renomear pasta/arquivo
+// -------------------------
+async function renomearPasta(currentPath, oldName, newName) {
+  if (!oldName || !newName) return;
+  const origem = path.join(currentPath, oldName).replace(/\\/g, "/");
+  const destino = path.join(currentPath, newName).replace(/\\/g, "/");
+
+  if (!isProduction) {
+    // 1) Rename físico
+    const absOrigem = path.join(__dirname, "..", "..", origem);
+    const absDestino = path.join(__dirname, "..", "..", destino);
+    fs.renameSync(absOrigem, absDestino);
+
+    // 2) Atualiza DB
+    const db = lerBlocosLocal();
+    const pai = currentPath;
+    garantirEntradaNoDB(db, pai);
+
+    const isPasta = db[pai].folders.includes(oldName);
+    if (isPasta) {
+      // Tira o oldName
+      db[pai].folders = db[pai].folders.filter((f) => f !== oldName);
+      // Coloca o newName
+      if (!db[pai].folders.includes(newName)) {
+        db[pai].folders.push(newName);
+      }
+
+      // Ajustar subcaminhos no DB
+      moverSubcaminhosNoDB(db, origem, destino);
+    } else {
+      // Então é arquivo
+      db[pai].files = db[pai].files.filter((f) => f !== oldName);
+      if (!db[pai].files.includes(newName)) {
+        db[pai].files.push(newName);
+      }
+      // Se tiver metadados, renomeie a chave
+      const meta = db[pai].metadados?.[oldName];
+      if (meta) {
+        db[pai].metadados[newName] = meta;
+        delete db[pai].metadados[oldName];
+      }
+    }
+
+    await salvarDB(db);
+  } else {
+    // PROD => Drive
+    await renomearItemNoDrive(origem, destino);
+
+    const db = await carregarDB();
+    const pai = currentPath;
+    garantirEntradaNoDB(db, pai);
+
+    const isPasta = db[pai].folders.includes(oldName);
+    if (isPasta) {
+      db[pai].folders = db[pai].folders.filter((f) => f !== oldName);
+      if (!db[pai].folders.includes(newName)) {
+        db[pai].folders.push(newName);
+      }
+
+      moverSubcaminhosNoDB(db, origem, destino);
+    } else {
+      db[pai].files = db[pai].files.filter((f) => f !== oldName);
+      if (!db[pai].files.includes(newName)) {
+        db[pai].files.push(newName);
+      }
+      const meta = db[pai].metadados?.[oldName];
+      if (meta) {
+        db[pai].metadados[newName] = meta;
+        delete db[pai].metadados[oldName];
+      }
+    }
+
+    await salvarDB(db);
+  }
+}
+
+// Exporta
 module.exports = {
   listarConteudo,
   criarPasta,
