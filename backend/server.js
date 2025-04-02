@@ -9,9 +9,11 @@ const catalogoRoutes = require("./routes/catalogoRoutes");
 const app = express();
 
 // ✅ ATUALIZE ESTA PARTE:
-app.use(cors({
-  origin: "https://www.dipedra.com.br" // libere seu domínio
-}));
+app.use(
+  cors({
+    origin: ["https://www.dipedra.com.br", "http://localhost:3000"],
+  })
+);
 
 app.use(express.json());
 
