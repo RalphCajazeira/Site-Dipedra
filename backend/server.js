@@ -1,4 +1,3 @@
-// backend/server.js
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
@@ -9,11 +8,10 @@ const catalogoRoutes = require("./routes/catalogoRoutes");
 
 const app = express();
 
-app.use(
-  cors({
-    origin: "https://www.dipedra.com.br",
-  })
-);
+// ✅ ATUALIZE ESTA PARTE:
+app.use(cors({
+  origin: "https://www.dipedra.com.br" // libere seu domínio
+}));
 
 app.use(express.json());
 
