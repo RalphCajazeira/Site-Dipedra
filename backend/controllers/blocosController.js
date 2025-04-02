@@ -52,9 +52,9 @@ async function carregarDB() {
 // -------------------------
 async function salvarDB(db) {
   if (isProduction) {
-    // Salva localmente e envia pro Drive
+    // Opcional salvar local também, se quiser manter histórico
     salvarBlocosLocal(db);
-    await salvarBlocosDBNoDrive();
+    await salvarBlocosDBNoDrive(db); // ✅ passa o banco correto
   } else {
     salvarBlocosLocal(db);
   }
@@ -159,21 +159,17 @@ const salvarImagens = async (folderPath, files, meta = {}) => {
   const compFormatado = formatarMedida(comprimento);
   const largFormatado = formatarMedida(largura);
 
-  // Carregar banco de dados atual
   const db = await carregarDB();
   garantirEntradaNoDB(db, folderPath);
 
-  // Inicializar controle de código se não existir
   if (!db.__ultimoCodigo__) db.__ultimoCodigo__ = 0;
 
   const nomesGerados = [];
 
   for (const file of files) {
-    // Gerar novo código
     db.__ultimoCodigo__++;
     const code = db.__ultimoCodigo__.toString().padStart(4, "0");
 
-    // Construir nome final do arquivo com campos válidos
     const partesNome = [];
     if (nome.trim()) partesNome.push(nome.trim());
     partesNome.push(`${compFormatado}x${largFormatado}`);
@@ -182,17 +178,23 @@ const salvarImagens = async (folderPath, files, meta = {}) => {
 
     const nomeArquivo = partesNome.join(" - ") + ".jpg";
 
-    // Caminho absoluto local (somente em desenvolvimento)
+    let url = "";
+
     if (!isProduction) {
       const destino = path.join(__dirname, "..", "..", folderPath, nomeArquivo);
       fs.mkdirSync(path.dirname(destino), { recursive: true });
       fs.renameSync(file.path, destino);
     } else {
-      // Upload para o Drive com nome final
-      await uploadArquivoParaDrive(file, folderPath, nomeArquivo);
+      const resultado = await uploadArquivoParaDrive(
+        file,
+        folderPath,
+        nomeArquivo
+      );
+      if (resultado?.fileUrl) {
+        url = resultado.fileUrl;
+      }
     }
 
-    // Atualizar banco de dados
     db[folderPath].files.push(nomeArquivo);
     if (!db[folderPath].metadados) db[folderPath].metadados = {};
     db[folderPath].metadados[nomeArquivo] = {
@@ -201,6 +203,7 @@ const salvarImagens = async (folderPath, files, meta = {}) => {
       largura: largFormatado,
       codeInterno: codeInterno.trim(),
       code,
+      url, // ✅ salva a URL pública no banco
     };
 
     nomesGerados.push(nomeArquivo);

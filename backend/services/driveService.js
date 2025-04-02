@@ -1,21 +1,18 @@
-// backend/services/driveService.js
-
 const { google } = require("googleapis");
 const fs = require("fs");
 const path = require("path");
+const stream = require("stream");
 
 const isProduction = process.env.NODE_ENV === "production";
-const GOOGLE_DRIVE_SITE_FOLDER_ID = process.env.GOOGLE_DRIVE_SITE_FOLDER_ID || "";
+const GOOGLE_DRIVE_SITE_FOLDER_ID =
+  process.env.GOOGLE_DRIVE_SITE_FOLDER_ID || "";
 
-// Drive instanciado só em produção
 let drive = null;
 
 if (isProduction) {
   try {
-    const serviceAccount = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
-
     const auth = new google.auth.GoogleAuth({
-      credentials: serviceAccount,
+      keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS,
       scopes: ["https://www.googleapis.com/auth/drive"],
     });
 
@@ -54,8 +51,109 @@ async function getPastaBlocosId() {
 }
 
 // -----------------
-// Baixar blocosDB.json do Drive
+// Criar pasta no Drive
 // -----------------
+async function criarPastaNoDrive(caminhoRelativo) {
+  if (!drive) return null;
+  const partes = caminhoRelativo
+    .replace(/^\/?assets\/blocos\/?/, "")
+    .split("/")
+    .filter(Boolean);
+  let parentId = await getPastaBlocosId();
+  for (const parte of partes) {
+    parentId = await encontrarOuCriarPasta(parte, parentId);
+  }
+  return parentId;
+}
+
+// -----------------
+// Upload arquivo e retornar URL pública
+// -----------------
+async function uploadArquivoParaDrive(file, caminhoRelativo, nomeFinal) {
+  if (!drive) {
+    fs.unlinkSync(file.path);
+    return null;
+  }
+
+  const folderPath = caminhoRelativo
+    .replace(/^\/?assets\/blocos\/?/, "")
+    .split("/")
+    .filter(Boolean);
+
+  let parentId = await getPastaBlocosId();
+  for (const parte of folderPath) {
+    parentId = await encontrarOuCriarPasta(parte, parentId);
+  }
+
+  const res = await drive.files.create({
+    requestBody: {
+      name: nomeFinal,
+      parents: [parentId],
+    },
+    media: {
+      mimeType: file.mimetype,
+      body: fs.createReadStream(file.path),
+    },
+    fields: "id",
+  });
+
+  const fileId = res.data.id;
+
+  // ✅ Torna o arquivo público
+  await drive.permissions.create({
+    fileId,
+    requestBody: {
+      role: "reader",
+      type: "anyone",
+    },
+  });
+
+  // ✅ Usa o domínio googleusercontent.com que funciona em <img>
+  const fileUrl = `https://lh3.googleusercontent.com/d/${fileId}=w1000`;
+
+  fs.unlinkSync(file.path);
+
+  return { fileId, fileUrl };
+}
+
+// -----------------
+// Salvar blocosDB.json no Drive
+// -----------------
+async function salvarBlocosDBNoDrive(dbData = {}) {
+  if (!drive) return;
+
+  const buffer = Buffer.from(JSON.stringify(dbData, null, 2));
+  const bufferStream = new stream.PassThrough();
+  bufferStream.end(buffer);
+
+  const res = await drive.files.list({
+    q: `'${GOOGLE_DRIVE_SITE_FOLDER_ID}' in parents and name='blocosDB.json' and trashed=false`,
+    fields: "files(id)",
+  });
+
+  if (res.data.files.length > 0) {
+    await drive.files.update({
+      fileId: res.data.files[0].id,
+      media: {
+        mimeType: "application/json",
+        body: bufferStream,
+      },
+    });
+  } else {
+    await drive.files.create({
+      requestBody: {
+        name: "blocosDB.json",
+        mimeType: "application/json",
+        parents: [GOOGLE_DRIVE_SITE_FOLDER_ID],
+      },
+      media: {
+        mimeType: "application/json",
+        body: bufferStream,
+      },
+    });
+  }
+}
+
 async function baixarBlocosDB() {
   if (!drive) return;
   const res = await drive.files.list({
@@ -78,54 +176,13 @@ async function baixarBlocosDB() {
   });
 }
 
-// -----------------
-// Salvar blocosDB.json no Drive
-// -----------------
-async function salvarBlocosDBNoDrive() {
-  if (!drive) return;
-  const content = await fs.promises.readFile("blocosDB.json", "utf-8");
-  const res = await drive.files.list({
-    q: `'${GOOGLE_DRIVE_SITE_FOLDER_ID}' in parents and name='blocosDB.json' and trashed=false`,
-    fields: "files(id)",
-  });
-  if (res.data.files.length === 0) {
-    await drive.files.create({
-      requestBody: {
-        name: "blocosDB.json",
-        mimeType: "application/json",
-        parents: [GOOGLE_DRIVE_SITE_FOLDER_ID],
-      },
-      media: {
-        mimeType: "application/json",
-        body: Buffer.from(content),
-      },
-    });
-  } else {
-    const fileId = res.data.files[0].id;
-    await drive.files.update({
-      fileId,
-      media: {
-        mimeType: "application/json",
-        body: Buffer.from(content),
-      },
-    });
-  }
-}
-
-// -----------------
-// Carregar blocosDB.json direto do Drive
-// -----------------
 async function carregarBlocosDBDoDrive() {
-  if (!drive) {
-    return {};
-  }
+  if (!drive) return {};
   const res = await drive.files.list({
     q: `'${GOOGLE_DRIVE_SITE_FOLDER_ID}' in parents and name='blocosDB.json' and trashed=false`,
     fields: "files(id)",
   });
-  if (res.data.files.length === 0) {
-    return {};
-  }
+  if (res.data.files.length === 0) return {};
   const fileId = res.data.files[0].id;
   const response = await drive.files.get(
     { fileId, alt: "media" },
@@ -146,52 +203,18 @@ async function carregarBlocosDBDoDrive() {
 }
 
 // -----------------
-// Criar pasta no Drive
+// Demais funções (renomear, mover, deletar) — mantidas
 // -----------------
-async function criarPastaNoDrive(pathRelativo) {
-  if (!drive) return;
-  const partes = pathRelativo.split("/").filter(Boolean);
-  let parentId = await getPastaBlocosId();
-  for (const parte of partes) {
-    parentId = await encontrarOuCriarPasta(parte, parentId);
-  }
-}
 
-// -----------------
-// Upload arquivo
-// -----------------
-async function uploadArquivoParaDrive(file, pathRelativo, nomeFinal) {
-  if (!drive) {
-    fs.unlinkSync(file.path);
-    return;
-  }
-  const partes = pathRelativo.split("/").filter(Boolean);
-  let parentId = await getPastaBlocosId();
-  for (const parte of partes) {
-    parentId = await encontrarOuCriarPasta(parte, parentId);
-  }
-  await drive.files.create({
-    requestBody: {
-      name: nomeFinal,
-      parents: [parentId],
-    },
-    media: {
-      mimeType: file.mimetype,
-      body: fs.createReadStream(file.path),
-    },
-  });
-  fs.unlinkSync(file.path);
-}
-
-// -----------------
-// Renomear no Drive
-// -----------------
 async function renomearItemNoDrive(origemRel, destinoRel) {
   if (!drive) return;
   const nomeAntigo = path.basename(origemRel);
   const nomeNovo = path.basename(destinoRel);
-  const pastaOrigem = path.dirname(origemRel).split("/").filter(Boolean);
-
+  const pastaOrigem = path
+    .dirname(origemRel)
+    .replace(/^\/?assets\/blocos\/?/, "")
+    .split("/")
+    .filter(Boolean);
   let parentId = await getPastaBlocosId();
   for (const parte of pastaOrigem) {
     parentId = await encontrarOuCriarPasta(parte, parentId);
@@ -201,25 +224,25 @@ async function renomearItemNoDrive(origemRel, destinoRel) {
     fields: "files(id)",
   });
   if (res.data.files.length > 0) {
-    const fileId = res.data.files[0].id;
     await drive.files.update({
-      fileId,
-      requestBody: {
-        name: nomeNovo,
-      },
+      fileId: res.data.files[0].id,
+      requestBody: { name: nomeNovo },
     });
   }
 }
 
-// -----------------
-// Mover no Drive
-// -----------------
 async function moverItemNoDrive(origemRel, destinoRel) {
   if (!drive) return;
   const nome = path.basename(origemRel);
-  const origemPartes = path.dirname(origemRel).split("/").filter(Boolean);
-  const destinoPartes = destinoRel.split("/").filter(Boolean);
-
+  const origemPartes = path
+    .dirname(origemRel)
+    .replace(/^\/?assets\/blocos\/?/, "")
+    .split("/")
+    .filter(Boolean);
+  const destinoPartes = destinoRel
+    .replace(/^\/?assets\/blocos\/?/, "")
+    .split("/")
+    .filter(Boolean);
   let origemId = await getPastaBlocosId();
   for (const parte of origemPartes) {
     origemId = await encontrarOuCriarPasta(parte, origemId);
@@ -242,14 +265,14 @@ async function moverItemNoDrive(origemRel, destinoRel) {
   }
 }
 
-// -----------------
-// Deletar no Drive
-// -----------------
 async function deletarItemNoDrive(caminhoRelativo) {
   if (!drive) return;
   const nome = path.basename(caminhoRelativo);
-  const pastaRelativa = path.dirname(caminhoRelativo).split("/").filter(Boolean);
-
+  const pastaRelativa = path
+    .dirname(caminhoRelativo)
+    .replace(/^\/?assets\/blocos\/?/, "")
+    .split("/")
+    .filter(Boolean);
   let parentId = await getPastaBlocosId();
   for (const parte of pastaRelativa) {
     parentId = await encontrarOuCriarPasta(parte, parentId);
@@ -263,6 +286,15 @@ async function deletarItemNoDrive(caminhoRelativo) {
   }
 }
 
+async function verificarSeBlocosDBExiste() {
+  if (!drive) return false;
+  const res = await drive.files.list({
+    q: `'${GOOGLE_DRIVE_SITE_FOLDER_ID}' in parents and name='blocosDB.json' and trashed=false`,
+    fields: "files(id)",
+  });
+  return res.data.files.length > 0;
+}
+
 module.exports = {
   baixarBlocosDB,
   salvarBlocosDBNoDrive,
@@ -272,4 +304,5 @@ module.exports = {
   renomearItemNoDrive,
   moverItemNoDrive,
   deletarItemNoDrive,
+  verificarSeBlocosDBExiste,
 };

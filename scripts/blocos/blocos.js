@@ -111,7 +111,8 @@ async function loadFolder(path = currentPath) {
 
     if (/\.(jpg|jpeg|png|gif)$/i.test(file)) {
       const img = document.createElement("img");
-      img.src = `${currentPath}/${file}`;
+      const meta = metadadosGlobais[file];
+      img.src = meta?.url || `${currentPath}/${file}`;
       div.prepend(img);
     }
 

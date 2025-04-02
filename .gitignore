@@ -1,4 +1,5 @@
 /backend/node_modules
+/backend/Antigos
 backend/.env
 backend/chaves/drive-key.json
 backend/uploads/

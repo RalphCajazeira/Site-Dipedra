@@ -1,10 +1,35 @@
 {
-  "arquivos": {},
-  "pastas": [],
   "/assets/blocos": {
-    "folders": [],
+    "folders": [
+      "Bando 01"
+    ],
     "files": [],
     "metadados": {}
   },
-  "__ultimoCodigo__": 3
+  "__ultimoCodigo__": 3,
+  "/assets/blocos/Bando 01": {
+    "folders": [],
+    "files": [
+      "Bege Bahia - 3,00x2,00 - 1234 - Id 0002.jpg",
+      "2,00x1,00 - Id 0003.jpg"
+    ],
+    "metadados": {
+      "Bege Bahia - 3,00x2,00 - 1234 - Id 0002.jpg": {
+        "nome": "Bege Bahia",
+        "comprimento": "3,00",
+        "largura": "2,00",
+        "codeInterno": "1234",
+        "code": "0002",
+        "url": "https://lh3.googleusercontent.com/d/1CUuB0zbs0yGEVrSIfuKtSiSSQWaPmQvy=w1000"
+      },
+      "2,00x1,00 - Id 0003.jpg": {
+        "nome": "",
+        "comprimento": "2,00",
+        "largura": "1,00",
+        "codeInterno": "",
+        "code": "0003",
+        "url": "https://lh3.googleusercontent.com/d/1eDfbytG6lUAGHCigQ39x0HkMI9gIv2W7=w1000"
+      }
+    }
+  }
 }
