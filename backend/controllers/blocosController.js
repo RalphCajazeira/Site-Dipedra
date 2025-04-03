@@ -514,6 +514,18 @@ async function renomearPasta(currentPath, oldName, newName) {
   }
 }
 
+// dentro do blocosController.js
+
+async function listarConteudoPublica(req, res) {
+  const path = req.query.path || "/assets/blocos";
+  try {
+    const data = await listarConteudo(path);
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: "Erro ao listar conteúdo" });
+  }
+}
+
 // Exporta
 module.exports = {
   listarConteudo,
@@ -524,4 +536,5 @@ module.exports = {
   carregarDB,
   moverItem,
   renomearPasta,
+  listarConteudoPublica,
 };
