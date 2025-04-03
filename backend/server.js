@@ -1,3 +1,4 @@
+// backend/server.js
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
@@ -10,13 +11,11 @@ const inicializarDriveDB = require("./utils/inicializarDriveDB");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 🔓 Libera CORS totalmente (para testes)
+// 🔓 Libera CORS completamente para testes e produção
 app.use(cors());
-
-// Middleware para JSON
 app.use(express.json());
 
-// Arquivos estáticos
+// Servir arquivos estáticos
 app.use("/assets", express.static(path.join(__dirname, "..", "assets")));
 app.use("/pages", express.static(path.join(__dirname, "..", "pages")));
 app.use("/scripts", express.static(path.join(__dirname, "..", "scripts")));
@@ -25,20 +24,24 @@ app.use(
   express.static(path.join(__dirname, "..", "assets/css"))
 );
 
-// Rotas
+// Rotas da aplicação
 app.use("/api/blocos", blocosRoutes);
 app.use("/api/catalogo", catalogoRoutes);
 
-// Inicializa blocosDB.json
-inicializarDriveDB();
+// Inicia servidor após verificar/baixar blocosDB
+(async () => {
+  try {
+    await inicializarDriveDB();
+    const baseURL =
+      process.env.NODE_ENV === "production"
+        ? "https://site-dipedra-production.up.railway.app"
+        : `http://localhost:${PORT}`;
 
-// ✅ Inicia o servidor corretamente
-app.listen(PORT, () => {
-  const baseURL =
-    process.env.NODE_ENV === "production"
-      ? "https://site-dipedra-production.up.railway.app"
-      : `http://localhost:${PORT}`;
-
-  console.log(`🚀 Backend rodando na porta ${PORT}`);
-  console.log(`🌐 API disponível em: ${baseURL}/api/blocos`);
-});
+    app.listen(PORT, () => {
+      console.log(`🚀 Backend rodando na porta ${PORT}`);
+      console.log(`🌐 API disponível em: ${baseURL}/api/blocos`);
+    });
+  } catch (err) {
+    console.error("❌ Erro ao inicializar o backend:", err.message);
+  }
+})();

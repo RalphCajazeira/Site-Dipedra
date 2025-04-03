@@ -1,44 +1,44 @@
-// backend/server.js
-const express = require("express");
-const cors = require("cors");
+const fs = require("fs");
 const path = require("path");
-require("dotenv").config();
+const {
+  verificarSeBlocosDBExiste,
+  salvarBlocosDBNoDrive,
+  baixarBlocosDB,
+} = require("../services/driveService");
 
-const blocosRoutes = require("./routes/blocosRoutes");
-const catalogoRoutes = require("./routes/catalogoRoutes");
-const inicializarDriveDB = require("./utils/inicializarDriveDB");
+const isProduction = process.env.NODE_ENV === "production";
+const DB_PATH = path.join(__dirname, "..", "blocosDB.json");
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+async function inicializarDriveDB() {
+  try {
+    if (isProduction) {
+      const existeNoDrive = await verificarSeBlocosDBExiste();
 
-// 🔓 Libera CORS completamente para testes
-app.use(cors());
+      if (!existeNoDrive) {
+        console.log("[Init] blocosDB.json NÃO encontrado, criando novo...");
+        await salvarBlocosDBNoDrive({});
+        console.log("[Init] ✅ blocosDB.json criado com sucesso no Drive!");
+      } else {
+        console.log("[Init] ✅ blocosDB.json verificado no Drive.");
+      }
 
-// Permite receber JSON
-app.use(express.json());
+      // Sempre baixa o banco atualizado do Drive
+      await baixarBlocosDB();
+    } else {
+      if (!fs.existsSync(DB_PATH)) {
+        console.log("[Init] blocosDB.json local NÃO encontrado, criando...");
+        fs.writeFileSync(DB_PATH, JSON.stringify({}, null, 2));
+        console.log("[Init] ✅ blocosDB.json criado localmente.");
+      } else {
+        console.log("[Init] ✅ blocosDB.json já existe localmente.");
+      }
+    }
+  } catch (err) {
+    console.error(
+      "[Init] ❌ Erro ao verificar/criar blocosDB.json:",
+      err.message
+    );
+  }
+}
 
-// Servir arquivos estáticos
-app.use("/assets", express.static(path.join(__dirname, "..", "assets")));
-app.use("/pages", express.static(path.join(__dirname, "..", "pages")));
-app.use("/scripts", express.static(path.join(__dirname, "..", "scripts")));
-app.use(
-  "/assets/css",
-  express.static(path.join(__dirname, "..", "assets/css"))
-);
-
-// Rotas
-app.use("/api/blocos", blocosRoutes);
-app.use("/api/catalogo", catalogoRoutes);
-
-// Inicializa banco blocosDB.json no Drive
-inicializarDriveDB().then(() => {
-  const baseURL =
-    process.env.NODE_ENV === "production"
-      ? "https://site-dipedra-production.up.railway.app"
-      : `http://localhost:${PORT}`;
-
-  app.listen(PORT, () => {
-    console.log(`🚀 Backend rodando na porta ${PORT}`);
-    console.log(`🌐 API disponível em: ${baseURL}/api/blocos`);
-  });
-});
+module.exports = inicializarDriveDB;
