@@ -1,6 +1,8 @@
-const API_BASE =
-  location.hostname === "localhost" || location.hostname.startsWith("192.")
-    ? `${location.origin}/api/blocos`
-    : "https://site-dipedra-production.up.railway.app/api/blocos";
+const LOCAL_API = "http://localhost:3000/api/blocos";
+const PROD_API = "https://site-dipedra-production.up.railway.app/api/blocos"; // ✅ atualizado
 
-const SITE_BASE = API_BASE.replace(/\/api\/blocos$/, "");
+let API_BASE = LOCAL_API;
+
+if (window.location.hostname !== "localhost") {
+  API_BASE = PROD_API;
+}

@@ -1,86 +1,69 @@
-// Requer config.js importado antes
+// mover.js
 
-let moverTipo = null;
-let moverNome = null;
-let moverDestinoAtual = "/assets/blocos";
-let todasPastasDisponiveis = [];
+async function carregarPastasDisponiveis(pastaAtual = "/assets/blocos") {
+  const lista = document.getElementById("modal-mover-lista");
+  lista.innerHTML = "";
 
-async function carregarPastasDisponiveis() {
   try {
-    const res = await fetch(`${API_BASE}/db`);
+    const res = await fetch(`/blocos/db`);
     const db = await res.json();
-    todasPastasDisponiveis = db.pastas || [];
-  } catch (error) {
-    console.error("Erro ao carregar pastas disponíveis:", error);
+
+    for (const path in db) {
+      // Só mostra pastas diferentes da atual e visíveis
+      if (path !== pastaAtual && db[path]?.folders !== undefined) {
+        const item = document.createElement("div");
+        item.className = "destino-item";
+        item.textContent = path.replace("/assets/blocos", "") || "/";
+        item.dataset.path = path;
+        item.onclick = () => {
+          document.getElementById("modal-mover-destino").value = path;
+        };
+        lista.appendChild(item);
+      }
+    }
+  } catch (err) {
+    console.error("Erro ao carregar pastas disponíveis:", err);
   }
 }
 
 function abrirModalMover(tipo, nome) {
-  moverTipo = tipo;
-  moverNome = nome;
-  moverDestinoAtual = "/assets/blocos";
   document.getElementById("modal-mover").classList.remove("hidden");
-  carregarPastasDisponiveis().then(renderizarPastasMover);
+  document.getElementById("modal-mover-tipo").value = tipo;
+  document.getElementById("modal-mover-nome").value = nome;
+  document.getElementById("modal-mover-destino").value = "";
+
+  carregarPastasDisponiveis(currentPath);
 }
 
 function fecharModalMover() {
-  moverTipo = null;
-  moverNome = null;
-  moverDestinoAtual = "/assets/blocos";
   document.getElementById("modal-mover").classList.add("hidden");
 }
 
-function renderizarPastasMover() {
-  const container = document.getElementById("mover-pastas");
-  container.innerHTML = "";
+async function moverItemConfirmado() {
+  const tipo = document.getElementById("modal-mover-tipo").value;
+  const nome = document.getElementById("modal-mover-nome").value;
+  const destino = document.getElementById("modal-mover-destino").value;
 
-  const caminhoSpan = document.getElementById("mover-caminho");
-  caminhoSpan.textContent =
-    moverDestinoAtual.replace("/assets/blocos", "") || "/";
-
-  const subpastas = todasPastasDisponiveis
-    .filter((p) => {
-      return (
-        p.startsWith(moverDestinoAtual) &&
-        p !== moverDestinoAtual &&
-        p.replace(moverDestinoAtual + "/", "").indexOf("/") === -1
-      );
-    })
-    .sort();
-
-  for (const pasta of subpastas) {
-    const div = document.createElement("div");
-    div.className = "item mover-item";
-    div.textContent = pasta.replace(moverDestinoAtual + "/", "");
-    div.onclick = () => {
-      moverDestinoAtual = pasta;
-      renderizarPastasMover();
-    };
-    container.appendChild(div);
+  if (!destino || destino === currentPath) {
+    alert("Escolha uma pasta de destino diferente.");
+    return;
   }
+
+  await fetch("/blocos/mover", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      tipo,
+      origem: `${currentPath}/${nome}`,
+      destino,
+    }),
+  });
+
+  fecharModalMover();
+  loadFolder();
 }
 
-async function confirmarMover() {
-  if (!moverTipo || !moverNome || !moverDestinoAtual) return;
-
-  try {
-    await fetch(`${API_BASE}/mover`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        tipo: moverTipo,
-        origem: currentPath + "/" + moverNome,
-        destino: moverDestinoAtual,
-      }),
-    });
-    fecharModalMover();
-    loadFolder();
-  } catch (error) {
-    alert("Erro ao mover item: " + error.message);
-    console.error("Erro ao mover:", error);
-  }
-}
-
-window.addEventListener("DOMContentLoaded", () => {
-  carregarPastasDisponiveis();
-});
+// Vincular eventos (no onload ou onde preferir)
+document.getElementById("modal-mover-cancelar-btn").onclick = fecharModalMover;
+document.getElementById("modal-mover-confirmar-btn").onclick =
+  moverItemConfirmado;

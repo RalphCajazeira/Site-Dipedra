@@ -1,4 +1,32 @@
 {
-  "arquivos": {},
-  "pastas": []
+  "/assets/blocos": {
+    "folders": [
+      "Bando 02",
+      "Bando 03"
+    ],
+    "files": [],
+    "metadados": {}
+  },
+  "__ultimoCodigo__": 5,
+  "/assets/blocos/Bando 02": {
+    "folders": [],
+    "files": [],
+    "metadados": {}
+  },
+  "/assets/blocos/Bando 03": {
+    "folders": [],
+    "files": [
+      "2,00x2,00 - Id 0005.jpg"
+    ],
+    "metadados": {
+      "2,00x2,00 - Id 0005.jpg": {
+        "nome": "Logo",
+        "comprimento": "2,00",
+        "largura": "2,00",
+        "codeInterno": "12345",
+        "code": "0005",
+        "url": ""
+      }
+    }
+  }
 }

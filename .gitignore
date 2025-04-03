@@ -1,7 +1,11 @@
-/backend/node_modules
 backend/.env
 backend/.env.production
+<<<<<<< HEAD
 backend/Antigos
+=======
+/backend/node_modules
+/backend/Antigos
+>>>>>>> a4a05f305e79cc22fe797700d5ea597c847dfc59
 backend/chaves/drive-key.json
 backend/uploads/
 assets/blocos
