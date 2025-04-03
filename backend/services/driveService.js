@@ -12,7 +12,6 @@ let drive = null;
 if (isProduction) {
   try {
     const serviceAccount = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
-
     const auth = new google.auth.GoogleAuth({
       credentials: serviceAccount,
       scopes: ["https://www.googleapis.com/auth/drive"],

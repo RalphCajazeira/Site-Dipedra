@@ -1,5 +1,5 @@
-const LOCAL_API = "http://localhost:3000/blocos";
-const PROD_API = "https://site-dipedra-production.up.railway.app/blocos"; // ✅ certo
+const LOCAL_API = "http://localhost:3000/api/blocos";
+const PROD_API = "https://site-dipedra-production.up.railway.app/api/blocos"; // ✅ atualizado
 
 let API_BASE = LOCAL_API;
 
