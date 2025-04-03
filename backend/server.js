@@ -15,13 +15,14 @@ const PORT = process.env.PORT || 3000;
 const allowedOrigins = [
   "http://localhost:3000",
   "http://127.0.0.1:3000",
-  "https://www.dipedra.com.br",
+  "http://192.168.", // para rede local
+  "https://www.dipedra.com.br", // produção frontend
 ];
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (!origin || allowedOrigins.some((o) => origin.startsWith(o))) {
         return callback(null, true);
       }
       callback(new Error("Not allowed by CORS"));

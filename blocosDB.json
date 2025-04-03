@@ -1,4 +1,14 @@
 {
-  "arquivos": {},
-  "pastas": []
+  "arquivos": {
+    "/assets/blocos/Pasta 01/2x2 - Code 1743691892675.png": {
+      "code": 1743691892675,
+      "nome": "",
+      "comprimento": "2",
+      "largura": "2",
+      "codeInterno": ""
+    }
+  },
+  "pastas": [
+    "/assets/blocos/Pasta 01"
+  ]
 }
