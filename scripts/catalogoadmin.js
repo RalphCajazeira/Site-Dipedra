@@ -1,18 +1,20 @@
+let filteredItems = []; // Itens filtrados
+let isFiltering = false; // Modo de busca ativo
+
 document.addEventListener("DOMContentLoaded", () => {
   const uploadForm = document.getElementById("uploadForm");
   const catalogoGrid = document.getElementById("catalogo-grid");
   const editModal = document.getElementById("editModal");
   const closeModal = document.getElementById("closeModal");
   const editForm = document.getElementById("editForm");
+  const searchInput = document.getElementById("search-input");
 
-  let currentImage = ""; // Guarda a imagem que está sendo editada
+  let currentImage = "";
 
-  // Função para exibir mensagens de erro/alerta
   function showMessage(message, isError = false) {
     alert(isError ? `Erro: ${message}` : message);
   }
 
-  // Função genérica para realizar requisições
   async function fetchData(url, options = {}, retryCount = 3) {
     try {
       const response = await fetch(url, options);
@@ -20,43 +22,31 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!response.ok) throw new Error(data.message || "Erro na requisição");
       return data;
     } catch (error) {
-      console.error(error);
-      if (retryCount > 0) {
-        console.log(
-          `Tentando novamente... (${retryCount} tentativas restantes)`
-        );
-        return fetchData(url, options, retryCount - 1);
-      } else {
-        showMessage(error.message, true);
-        throw error;
-      }
+      if (retryCount > 0) return fetchData(url, options, retryCount - 1);
+      showMessage(error.message, true);
+      throw error;
     }
   }
 
-  // Função para criar elementos HTML dinamicamente
   function createElement(tag, attributes = {}, innerHTML = "") {
-    const element = document.createElement(tag);
-    Object.entries(attributes).forEach(
-      ([key, value]) => (element[key] = value)
-    );
-    element.innerHTML = innerHTML;
-    return element;
+    const el = document.createElement(tag);
+    Object.entries(attributes).forEach(([k, v]) => (el[k] = v));
+    el.innerHTML = innerHTML;
+    return el;
   }
 
-  // Carregar itens do catálogo
   async function loadItems() {
     try {
       const data = await fetchData("../assets/catalogo.json");
-      if (!data || data.length === 0) throw new Error("O catálogo está vazio.");
-
-      catalogoGrid.innerHTML = ""; // Limpa o grid antes de carregar novos itens
-      data.forEach((item) => catalogoGrid.appendChild(createCatalogCard(item)));
-    } catch (error) {
-      console.error("Erro ao carregar o catálogo:", error);
+      if (!data.length) throw new Error("Catálogo vazio.");
+      isFiltering = false;
+      filteredItems = data;
+      displayFilteredItems(filteredItems);
+    } catch (err) {
+      console.error("Erro ao carregar catálogo:", err);
     }
   }
 
-  // Criar card do catálogo
   function createCatalogCard(item) {
     const card = createElement("div", { className: "card" });
 
@@ -65,104 +55,169 @@ document.addEventListener("DOMContentLoaded", () => {
       alt: item.nome,
     });
 
-    const title = createElement("h3", {}, item.nome);
-
     const editButton = createElement(
       "button",
-      { className: "edit-button" },
+      {
+        className: "edit-button",
+        type: "button",
+      },
       "Editar"
     );
-    editButton.onclick = () => openEditModal(item);
+
+    editButton.addEventListener("click", (e) => {
+      e.preventDefault();
+      openEditModal(item);
+    });
 
     const deleteButton = createElement(
       "button",
-      { className: "delete-button" },
+      {
+        className: "delete-button",
+        type: "button",
+      },
       "Apagar"
     );
-    deleteButton.onclick = () => deleteItem(item.imagem);
 
-    card.append(img, title, editButton, deleteButton);
+    deleteButton.addEventListener("click", async (e) => {
+      e.preventDefault();
+      await deleteItem(item.imagem);
+    });
+
+    const actions = createElement("div", { className: "card-actions" });
+    actions.append(deleteButton, editButton);
+
+    const title = createElement("h3", {}, item.nome);
+
+    const info = createElement(
+      "div",
+      { className: "image-info" },
+      `
+      <p><strong>Tipo:</strong> ${item.tipo}</p>
+      <p><strong>Material:</strong> ${item.material}</p>
+      <p><strong>Ambientes:</strong> ${item.ambientes.join(", ")}</p>
+    `
+    );
+
+    card.append(img, actions, title, info);
     return card;
   }
 
-  // Abrir modal de edição
   function openEditModal(item) {
     document.getElementById("editNome").value = item.nome;
     document.getElementById("editTipo").value = item.tipo;
     document.getElementById("editMaterial").value = item.material;
     document.getElementById("editAmbientes").value = item.ambientes.join(", ");
     currentImage = item.imagem;
-
     editModal.style.display = "flex";
   }
 
-  // Fechar modal
   closeModal.addEventListener("click", () => {
     editModal.style.display = "none";
   });
 
-  // Submeter formulário de edição
-  editForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
+  editForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
     const nome = document.getElementById("editNome").value;
     const tipo = document.getElementById("editTipo").value;
     const material = document.getElementById("editMaterial").value;
     const ambientes = document.getElementById("editAmbientes").value;
 
     try {
-      const url = `http://127.0.0.1:3000/catalogo/edit/${currentImage}`;
-      const options = {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nome, tipo, material, ambientes }),
-      };
+      const result = await fetchData(
+        `http://127.0.0.1:3000/catalogo/edit/${currentImage}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nome, tipo, material, ambientes }),
+        }
+      );
 
-      const result = await fetchData(url, options);
       showMessage(result.message);
       editModal.style.display = "none";
-      await loadItems();
-    } catch (error) {
-      console.error("Erro ao editar item:", error);
+
+      // Atualiza localmente o item editado
+      filteredItems = filteredItems.map((item) =>
+        item.imagem === currentImage
+          ? {
+              ...item,
+              nome,
+              tipo,
+              material,
+              ambientes: ambientes.split(",").map((a) => a.trim()),
+            }
+          : item
+      );
+      displayFilteredItems(filteredItems);
+    } catch (err) {
+      console.error("Erro ao editar item:", err);
     }
   });
 
-  // Submeter formulário de upload
-  if (uploadForm) {
-    uploadForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const formData = new FormData(uploadForm);
+  async function deleteItem(imagem) {
+    if (!confirm("Deseja realmente apagar este item?")) return;
+    try {
+      const result = await fetchData(
+        `http://127.0.0.1:3000/catalogo/delete/${imagem}`,
+        {
+          method: "DELETE",
+        }
+      );
+      showMessage(result.message);
+      filteredItems = filteredItems.filter((item) => item.imagem !== imagem);
+      displayFilteredItems(filteredItems);
+    } catch (err) {
+      console.error("Erro ao apagar item:", err);
+    }
+  }
 
+  function displayFilteredItems(items) {
+    catalogoGrid.innerHTML = items.length
+      ? ""
+      : "<p>Nenhum resultado encontrado.</p>";
+
+    items.forEach((item) => catalogoGrid.appendChild(createCatalogCard(item)));
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener("input", async (e) => {
+      const query = e.target.value.trim().toLowerCase();
+      isFiltering = !!query;
       try {
-        const url = "http://127.0.0.1:3000/catalogo/upload";
-        const options = { method: "POST", body: formData };
-
-        const result = await fetchData(url, options);
-        showMessage(result.message);
-        uploadForm.reset();
-        await loadItems();
-      } catch (error) {
-        console.error("Erro ao enviar formulário:", error);
+        const data = await fetchData("../assets/catalogo.json");
+        const filtered = data.filter((item) => {
+          const fullText = `${item.nome} ${item.tipo} ${
+            item.material
+          } ${item.ambientes.join(" ")}`.toLowerCase();
+          return query.split(" ").every((term) => fullText.includes(term));
+        });
+        filteredItems = filtered;
+        displayFilteredItems(filtered);
+      } catch (err) {
+        console.error("Erro ao filtrar catálogo:", err);
       }
     });
   }
 
-  // Apagar item
-  async function deleteItem(image) {
-    if (!confirm("Deseja realmente apagar este item?")) return;
-
-    try {
-      const url = `http://127.0.0.1:3000/catalogo/delete/${image}`;
-      const options = { method: "DELETE" };
-
-      const result = await fetchData(url, options);
-      showMessage(result.message);
-      await loadItems();
-    } catch (error) {
-      console.error("Erro ao apagar item:", error);
-    }
+  if (uploadForm) {
+    uploadForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(uploadForm);
+      try {
+        const result = await fetchData(
+          "http://127.0.0.1:3000/catalogo/upload",
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+        showMessage(result.message);
+        uploadForm.reset();
+        await loadItems();
+      } catch (err) {
+        console.error("Erro ao enviar imagem:", err);
+      }
+    });
   }
 
-  // Inicializa o carregamento dos itens
   loadItems();
 });
