@@ -84,8 +84,13 @@ document.addEventListener("DOMContentLoaded", () => {
       catalogoGrid.appendChild(imgWrapper);
     });
 
-    catalogoGrid.appendChild(
-      createBackButton(() => displayFilterItems(filterType))
+    const bottomContainer = document.getElementById("catalogo-bottom");
+    bottomContainer.innerHTML = ""; // limpa caso já exista botão anterior
+    bottomContainer.appendChild(
+      createBackButton(() => {
+        displayFilterItems(filterType);
+        bottomContainer.innerHTML = ""; // limpa botão ao voltar
+      })
     );
   }
 

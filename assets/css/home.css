@@ -60,17 +60,42 @@
 /* Estilos da seção Contacts (incorporando contacts.css) */
 
 #contacts {
+  width: 100%;
+  background-color: var(--color-background);
+  color: var(--color-text-dark);
+  padding-block: var(--spacing-4);
+}
+
+#contacts .contacts-wrapper {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-3);
-  align-items: center;
-  background-color: var(--color-background);
-  color: var(--color-text-dark);
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: var(--spacing-3);
 }
 
-.address,
-.phone {
+#contacts .address {
+  order: 1;
   text-align: center;
+}
+
+#contacts .phone {
+  order: 2;
+  text-align: center;
+}
+
+#contacts .social-media {
+  order: 3;
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-3);
+}
+
+.social-media img {
+  width: 2rem;
+  height: 2rem;
 }
 
 .title {
@@ -78,16 +103,6 @@
   justify-content: center;
   gap: var(--spacing-2);
   color: var(--color-primary);
-}
-
-.social-media {
-  display: flex;
-  gap: var(--spacing-3);
-}
-
-.social-media img {
-  width: 2rem;
-  height: 2rem;
 }
 
 /* Estilos da seção Maps (incorporando maps.css) */
@@ -116,4 +131,35 @@
   width: 100%;
   height: 20rem;
   border: 0;
+}
+
+/* Layout para telas maiores */
+
+@media (min-width: 768px) {
+  #contacts .contacts-wrapper {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  #contacts .address,
+  #contacts .phone,
+  #contacts .social-media {
+    flex: 1;
+  }
+
+  #contacts .address {
+    order: 1;
+    text-align: left;
+  }
+
+  #contacts .social-media {
+    order: 2;
+    justify-content: center;
+    text-align: center;
+  }
+
+  #contacts .phone {
+    order: 3;
+    text-align: right;
+  }
 }

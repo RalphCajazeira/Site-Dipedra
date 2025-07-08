@@ -73,28 +73,16 @@ footer {
 }
 
 @media (min-width: 480px) {
-  #contacts {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    place-items: center;
-    margin-top: 1rem;
-    margin-inline: 5rem;
+  #contacts .address {
+    text-align: left;
+  }
 
-    & > div {
-      width: 100%;
-    }
+  #contacts .social-media {
+    justify-content: center;
+    align-items: center;
+  }
 
-    & .address {
-      justify-items: start;
-      text-align: left;
-    }
-    & .social-media {
-      justify-content: center;
-    }
-
-    & .phone {
-      justify-items: end;
-      text-align: right;
-    }
+  #contacts .phone {
+    text-align: right;
   }
 }
