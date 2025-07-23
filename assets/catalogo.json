@@ -622,5 +622,41 @@
     "ambientes": [
       "Banheiro"
     ]
+  },
+  {
+    "imagem": "chapa---quartzito---tesla-green---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Quartzito",
+    "material": "Tesla Green",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "bancada---quartzito---tesla-green---banheiro---1.jpg",
+    "nome": "Bancada",
+    "tipo": "Quartzito",
+    "material": "Tesla Green",
+    "ambientes": [
+      "Banheiro"
+    ]
+  },
+  {
+    "imagem": "bancada---quartzito---tesla-green---banheiro---2.jpg",
+    "nome": "Bancada",
+    "tipo": "Quartzito",
+    "material": "Tesla Green",
+    "ambientes": [
+      "Banheiro"
+    ]
+  },
+  {
+    "imagem": "bancada---quartzito---tesla-green---banheiro---3.jpg",
+    "nome": "Bancada",
+    "tipo": "Quartzito",
+    "material": "Tesla Green",
+    "ambientes": [
+      "Banheiro"
+    ]
   }
 ]
