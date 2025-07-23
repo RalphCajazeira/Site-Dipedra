@@ -681,7 +681,7 @@
     "imagem": "bancada---pietra-marrom-imperial---granito----lavabo---1.jpg",
     "nome": "Bancada",
     "tipo": "Granito",
-    "material": "Pietra Marrom Imperial",
+    "material": "Pietra Imperiale",
     "ambientes": [
       "Lavabo"
     ]
@@ -690,9 +690,18 @@
     "imagem": "bancada---pietra-marrom-imperial---granito----lavabo---2.jpg",
     "nome": "Bancada",
     "tipo": "Granito",
-    "material": "Pietra Marrom Imperial",
+    "material": "Pietra Imperiale",
     "ambientes": [
       "Lavabo"
+    ]
+  },
+  {
+    "imagem": "chapa---granito---pietra-imperiale---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Granito",
+    "material": "Pietra Imperiale",
+    "ambientes": [
+      "Chapas"
     ]
   }
 ]
