@@ -131,7 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const matches = terms.every((term) => searchData.includes(term));
 
       if (matches) {
-        if (item.nome === "Chapas") {
+        if (item.ambientes.includes("Chapas")) {
           chapas.push(item);
         } else {
           outros.push(item);
