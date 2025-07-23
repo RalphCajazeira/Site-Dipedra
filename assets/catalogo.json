@@ -658,5 +658,32 @@
     "ambientes": [
       "Banheiro"
     ]
+  },
+  {
+    "imagem": "chapa---dolomítico----nero-nacional---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Dolomítico",
+    "material": "Nero Nacional",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---quartzito---tesla-green---chapas---2.jpg",
+    "nome": "Chapa",
+    "tipo": "Quartzito",
+    "material": "Tesla Green",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---quartzito---tesla-green---chapas---3.jpg",
+    "nome": "Chapa",
+    "tipo": "Quartzito",
+    "material": "Tesla Green",
+    "ambientes": [
+      "Chapas"
+    ]
   }
 ]

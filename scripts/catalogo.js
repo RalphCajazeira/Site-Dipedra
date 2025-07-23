@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
     nome: new Map(),
     tipo: new Map(),
     material: new Map(),
+    chapas: new Map(),
   };
 
   // Função para carregar dados do catálogo
@@ -42,6 +43,16 @@ document.addEventListener("DOMContentLoaded", () => {
   function populateFilterMaps() {
     allItems.forEach((item) => {
       Object.keys(filterMaps).forEach((key) => {
+        if (key === "chapas") {
+          if (item.ambientes.includes("Chapas")) {
+            if (!filterMaps.chapas.has("Chapas")) {
+              filterMaps.chapas.set("Chapas", []);
+            }
+            filterMaps.chapas.get("Chapas").push(item);
+          }
+          return;
+        }
+
         const values = Array.isArray(item[key]) ? item[key] : [item[key]];
         values.forEach((value) => {
           if (!filterMaps[key].has(value)) {
@@ -76,7 +87,19 @@ document.addEventListener("DOMContentLoaded", () => {
   // Função para exibir imagens por grupo
   function displayImagesByGroup(filterType, group) {
     const filterMap = filterMaps[filterType] || filterMaps.ambientes;
-    filteredItems = filterMap.get(group) || [];
+    let items = filterMap.get(group) || [];
+
+    // Se for o filtro de chapas, ordenar por material
+    if (filterType === "chapas") {
+      items.sort((a, b) => a.material.localeCompare(b.material));
+    } else {
+      // Para qualquer outro filtro, ordenar para mostrar as Chapas primeiro
+      const chapas = items.filter((item) => item.nome === "Chapa");
+      const outros = items.filter((item) => item.nome !== "Chapa");
+      items = [...chapas, ...outros];
+    }
+
+    filteredItems = items;
     catalogoGrid.innerHTML = "";
 
     filteredItems.forEach((item, index) => {
@@ -85,11 +108,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     const bottomContainer = document.getElementById("catalogo-bottom");
-    bottomContainer.innerHTML = ""; // limpa caso já exista botão anterior
+    bottomContainer.innerHTML = "";
     bottomContainer.appendChild(
       createBackButton(() => {
         displayFilterItems(filterType);
-        bottomContainer.innerHTML = ""; // limpa botão ao voltar
+        bottomContainer.innerHTML = "";
       })
     );
   }
@@ -98,13 +121,25 @@ document.addEventListener("DOMContentLoaded", () => {
   function filterItems(query) {
     const terms = query.toLowerCase().split(" ").filter(Boolean);
 
-    filteredItems = allItems.filter((item) => {
+    const chapas = [];
+    const outros = [];
+
+    allItems.forEach((item) => {
       const searchData = `${item.nome} ${item.tipo} ${
         item.material
       } ${item.ambientes.join(" ")}`.toLowerCase();
-      return terms.every((term) => searchData.includes(term));
+      const matches = terms.every((term) => searchData.includes(term));
+
+      if (matches) {
+        if (item.nome === "Chapas") {
+          chapas.push(item);
+        } else {
+          outros.push(item);
+        }
+      }
     });
 
+    filteredItems = [...chapas, ...outros];
     displayFilteredItems(filteredItems);
   }
 
