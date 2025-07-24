@@ -147,7 +147,7 @@
     "imagem": "bancada-ilha---granito---verde-guatemala---cozinha---1.jpg",
     "nome": "Bancada Ilha",
     "tipo": "Granito",
-    "material": "Verde Guatemala",
+    "material": "Verde Guatemala Polido",
     "ambientes": [
       "Cozinha"
     ]
@@ -156,7 +156,7 @@
     "imagem": "bancada-ilha---granito---verde-guatemala---cozinha---2.jpg",
     "nome": "Bancada Ilha",
     "tipo": "Granito",
-    "material": "Verde Guatemala",
+    "material": "Verde Guatemala Polido",
     "ambientes": [
       "Cozinha"
     ]
@@ -165,7 +165,7 @@
     "imagem": "balcão---quartzito---quartzito-baccarat---cozinha---1.jpg",
     "nome": "Balcão",
     "tipo": "Quartzito",
-    "material": "Quartzito Baccarat",
+    "material": "Baccarat",
     "ambientes": [
       "Cozinha"
     ]
@@ -636,7 +636,7 @@
     "imagem": "bancada---quartzito---tesla-green---banheiro---1.jpg",
     "nome": "Bancada",
     "tipo": "Quartzito",
-    "material": "Tesla Green",
+    "material": "Tesla Green Polido",
     "ambientes": [
       "Banheiro"
     ]
@@ -645,7 +645,7 @@
     "imagem": "bancada---quartzito---tesla-green---banheiro---2.jpg",
     "nome": "Bancada",
     "tipo": "Quartzito",
-    "material": "Tesla Green",
+    "material": "Tesla Green Polido",
     "ambientes": [
       "Banheiro"
     ]
@@ -654,7 +654,7 @@
     "imagem": "bancada---quartzito---tesla-green---banheiro---3.jpg",
     "nome": "Bancada",
     "tipo": "Quartzito",
-    "material": "Tesla Green",
+    "material": "Tesla Green Polido",
     "ambientes": [
       "Banheiro"
     ]
@@ -663,7 +663,7 @@
     "imagem": "chapa---quartzito---tesla-green---chapas---3.jpg",
     "nome": "Chapa",
     "tipo": "Quartzito",
-    "material": "Tesla Green",
+    "material": "Tesla Green Polido",
     "ambientes": [
       "Chapas"
     ]
@@ -681,7 +681,7 @@
     "imagem": "bancada---pietra-marrom-imperial---granito----lavabo---1.jpg",
     "nome": "Bancada",
     "tipo": "Granito",
-    "material": "Pietra Imperiale",
+    "material": "Pietra Imperiale Marrom Polido",
     "ambientes": [
       "Lavabo"
     ]
@@ -690,7 +690,7 @@
     "imagem": "bancada---pietra-marrom-imperial---granito----lavabo---2.jpg",
     "nome": "Bancada",
     "tipo": "Granito",
-    "material": "Pietra Imperiale",
+    "material": "Pietra Imperiale Marrom Polido",
     "ambientes": [
       "Lavabo"
     ]
@@ -699,7 +699,70 @@
     "imagem": "chapa---granito---pietra-imperiale---chapas---1.jpg",
     "nome": "Chapa",
     "tipo": "Granito",
-    "material": "Pietra Imperiale",
+    "material": "Pietra Imperiale Marrom Polido",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---quartzito---invictus-white-polido---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Quartzito",
+    "material": "Invictus White Polido",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---quartzito---mont-blanc-polido---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Quartzito",
+    "material": "Mont Blanc Polido",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---granito---branco-cotton-polido---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Granito",
+    "material": "Branco Cotton Polido",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---quartzito---patagônia-green-polido---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Quartzito",
+    "material": "Patagônia Green Polido",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---quartzito---taj-mahal-perla-white-polido---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Quartzito",
+    "material": "Taj Mahal Perla White Polido",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---quartzito---olympia-polido---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Quartzito",
+    "material": "Olympia Polido",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---mármore---calcita-extra-polido---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Mármore",
+    "material": "Calcita Extra Polido",
     "ambientes": [
       "Chapas"
     ]
