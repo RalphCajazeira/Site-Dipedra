@@ -7,8 +7,20 @@
       return configured.replace(/\/$/, "");
     }
 
-    if (window.location.origin && window.location.origin !== "null") {
-      return `${window.location.origin.replace(/\/$/, "")}/api`;
+    if (window.location && window.location.origin && window.location.origin !== "null") {
+      const origin = window.location.origin.replace(/\/$/, "");
+      const hostname = window.location.hostname;
+      const port = window.location.port;
+
+      const isLocalHost = ["localhost", "127.0.0.1", "[::1]"].includes(hostname);
+
+      if (!isLocalHost) {
+        return `${origin}/api`;
+      }
+
+      if (!port || port === "3000") {
+        return `${origin}/api`;
+      }
     }
 
     return "http://localhost:3000/api";
