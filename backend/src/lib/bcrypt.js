@@ -24,17 +24,27 @@ function parseHash(storedHash) {
   }
 
   const [, params, saltB64, keyB64] = storedHash.split("$");
-  const [cost, blockSize, parallelization, keyLength] = params
-    .split(":")
-    .map((value) => Number(value));
+
+  const [costRaw, blockSizeRaw, parallelizationRaw, keyLengthRaw] = params.split(":");
+
+  const salt = decode(saltB64);
+  const key = decode(keyB64);
+
+  const cost = Number(costRaw) || COST;
+  const blockSize = Number(blockSizeRaw) || BLOCK_SIZE;
+  const parallelization = Number(parallelizationRaw) || PARALLELIZATION;
+  const parsedKeyLength = Number(keyLengthRaw);
+  const keyLength = Number.isFinite(parsedKeyLength) && parsedKeyLength > 0
+    ? parsedKeyLength
+    : key.length;
 
   return {
     cost,
     blockSize,
     parallelization,
     keyLength,
-    salt: decode(saltB64),
-    key: decode(keyB64),
+    salt,
+    key,
   };
 }
 
