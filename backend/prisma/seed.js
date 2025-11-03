@@ -1,7 +1,10 @@
 const fs = require("fs");
 const path = require("path");
 const { prisma } = require("../src/lib/prisma-client");
-const { normalizeAmbientes } = require("../src/utils/ambientes");
+const {
+  normalizeAmbientes,
+  serializeAmbientes,
+} = require("../src/utils/ambientes");
 
 async function seedCatalog() {
   const catalogPath = path.join(__dirname, "..", "..", "assets", "catalogo.json");
@@ -16,6 +19,7 @@ async function seedCatalog() {
 
   for (const item of items) {
     const ambientes = normalizeAmbientes(item.ambientes);
+    const storedAmbientes = serializeAmbientes(ambientes);
 
     await prisma.catalogItem.upsert({
       where: { image: item.imagem },
@@ -24,13 +28,13 @@ async function seedCatalog() {
         name: item.nome,
         type: item.tipo || null,
         material: item.material || null,
-        ambientes,
+        ambientes: storedAmbientes,
       },
       update: {
         name: item.nome,
         type: item.tipo || null,
         material: item.material || null,
-        ambientes,
+        ambientes: storedAmbientes,
       },
     });
   }

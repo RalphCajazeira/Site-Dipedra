@@ -1,5 +1,9 @@
 require("../config/register-alias");
 const { PrismaClientKnownRequestError } = require("@prisma/client/runtime/library");
+const {
+  serializeAmbientes,
+  parseStoredAmbientes,
+} = require("@/utils/ambientes");
 const { prisma } = require("@/lib/prisma-client");
 
 function mapCatalogItem(entity) {
@@ -13,7 +17,7 @@ function mapCatalogItem(entity) {
     nome: entity.name,
     tipo: entity.type,
     material: entity.material,
-    ambientes: entity.ambientes,
+    ambientes: parseStoredAmbientes(entity.ambientes),
     createdAt: entity.createdAt,
     updatedAt: entity.updatedAt,
   };
@@ -27,7 +31,7 @@ async function create(item) {
         name: item.nome,
         type: item.tipo,
         material: item.material,
-        ambientes: item.ambientes,
+        ambientes: serializeAmbientes(item.ambientes),
       },
     });
 
@@ -51,7 +55,7 @@ async function update(image, item) {
       name: item.nome,
       type: item.tipo,
       material: item.material,
-      ambientes: item.ambientes,
+      ambientes: serializeAmbientes(item.ambientes),
     },
   });
 
