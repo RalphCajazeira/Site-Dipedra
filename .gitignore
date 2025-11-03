@@ -3,4 +3,5 @@ backend/.env
 backend/.env.production
 backend/chaves/drive-key.json
 backend/uploads/
-assets/blocos
+backend/var/
+backend/prisma/dev.db
