@@ -17,6 +17,85 @@ const {
 const router = express.Router();
 const upload = multer({ dest: "uploads/" });
 
+function normalizeRelativePath(rawPath = "") {
+  const sanitized = rawPath.toString();
+  const normalized = path.posix
+    .normalize(sanitized)
+    .replace(/^\/+/, "")
+    .replace(/\/+$/, "");
+
+  const cleaned = normalized === "." ? "" : normalized;
+  const withoutTraversal = cleaned.replace(/^(\.\.\/+)+/, "");
+  return withoutTraversal;
+}
+
+async function syncDriveRename({ currentPath, oldName, newName, driveFns }) {
+  const services =
+    driveFns || require("../services/driveService");
+
+  const {
+    getDriveFolderId,
+    listDriveFilesInFolder,
+    moveFileOrFolder,
+    createFolder,
+    deleteFileOrFolder,
+    DRIVE_FOLDER_NOT_FOUND,
+  } = services;
+
+  const parentPath = currentPath
+    ? path.posix.join(currentPath, "")
+    : "";
+
+  const parentFolderId = await getDriveFolderId(parentPath, {
+    createIfMissing: true,
+  });
+
+  let oldFolderId;
+  try {
+    oldFolderId = await getDriveFolderId(
+      path.posix.join(parentPath, oldName)
+    );
+  } catch (error) {
+    if (error && error.code === DRIVE_FOLDER_NOT_FOUND) {
+      console.warn(
+        `⚠️ Pasta "${oldName}" não encontrada no Drive para sincronizar renomeação.`
+      );
+      return { skipped: true };
+    }
+    throw error;
+  }
+
+  let newFolderId;
+  try {
+    newFolderId = await getDriveFolderId(
+      path.posix.join(parentPath, newName)
+    );
+  } catch (error) {
+    if (error && error.code === DRIVE_FOLDER_NOT_FOUND) {
+      const criada = await createFolder(newName, parentFolderId);
+      newFolderId = criada?.id || criada;
+    } else {
+      throw error;
+    }
+  }
+
+  const itens = await listDriveFilesInFolder(oldFolderId);
+  let movedCount = 0;
+  for (const item of itens) {
+    await moveFileOrFolder(item.id, newFolderId);
+    movedCount += 1;
+  }
+
+  await deleteFileOrFolder(oldFolderId);
+
+  return {
+    parentFolderId,
+    oldFolderId,
+    newFolderId,
+    movedCount,
+  };
+}
+
 // ↓↓↓ GET arquivos + metadados por pasta
 router.get("/", (req, res) => {
   const dirPath = req.query.path || "assets/blocos";
@@ -100,20 +179,47 @@ router.delete("/delete", (req, res) => {
 // ↓↓↓ Renomear pasta
 // Renomear pasta (modo local ou produção)
 router.put("/rename", async (req, res) => {
-  const { path: currentPath, oldName, newName } = req.body;
+  const { path: currentPath = "", oldName, newName } = req.body;
+
+  if (!oldName || !newName) {
+    return res
+      .status(400)
+      .json({ error: "Parâmetros oldName e newName são obrigatórios." });
+  }
+
+  if (oldName === newName) {
+    return res.sendStatus(200);
+  }
 
   try {
-    const fullOldPath = path.join(__dirname, "../../", currentPath, oldName);
-    const fullNewPath = path.join(__dirname, "../../", currentPath, newName);
+    const sanitizedCurrentPath = normalizeRelativePath(currentPath);
+    const relOld = normalizeRelativePath(
+      path.posix.join(sanitizedCurrentPath, oldName)
+    );
+    const relNew = normalizeRelativePath(
+      path.posix.join(sanitizedCurrentPath, newName)
+    );
 
-    const relOld = path.join(currentPath, oldName).replace(/\\/g, "/");
-    const relNew = path.join(currentPath, newName).replace(/\\/g, "/");
+    const fullOldPath = path.resolve(
+      __dirname,
+      "../../",
+      relOld
+    );
+    const fullNewPath = path.resolve(
+      __dirname,
+      "../../",
+      relNew
+    );
 
     const db = carregarDB();
 
     // 1. Renomear fisicamente (local)
     if (fs.existsSync(fullOldPath)) {
       await fs.promises.rename(fullOldPath, fullNewPath);
+    } else {
+      console.warn(
+        `⚠️ Caminho local "${fullOldPath}" não encontrado para renomear.`
+      );
     }
 
     // 2. Atualizar caminhos no banco
@@ -136,31 +242,12 @@ router.put("/rename", async (req, res) => {
 
     salvarDB(db);
 
-    // Se estiver em produção, movimenta também no Drive
     if (process.env.NODE_ENV === "production") {
-      const {
-        getDriveFolderId,
-        moveFileOrFolder,
-        listDriveFilesInFolder,
-      } = require("../services/driveService");
-
-      const blocosFolderId = await getDriveFolderId("blocos");
-      const subpastas = await listDriveFilesInFolder(blocosFolderId);
-
-      const antiga = subpastas.find((p) => p.name === oldName);
-      if (!antiga) return res.sendStatus(200); // nada a mover
-
-      // Cria nova pasta
-      const novaId = await createFolder(newName, blocosFolderId);
-
-      // Move arquivos
-      const arquivosNaPasta = await listDriveFilesInFolder(antiga.id);
-      for (const arquivo of arquivosNaPasta) {
-        await moveFileOrFolder(arquivo.id, novaId);
-      }
-
-      // Remove pasta antiga (opcional)
-      await drive.files.delete({ fileId: antiga.id });
+      await syncDriveRename({
+        currentPath: sanitizedCurrentPath,
+        oldName,
+        newName,
+      });
     }
 
     res.sendStatus(200);
@@ -192,3 +279,4 @@ router.get("/db", (req, res) => {
 });
 
 module.exports = router;
+module.exports.syncDriveRename = syncDriveRename;
