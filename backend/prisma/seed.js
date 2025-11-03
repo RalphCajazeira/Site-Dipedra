@@ -5,6 +5,8 @@ const {
   normalizeAmbientes,
   serializeAmbientes,
 } = require("../src/utils/ambientes");
+const bcrypt = require("../src/lib/bcrypt");
+const userRepository = require("../src/repositories/user-repository");
 
 async function seedCatalog() {
   const catalogPath = path.join(__dirname, "..", "..", "assets", "catalogo.json");
@@ -42,9 +44,36 @@ async function seedCatalog() {
   console.log(`✅ ${items.length} registros importados para ${process.env.DATABASE_URL}.`);
 }
 
+async function seedUsers() {
+  const seeds = [
+    {
+      username: "master",
+      password: "master",
+      role: "master",
+    },
+    {
+      username: "user",
+      password: "user",
+      role: "user",
+    },
+  ];
+
+  for (const seed of seeds) {
+    const passwordHash = await bcrypt.hash(seed.password);
+    await userRepository.upsertUser({
+      username: seed.username,
+      passwordHash,
+      role: seed.role,
+    });
+  }
+
+  console.log("✅ Usuários administrativos sincronizados.");
+}
+
 async function main() {
   try {
     await seedCatalog();
+    await seedUsers();
   } finally {
     await prisma.$disconnect();
   }

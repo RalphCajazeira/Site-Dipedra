@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Área Restrita - Dipedra</title>
+    <link rel="stylesheet" href="../assets/css/login.css" />
+    <link rel="icon" href="../assets/images/favicon.ico" type="image/x-icon" />
+  </head>
+  <body>
+    <div class="page-container">
+      <header class="site-header">
+        <div class="header-main container pady-1">
+          <a class="header-logo" href="../index.html">
+            <img src="../assets/images/Logo Dipedra SVG.png" alt="Logo Dipedra" />
+          </a>
+          <nav class="header-menu">
+            <a href="../index.html">Home</a>
+            <a href="catalogo.html">Catálogo</a>
+            <a href="budget.html">Orçamento</a>
+            <a href="about.html">Sobre Nós</a>
+          </nav>
+          <div class="header-actions">
+            <a class="login-link" href="login.html" aria-label="Área restrita">
+              <img src="../assets/icons/user-circle.svg" alt="" aria-hidden="true" />
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <main class="main-login">
+        <section class="login-card">
+          <h1>Acesso administrativo</h1>
+          <form id="login-form">
+            <label for="username">
+              Usuário
+              <input type="text" id="username" name="username" autocomplete="username" required />
+            </label>
+            <label for="password">
+              Senha
+              <input type="password" id="password" name="password" autocomplete="current-password" required />
+            </label>
+            <button type="submit">Entrar</button>
+          </form>
+          <p id="login-feedback" class="login-feedback"></p>
+          <div class="link">
+            <a href="catalogo.html">Voltar ao catálogo</a>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <p>&copy; 2024 Dipedra</p>
+      </footer>
+    </div>
+
+    <script src="../scripts/app-api.js"></script>
+    <script src="../scripts/login.js"></script>
+  </body>
+</html>

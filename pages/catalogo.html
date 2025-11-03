@@ -11,15 +11,22 @@
   <body>
     <div class="page-container">
       <!-- Cabeçalho direto, sem carregamento dinâmico -->
-      <header>
-        <div class="header-main container pady-1 flex-col align-center gap-1">
-          <img src="../assets/images/Logo Dipedra SVG.png" alt="Logo Dipedra" />
-          <ul class="menu">
+      <header class="site-header">
+        <div class="header-main container pady-1">
+          <a class="header-logo" href="../index.html">
+            <img src="../assets/images/Logo Dipedra SVG.png" alt="Logo Dipedra" />
+          </a>
+          <nav class="header-menu">
             <a href="../index.html">Home</a>
             <a href="catalogo.html">Catálogo</a>
             <a href="budget.html">Orçamento</a>
             <a href="about.html">Sobre Nós</a>
-          </ul>
+          </nav>
+          <div class="header-actions">
+            <a class="login-link" href="login.html" aria-label="Acessar área restrita">
+              <img src="../assets/icons/user-circle.svg" alt="" aria-hidden="true" />
+            </a>
+          </div>
         </div>
       </header>
 
@@ -44,6 +51,41 @@
             style="cursor: pointer"
           />
         </div>
+      </section>
+
+      <!-- Painel administrativo -->
+      <section id="admin-panel" class="admin-panel" hidden>
+        <div class="admin-toolbar">
+          <div>
+            <h2>Gerenciamento do catálogo</h2>
+            <p class="admin-hint">
+              Utilize o formulário para adicionar novos materiais e os botões de cada item para editar ou remover.
+            </p>
+          </div>
+          <div class="admin-toolbar-actions">
+            <button type="button" id="toggle-upload">Adicionar imagens</button>
+            <button type="button" id="logout-button">Sair</button>
+          </div>
+        </div>
+        <form
+          id="upload-form"
+          class="admin-form"
+          hidden
+          enctype="multipart/form-data"
+        >
+          <input type="text" name="nome" id="upload-nome" placeholder="Nome do produto" required />
+          <input type="text" name="tipo" id="upload-tipo" placeholder="Tipo" />
+          <input type="text" name="material" id="upload-material" placeholder="Material" />
+          <input
+            type="text"
+            name="ambientes"
+            id="upload-ambientes"
+            placeholder="Ambientes (separados por vírgula)"
+          />
+          <input type="file" name="images" id="upload-imagens" accept="image/*" multiple required />
+          <p class="admin-hint">Envie até 10 imagens por vez.</p>
+          <button type="submit">Salvar imagens</button>
+        </form>
       </section>
 
       <!-- Filtro -->
@@ -82,12 +124,12 @@
       </section>
 
       <!-- Grid de Imagens -->
-      <section id="catalogo-grid" class="grid-container">
-        <!-- As imagens serão geradas dinamicamente aqui pelo JavaScript -->
+      <section>
+        <div id="catalogo-grid" class="grid-container">
+          <!-- As imagens serão geradas dinamicamente aqui pelo JavaScript -->
+        </div>
       </section>
 
-      <!-- Aqui ficará o botão -->
-      <div id="catalogo-grid"></div>
       <div id="catalogo-bottom"></div>
 
       <!-- Rodapé direto, sem carregamento dinâmico -->
@@ -115,7 +157,30 @@
       </div>
     </div>
 
-    <!-- Script específico para o catálogo -->
+    <div id="edit-modal" class="modal" style="display: none">
+      <div class="admin-modal">
+        <button class="modal-close" type="button" id="close-edit-modal">×</button>
+        <h3>Editar item do catálogo</h3>
+        <form id="edit-form">
+          <label for="edit-nome">Nome</label>
+          <input type="text" id="edit-nome" name="nome" required />
+
+          <label for="edit-tipo">Tipo</label>
+          <input type="text" id="edit-tipo" name="tipo" />
+
+          <label for="edit-material">Material</label>
+          <input type="text" id="edit-material" name="material" />
+
+          <label for="edit-ambientes">Ambientes (separados por vírgula)</label>
+          <textarea id="edit-ambientes" name="ambientes" rows="2"></textarea>
+
+          <button type="submit">Salvar alterações</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Scripts de integração com a API -->
+    <script src="../scripts/app-api.js"></script>
     <script src="../scripts/catalogo.js"></script>
 
     <!-- Script da biblioteca QR Code -->

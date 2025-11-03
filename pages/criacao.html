@@ -11,15 +11,22 @@
   <body>
     <div class="page-container">
       <!-- Header -->
-      <header>
-        <div class="header-main container pady-1 flex-col align-center gap-1">
-          <img src="../assets/images/Logo Dipedra SVG.png" alt="Logo Dipedra" />
-          <ul class="menu">
+      <header class="site-header">
+        <div class="header-main container pady-1">
+          <a class="header-logo" href="../index.html">
+            <img src="../assets/images/Logo Dipedra SVG.png" alt="Logo Dipedra" />
+          </a>
+          <nav class="header-menu">
             <a href="../index.html">Home</a>
             <a href="catalogo.html">Catálogo</a>
             <a href="budget.html">Orçamento</a>
             <a href="about.html">Sobre Nós</a>
-          </ul>
+          </nav>
+          <div class="header-actions">
+            <a class="login-link" href="login.html" aria-label="Acessar área restrita">
+              <img src="../assets/icons/user-circle.svg" alt="" aria-hidden="true" />
+            </a>
+          </div>
         </div>
       </header>
 
