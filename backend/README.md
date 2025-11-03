@@ -75,6 +75,24 @@ Todas as rotas ficam sob `/api`.
 - `PUT /api/catalog/:image` – Atualiza os metadados de um item existente.
 - `DELETE /api/catalog/:image` – Remove um item e exclui a imagem local associada.
 
+## Autenticação e autorização
+
+O painel administrativo utiliza autenticação baseada em token (JWT).
+
+- `POST /api/auth/login` – Autentica um usuário (`{ "username", "password" }`) e retorna `{ token, user }`.
+- `GET /api/auth/me` – Retorna os dados do usuário autenticado (necessita header `Authorization: Bearer <token>`).
+
+O token deve ser enviado no header `Authorization` ao chamar as rotas protegidas do catálogo (`POST`, `PUT` e `DELETE`).
+
+### Perfis padrão
+
+O script de seed cria dois usuários administrativos:
+
+| Usuário | Senha | Permissões |
+| ------- | ----- | ---------- |
+| `master` | `master` | Acesso total (criar, editar e remover) |
+| `user` | `user` | Criar e editar itens |
+
 ### Campos esperados
 
 - `nome` (string, obrigatório)

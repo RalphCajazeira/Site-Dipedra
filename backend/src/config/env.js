@@ -24,6 +24,10 @@ const env = {
   nodeEnv: process.env.NODE_ENV || "development",
   port: Number(process.env.PORT) || 3000,
   databaseUrl,
+  auth: {
+    jwtSecret: process.env.JWT_SECRET || "change-me-in-production",
+    jwtExpiresIn: process.env.JWT_EXPIRES_IN || "8h",
+  },
   upload: {
     catalogDir:
       process.env.CATALOG_UPLOAD_DIR ||
