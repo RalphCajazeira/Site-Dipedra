@@ -98,7 +98,12 @@ router.delete("/delete", (req, res) => {
 });
 
 // ↓↓↓ Renomear pasta
-// Renomear pasta (modo local ou produção)
+// Observação: somente o fluxo local está funcional neste momento. O bloco de produção
+// depende de helpers do Drive (ex.: getDriveFolderId, listDriveFilesInFolder,
+// createFolder, moveFileOrFolder e do próprio client drive) que ainda não existem no
+// driveService.
+// TODO: disponibilizar essas funções no serviço do Drive e revisar o uso aqui antes de
+// ativar o fluxo em produção.
 router.put("/rename", async (req, res) => {
   const { path: currentPath, oldName, newName } = req.body;
 
