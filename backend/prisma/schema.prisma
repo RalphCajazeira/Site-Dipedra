@@ -13,6 +13,7 @@ model CatalogItem {
   name      String
   type      String?
   material  String?
+  /// Lista de ambientes associados ao item.
   ambientes Json
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
