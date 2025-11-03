@@ -5,8 +5,7 @@ const {
   normalizeAmbientes,
   serializeAmbientes,
 } = require("../src/utils/ambientes");
-const bcrypt = require("../src/lib/bcrypt");
-const userRepository = require("../src/repositories/user-repository");
+const { syncDefaultUsers } = require("../src/services/default-user-service");
 
 async function seedCatalog() {
   const catalogPath = path.join(__dirname, "..", "..", "assets", "catalogo.json");
@@ -45,28 +44,7 @@ async function seedCatalog() {
 }
 
 async function seedUsers() {
-  const seeds = [
-    {
-      username: "master",
-      password: "master",
-      role: "master",
-    },
-    {
-      username: "user",
-      password: "user",
-      role: "user",
-    },
-  ];
-
-  for (const seed of seeds) {
-    const passwordHash = await bcrypt.hash(seed.password);
-    await userRepository.upsertUser({
-      username: seed.username,
-      passwordHash,
-      role: seed.role,
-    });
-  }
-
+  await syncDefaultUsers();
   console.log("✅ Usuários administrativos sincronizados.");
 }
 
