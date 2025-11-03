@@ -92,7 +92,11 @@ As imagens são salvas em `assets/images/catalogo` com nomes normalizados (`nome
 | `DATABASE_URL`       | URL do banco SQLite usado pelo Prisma            | `file:backend/var/database.sqlite` |
 | `CATALOG_UPLOAD_DIR` | Diretório onde as imagens serão armazenadas      | `assets/images/catalogo`           |
 
-Crie um arquivo `.env` na pasta `backend` para personalizar os valores quando necessário.
+Copie o arquivo `.env.example` para `.env` na pasta `backend` e ajuste os valores conforme necessário:
+
+```bash
+cp .env.example .env
+```
 
 ## Testes
 
