@@ -8,7 +8,7 @@ const KEY_LENGTH = 32;
 const COST = 16384;
 const BLOCK_SIZE = 8;
 const PARALLELIZATION = 1;
-const PREFIX = "scrypt$";
+const PREFIX = "scrypt";
 
 function encode(hashBuffer) {
   return hashBuffer.toString("base64");
@@ -19,11 +19,17 @@ function decode(hash) {
 }
 
 function parseHash(storedHash) {
-  if (typeof storedHash !== "string" || !storedHash.startsWith(PREFIX)) {
+  if (typeof storedHash !== "string") {
     throw new Error("Unsupported hash format");
   }
 
-  const [, params, saltB64, keyB64] = storedHash.split("$");
+  const parts = storedHash.split("$");
+
+  if (parts.length !== 4 || parts[0] !== PREFIX) {
+    throw new Error("Unsupported hash format");
+  }
+
+  const [, params, saltB64, keyB64] = parts;
 
   const [costRaw, blockSizeRaw, parallelizationRaw, keyLengthRaw] = params.split(":");
 

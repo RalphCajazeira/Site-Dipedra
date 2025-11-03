@@ -2,9 +2,11 @@ require("./config/register-alias");
 const { createApp } = require("@/app");
 const { env } = require("@/config/env");
 const { prisma } = require("@/lib/prisma-client");
+const { syncDefaultUsers } = require("@/services/default-user-service");
 
 async function bootstrap() {
   await prisma.$connect();
+  await syncDefaultUsers();
 
   const app = createApp();
   const server = app.listen(env.port, () => {
