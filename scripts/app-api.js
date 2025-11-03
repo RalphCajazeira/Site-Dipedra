@@ -159,9 +159,87 @@
     clearSession();
   }
 
+  function isNetworkError(error) {
+    if (!error) {
+      return false;
+    }
+
+    return (
+      error.name === "TypeError" ||
+      error.message === "Failed to fetch" ||
+      /NetworkError/i.test(error.message || "")
+    );
+  }
+
+  function resolveFallbackCatalogUrl() {
+    if (typeof window === "undefined" || !window.location) {
+      return "../assets/catalogo.json";
+    }
+
+    try {
+      return new URL("../assets/catalogo.json", window.location.href).href;
+    } catch (_error) {
+      return "../assets/catalogo.json";
+    }
+  }
+
+  function normalizeFallbackItem(item) {
+    if (!item || typeof item !== "object") {
+      return null;
+    }
+
+    const ambientes = Array.isArray(item.ambientes)
+      ? item.ambientes
+      : typeof item.ambientes === "string"
+        ? item.ambientes
+            .split(",")
+            .map((value) => value.trim())
+            .filter(Boolean)
+        : [];
+
+    return {
+      image: item.image || item.imagem || "",
+      nome: item.nome || "",
+      tipo: item.tipo || "",
+      material: item.material || "",
+      ambientes,
+    };
+  }
+
+  async function loadFallbackCatalog() {
+    const url = resolveFallbackCatalogUrl();
+    const response = await fetch(url, { cache: "no-cache" });
+
+    if (!response.ok) {
+      throw new Error("Não foi possível carregar o catálogo local.");
+    }
+
+    const data = await response.json();
+    if (!Array.isArray(data)) {
+      return [];
+    }
+
+    return data
+      .map(normalizeFallbackItem)
+      .filter((item) => item && item.image);
+  }
+
   async function fetchCatalog() {
-    const payload = await request("/catalog", { method: "GET" });
-    return payload?.items ?? [];
+    try {
+      const payload = await request("/catalog", { method: "GET" });
+      return payload?.items ?? [];
+    } catch (error) {
+      if (!isNetworkError(error)) {
+        throw error;
+      }
+
+      console.warn(
+        "Não foi possível comunicar com a API do catálogo. Utilizando dados locais.",
+        error
+      );
+
+      return loadFallbackCatalog();
+    }
   }
 
   async function createCatalogItems(formData) {
