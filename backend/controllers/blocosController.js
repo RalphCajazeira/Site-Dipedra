@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { salvarBlocosDBNoDrive } = require("../services/driveService");
 
-const ROOT = path.resolve(__dirname, "../../");
+const ROOT = process.env.BLOCOS_ROOT || path.resolve(__dirname, "../../");
 
 const DB_PATH = path.join(ROOT, "blocosDB.json");
 
