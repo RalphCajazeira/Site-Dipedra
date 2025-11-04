@@ -43,6 +43,30 @@
   margin-left: auto;
 }
 
+.user-session {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.user-session__logout {
+  border: none;
+  border-radius: 999px;
+  padding: 0.4rem 1rem;
+  background: rgba(0, 32, 73, 0.08);
+  color: var(--color-primary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.user-session__logout:hover,
+.user-session__logout:focus {
+  background: rgba(0, 80, 160, 0.2);
+}
+
 .login-link {
   display: inline-flex;
   align-items: center;

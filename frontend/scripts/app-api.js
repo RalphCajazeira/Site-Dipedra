@@ -1,8 +1,55 @@
-(function (window) {
+(function (window, document) {
   const STORAGE_KEY = "dipedra.session";
+  const CONFIG_EVENT = "app:config-loaded";
+
+  const scriptUrl = (() => {
+    try {
+      const current = document.currentScript;
+      if (current?.src) {
+        return new URL(current.src, window.location.href);
+      }
+
+      const candidates = document.querySelectorAll("script[src]");
+      for (const candidate of candidates) {
+        if (candidate.src && candidate.src.includes("app-api.js")) {
+          return new URL(candidate.src, window.location.href);
+        }
+      }
+    } catch (_error) {
+      /* noop */
+    }
+
+    return null;
+  })();
+
+  const frontendBaseUrl = scriptUrl ? new URL("../", scriptUrl) : null;
+
+  function resolveRelativeUrl(path, fallback = "") {
+    if (!path || typeof path !== "string") {
+      return fallback;
+    }
+
+    if (/^(?:[a-z]+:)?\/\//i.test(path) || path.startsWith("/")) {
+      return path;
+    }
+
+    if (!frontendBaseUrl) {
+      return path;
+    }
+
+    try {
+      return new URL(path, frontendBaseUrl).href;
+    } catch (_error) {
+      return fallback || path;
+    }
+  }
+
+  function getConfig() {
+    return window.APP_CONFIG || {};
+  }
 
   function resolveBaseUrl() {
-    const configured = window.APP_CONFIG?.apiBaseUrl;
+    const configured = getConfig().apiBaseUrl;
     if (configured && typeof configured === "string") {
       return configured.replace(/\/$/, "");
     }
@@ -26,7 +73,11 @@
     return "http://localhost:3000/api";
   }
 
-  const API_BASE_URL = resolveBaseUrl();
+  let API_BASE_URL = resolveBaseUrl();
+
+  window.addEventListener(CONFIG_EVENT, () => {
+    API_BASE_URL = resolveBaseUrl();
+  });
 
   function getSession() {
     try {
@@ -130,6 +181,11 @@
 
   async function fetchProfile() {
     const session = getSession();
+
+    if (!shouldUseApi()) {
+      return session || null;
+    }
+
     if (!session?.token) {
       return null;
     }
@@ -159,28 +215,32 @@
     clearSession();
   }
 
-  function isNetworkError(error) {
-    if (!error) {
-      return false;
+  function resolveFallbackCatalogUrl() {
+    const fallback = getConfig().fallbackCatalogUrl;
+    if (fallback) {
+      return fallback;
     }
 
-    return (
-      error.name === "TypeError" ||
-      error.message === "Failed to fetch" ||
-      /NetworkError/i.test(error.message || "")
-    );
+    return resolveRelativeUrl("assets/catalogo.json");
   }
 
-  function resolveFallbackCatalogUrl() {
-    if (typeof window === "undefined" || !window.location) {
-      return "../assets/catalogo.json";
+  function getCatalogMode() {
+    const config = getConfig();
+    const value = (config.catalogSource || "auto").toString().trim().toLowerCase();
+
+    if (["local", "static", "json", "offline"].includes(value)) {
+      return "local";
     }
 
-    try {
-      return new URL("../assets/catalogo.json", window.location.href).href;
-    } catch (_error) {
-      return "../assets/catalogo.json";
+    if (["api", "remote", "online", "api-only"].includes(value)) {
+      return "api";
     }
+
+    return "auto";
+  }
+
+  function shouldUseApi() {
+    return getCatalogMode() !== "local";
   }
 
   function normalizeFallbackItem(item) {
@@ -197,8 +257,15 @@
             .filter(Boolean)
         : [];
 
+    const image =
+      typeof item.image === "string"
+        ? item.image.trim()
+        : typeof item.imagem === "string"
+          ? item.imagem.trim()
+          : "";
+
     return {
-      image: item.image || item.imagem || "",
+      image,
       nome: item.nome || "",
       tipo: item.tipo || "",
       material: item.material || "",
@@ -225,16 +292,22 @@
   }
 
   async function fetchCatalog() {
+    const mode = getCatalogMode();
+
+    if (mode === "local") {
+      return loadFallbackCatalog();
+    }
+
     try {
       const payload = await request("/catalog", { method: "GET" });
       return payload?.items ?? [];
     } catch (error) {
-      if (!isNetworkError(error)) {
+      if (mode === "api") {
         throw error;
       }
 
       console.warn(
-        "Não foi possível comunicar com a API do catálogo. Utilizando dados locais.",
+        "Não foi possível utilizar a API do catálogo. Utilizando dados locais.",
         error
       );
 
@@ -274,8 +347,42 @@
     );
   }
 
-  window.AppAPI = {
-    API_BASE_URL,
+  function resolveImageUrl(imagePath) {
+    if (!imagePath || typeof imagePath !== "string") {
+      return "";
+    }
+
+    if (/^(?:[a-z]+:)?\/\//i.test(imagePath) || imagePath.startsWith("/")) {
+      return imagePath;
+    }
+
+    const base = getConfig().imageBaseUrl;
+    if (base && typeof base === "string") {
+      const normalizedBase = base.endsWith("/") ? base : `${base}/`;
+      const combined = `${normalizedBase}${imagePath.replace(/^\/+/, "")}`;
+      return resolveRelativeUrl(combined, combined);
+    }
+
+    return resolveRelativeUrl(`assets/images/catalogo/${imagePath}`, imagePath);
+  }
+
+  function getPlaceholderImageUrl() {
+    const placeholder = getConfig().placeholderImageUrl;
+    if (placeholder) {
+      return placeholder;
+    }
+
+    return resolveRelativeUrl("assets/images/placeholder.jpg");
+  }
+
+  const api = {
+    get API_BASE_URL() {
+      return API_BASE_URL;
+    },
+    get apiBaseUrl() {
+      return API_BASE_URL;
+    },
+    getConfig,
     getSession,
     fetchProfile,
     login,
@@ -284,5 +391,9 @@
     createCatalogItems,
     updateCatalogItem,
     deleteCatalogItem,
+    resolveImageUrl,
+    getPlaceholderImageUrl,
   };
-})(window);
+
+  window.AppAPI = api;
+})(window, document);

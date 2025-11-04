@@ -31,7 +31,7 @@ const env = {
   upload: {
     catalogDir:
       process.env.CATALOG_UPLOAD_DIR ||
-      path.join(projectRoot, "assets", "images", "catalogo"),
+      path.join(projectRoot, "frontend", "assets", "images", "catalogo"),
   },
 };
 
