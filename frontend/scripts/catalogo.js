@@ -24,8 +24,22 @@ document.addEventListener("DOMContentLoaded", () => {
     closeEdit: document.getElementById("close-edit-modal"),
   };
 
-  const imagePath = "../assets/images/catalogo/";
-  const placeholderPath = "../assets/images/placeholder.jpg";
+  const placeholderPath =
+    typeof api.getPlaceholderImageUrl === "function"
+      ? api.getPlaceholderImageUrl()
+      : "../assets/images/placeholder.jpg";
+
+  function resolveImagePath(imageName) {
+    if (!imageName) {
+      return placeholderPath;
+    }
+
+    if (typeof api.resolveImageUrl === "function") {
+      return api.resolveImageUrl(imageName);
+    }
+
+    return `../assets/images/catalogo/${imageName}`;
+  }
 
   const state = {
     items: [],
@@ -389,9 +403,10 @@ document.addEventListener("DOMContentLoaded", () => {
     card.className = "card";
 
     const img = document.createElement("img");
-    img.src = `${imagePath}${imageName}`;
+    img.src = resolveImagePath(imageName);
     img.alt = title;
     img.onerror = () => {
+      img.onerror = null;
       img.src = placeholderPath;
     };
 
@@ -409,9 +424,10 @@ document.addEventListener("DOMContentLoaded", () => {
     wrapper.className = "image-wrapper";
 
     const img = document.createElement("img");
-    img.src = `${imagePath}${item.image}`;
+    img.src = resolveImagePath(item.image);
     img.alt = `Imagem de ${item.nome || item.image}`;
     img.onerror = () => {
+      img.onerror = null;
       img.src = placeholderPath;
     };
     img.addEventListener("click", () => openModal(index));
@@ -479,7 +495,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!items || items.length === 0) return;
 
     state.currentImageIndex = index;
-    elements.modalImage.src = `${imagePath}${items[index].image}`;
+    elements.modalImage.src = resolveImagePath(items[index].image);
     elements.modal.style.display = "flex";
   }
 
@@ -496,7 +512,7 @@ document.addEventListener("DOMContentLoaded", () => {
       (state.currentImageIndex + direction + items.length) % items.length;
 
     if (elements.modalImage) {
-      elements.modalImage.src = `${imagePath}${items[state.currentImageIndex].image}`;
+      elements.modalImage.src = resolveImagePath(items[state.currentImageIndex].image);
     }
   }
 

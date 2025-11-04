@@ -24,6 +24,10 @@
             <a class="login-link" href="login.html" aria-label="Área restrita">
               <img src="../assets/icons/user-circle.svg" alt="" aria-hidden="true" />
             </a>
+            <div class="user-session" hidden>
+              <span class="user-session__greeting" aria-live="polite"></span>
+              <button type="button" class="user-session__logout">Sair</button>
+            </div>
           </div>
         </div>
       </header>
@@ -54,7 +58,9 @@
       </footer>
     </div>
 
+    <script src="../scripts/config.js"></script>
     <script src="../scripts/app-api.js"></script>
+    <script src="../scripts/session-ui.js"></script>
     <script src="../scripts/login.js"></script>
   </body>
 </html>
