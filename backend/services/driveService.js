@@ -3,16 +3,27 @@ const fs = require("fs");
 const fsp = fs.promises;
 const path = require("path");
 
-const GOOGLE_DRIVE_SITE_FOLDER_ID = process.env.GOOGLE_DRIVE_SITE_FOLDER_ID;
+const DRIVE_FOLDER_ID =
+  process.env.DRIVE_FOLDER_ID || process.env.GOOGLE_DRIVE_SITE_FOLDER_ID;
 
-// Modo local carrega a chave do JSON, produção usa variável de ambiente
+if (!DRIVE_FOLDER_ID) {
+  throw new Error(
+    "Defina DRIVE_FOLDER_ID (ou GOOGLE_DRIVE_SITE_FOLDER_ID) para usar o Google Drive."
+  );
+}
+
+// Modo local pode usar arquivo, produção exige variável de ambiente
 let auth;
-if (process.env.NODE_ENV === "production") {
+if (process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
   const key = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
   auth = new google.auth.GoogleAuth({
     credentials: key,
     scopes: ["https://www.googleapis.com/auth/drive"],
   });
+} else if (process.env.NODE_ENV === "production") {
+  throw new Error(
+    "Defina GOOGLE_SERVICE_ACCOUNT_JSON no ambiente de produção."
+  );
 } else {
   auth = new google.auth.GoogleAuth({
     keyFile: path.join(__dirname, "../chaves/drive-key.json"),
@@ -28,7 +39,7 @@ const LOCAL_DB_PATH = path.join(__dirname, "../blocosDB.json");
 /** ↓↓↓ Encontra o arquivo blocosDB.json no Drive */
 async function encontrarArquivoDB() {
   const res = await drive.files.list({
-    q: `'${GOOGLE_DRIVE_SITE_FOLDER_ID}' in parents and name = 'blocosDB.json' and trashed = false`,
+    q: `'${DRIVE_FOLDER_ID}' in parents and name = 'blocosDB.json' and trashed = false`,
     fields: "files(id, name)",
   });
 
@@ -109,7 +120,7 @@ async function encontrarOuCriarCaminhoCompleto(caminhoRelativo) {
   const partes = caminhoRelativo.split("/").filter(Boolean);
   const pastaRaiz = await encontrarOuCriarPasta(
     "blocos",
-    GOOGLE_DRIVE_SITE_FOLDER_ID
+    DRIVE_FOLDER_ID
   );
 
   let parentId = pastaRaiz;
