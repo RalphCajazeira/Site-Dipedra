@@ -518,7 +518,7 @@
   {
     "imagem": "mesa---mármore----gris-armani---sala---1.jpg",
     "nome": "Mesa",
-    "tipo": "Mármore ",
+    "tipo": "Mármore",
     "material": "Gris Armani",
     "ambientes": [
       "Sala"
@@ -527,7 +527,7 @@
   {
     "imagem": "mesa---mármore----gris-armani---sala---2.jpg",
     "nome": "Mesa",
-    "tipo": "Mármore ",
+    "tipo": "Mármore",
     "material": "Gris Armani",
     "ambientes": [
       "Sala"
@@ -536,7 +536,7 @@
   {
     "imagem": "mesa---mármore----gris-armani---sala---3.jpg",
     "nome": "Mesa",
-    "tipo": "Mármore ",
+    "tipo": "Mármore",
     "material": "Gris Armani",
     "ambientes": [
       "Sala"
