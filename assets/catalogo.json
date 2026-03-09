@@ -434,8 +434,8 @@
   {
     "imagem": "balcão---quartzo---bronzita---gourmet---1.jpg",
     "nome": "Balcão",
-    "tipo": "Quartzo",
-    "material": "Bronzita",
+    "tipo": "Quartzito",
+    "material": "Bronzite Escovado",
     "ambientes": [
       "Gourmet",
       "Bar"
@@ -444,8 +444,8 @@
   {
     "imagem": "balcão---quartzo---bronzita---gourmet---2.jpg",
     "nome": "Balcão",
-    "tipo": "Quartzo",
-    "material": "Bronzita",
+    "tipo": "Quartzito",
+    "material": "Bronzite Escovado",
     "ambientes": [
       "Gourmet",
       "Bar"
@@ -454,8 +454,8 @@
   {
     "imagem": "balcão---quartzo---bronzita---gourmet---3.jpg",
     "nome": "Balcão",
-    "tipo": "Quartzo",
-    "material": "Bronzita",
+    "tipo": "Quartzito",
+    "material": "Bronzite Escovado",
     "ambientes": [
       "Gourmet",
       "Bar"
@@ -763,6 +763,366 @@
     "nome": "Chapa",
     "tipo": "Mármore",
     "material": "Calcita Extra Polido",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---mármore---macchia-oro---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Quartzito",
+    "material": "Macchia Oro",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---granito---paraná-polido---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Dolomítico",
+    "material": "Paraná Polido",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---dolomítico---arabescato---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Dolomítico",
+    "material": "Arabescato",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---dolomítico---super-white---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Dolomítico",
+    "material": "Super White",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---quartzito---crystallus-extreme-white---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Quartzito",
+    "material": "Crystallus Extreme White",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---quartzito---amazonita---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Quartzito",
+    "material": "Amazonita",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---quartzito---patagônia---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Quartzito",
+    "material": "Patagônia",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---quartzito---cygnus---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Quartzito",
+    "material": "Cygnus",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---granito---gris-armani---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Granito",
+    "material": "Gris Armani",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---mármore---bege-bahia-apicoado---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Mármore",
+    "material": "Bege Bahia Apicoado",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---granito---preto-vulcano---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Granito",
+    "material": "Preto Vulcano",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---quartzito---cristallus-rosa-resinado---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Quartzito",
+    "material": "Cristallus Rosa Resinado",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---quartzito---mont-blanc---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Quartzito",
+    "material": "Mont Blanc",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---granito---cafe-imperial---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Granito",
+    "material": "Cafe Imperial",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---quartzito---vitoria-regia---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Quartzito",
+    "material": "Vitoria Regia",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---quartzito---verde-bambu---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Quartzito",
+    "material": "Verde Bambu",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---quartzito---taj-mahal---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Quartzito",
+    "material": "Taj Mahal",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---quartzito---kouros-escovado---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Quartzito",
+    "material": "Kouros Escovado",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---quartzito---cygnus---chapas---2.jpg",
+    "nome": "Chapa",
+    "tipo": "Quartzito",
+    "material": "Cygnus",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---quartzito---cristallus-tiffany---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Quartzito",
+    "material": "Cristallus Tiffany",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---quartzito---cristallus-rosa-translucido---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Quartzito",
+    "material": "Cristallus Rosa Translucido",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---quartzito---cristallus-polido---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Quartzito",
+    "material": "Cristallus Polido",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---quartzito---botanic-green-polido---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Quartzito",
+    "material": "Botanic Green Polido",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---mármore---travertino-silver---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Mármore",
+    "material": "Travertino Silver",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---mármore---marrom-imperador---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Mármore",
+    "material": "Marrom Imperador",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---mármore---calcita-especial-escovado---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Mármore",
+    "material": "Calcita Especial Escovado",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---mármore---calcita-blue---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Mármore",
+    "material": "Calcita Blue",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---mármore---bege-bahia-polido---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Mármore",
+    "material": "Bege Bahia Polido",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---mármore---bege-bahia-bruto---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Mármore",
+    "material": "Bege Bahia Bruto",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---limestone---crema-moca---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Limestone",
+    "material": "Crema Moca",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---granito---verde-guatemala---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Granito",
+    "material": "Verde Guatemala",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---granito---verde-avocatus---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Granito",
+    "material": "Verde Avocatus",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---dolomítico---pitaya-polido---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Dolomítico",
+    "material": "Pitaya polido",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---granito---green-galaxy-polido---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Granito",
+    "material": "Green Galaxy Polido",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---quartzito---del-mare---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Quartzito",
+    "material": "Del Mare",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---granito---cinza-absoluto---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Granito",
+    "material": "Cinza Absoluto",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---quartzito---patagônia-green---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Quartzito",
+    "material": "Patagônia Green",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---quartzito---bronzite-escovado---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Quartzito",
+    "material": "Bronzite Escovado",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---granito---preto-via-lactea-polido---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Granito",
+    "material": "Preto Via Lactea polido",
+    "ambientes": [
+      "Chapas"
+    ]
+  },
+  {
+    "imagem": "chapa---granito---titanium-gold---chapas---1.jpg",
+    "nome": "Chapa",
+    "tipo": "Granito",
+    "material": "Titanium Gold",
     "ambientes": [
       "Chapas"
     ]
