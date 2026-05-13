@@ -1,26 +1,66 @@
 .footer {
   border-top: 1px solid rgba(194, 160, 100, 0.12);
-  background: rgba(7, 6, 4, 0.82);
+  background:
+    linear-gradient(180deg, rgba(7, 6, 4, 0.82), rgba(5, 4, 3, 0.98));
 }
 
 .inner {
   width: min(1180px, calc(100% - 32px));
   margin: 0 auto;
-  min-height: 88px;
+  min-height: 110px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
   color: rgba(235, 229, 219, 0.62);
-  font-size: 0.9rem;
+  padding: 24px 0;
 }
 
-.inner a {
+.branding {
+  display: grid;
+  gap: 6px;
+}
+
+.branding strong {
+  color: var(--color-accent);
+  font-size: 1rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.branding p {
+  margin: 0;
+  max-width: 320px;
+  color: rgba(235, 229, 219, 0.66);
+  line-height: 1.7;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  justify-content: center;
+}
+
+.links a,
+.backToTop {
   color: var(--color-accent);
   text-decoration: none;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   font-size: 0.72rem;
+}
+
+.links a:hover,
+.links a:focus-visible,
+.backToTop:hover,
+.backToTop:focus-visible {
+  color: var(--color-accent-strong);
+  outline: none;
+}
+
+.backToTop {
+  white-space: nowrap;
 }
 
 @media (max-width: 640px) {
@@ -29,5 +69,9 @@
     justify-content: center;
     text-align: center;
     padding-block: 20px;
+  }
+
+  .branding p {
+    max-width: 100%;
   }
 }

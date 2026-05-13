@@ -64,7 +64,8 @@
   transition: color 180ms ease;
 }
 
-.nav a:hover {
+.navDesktop a:hover,
+.navDesktop a:focus-visible {
   color: var(--color-accent);
 }
 
@@ -78,7 +79,7 @@
   min-height: 44px;
 }
 
- .menuButton {
+.menuButton {
   display: none;
   align-items: center;
   justify-content: center;
@@ -88,6 +89,12 @@
   border: 1px solid rgba(194, 160, 100, 0.18);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.03);
+}
+
+.menuButton:focus-visible,
+.quoteButton:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
 }
 
 .mobileMenu {
@@ -146,6 +153,11 @@
     letter-spacing: 0.14em;
     text-transform: uppercase;
     border-bottom: 1px solid rgba(194, 160, 100, 0.08);
+  }
+
+  .navMobile a:hover,
+  .navMobile a:focus-visible {
+    color: var(--color-accent);
   }
 
   .navMobile a:last-child {

@@ -4,6 +4,7 @@ import tajMahalCozinhaImage from "@/assets/images/collection/taj-mahal-cozinha.j
 import pedraMoledoExternoImage from "@/assets/images/projects/pedra-moledo-externo.jpg";
 import pretoVulcanoGourmetImage from "@/assets/images/projects/preto-vulcano-gourmet.jpg";
 import travertinoBanheiroImage from "@/assets/images/projects/travertino-banheiro.jpg";
+import { whatsappHref } from "@/shared/config/site";
 
 export const homeMarqueeCategories = [
   "Mármores",
@@ -86,7 +87,46 @@ export const industrialBannerContent = {
   description:
     "Nosso processo combina curadoria técnica, suporte comercial e presença visual premium para obras que exigem consistência do começo ao fim.",
   ctas: [
-    { label: "Falar com a equipe", href: "https://wa.me/557136781431?text=Ol%C3%A1!%20Gostaria%20de%20falar%20sobre%20um%20projeto%20com%20a%20DiPedra." },
+    { label: "Falar com a equipe", href: whatsappHref },
     { label: "Explorar catálogo", href: "#pedras" }
   ]
+};
+
+export type DifferentialItem = {
+  description: string;
+  title: string;
+};
+
+export const differentialItems: DifferentialItem[] = [
+  {
+    title: "Curadoria técnica",
+    description: "Seleção orientada por aplicação, acabamento e leitura estética do ambiente."
+  },
+  {
+    title: "Presença premium",
+    description: "Uma identidade visual que transmite sofisticação sem exagero."
+  },
+  {
+    title: "Atendimento consultivo",
+    description: "Apoio próximo para ajudar a escolher a pedra certa com segurança."
+  },
+  {
+    title: "Entrega em escala",
+    description: "Estrutura para obras residenciais, comerciais e projetos de maior porte."
+  }
+];
+
+export const finalCtaContent = {
+  eyebrow: "Atendimento e orçamento",
+  title: "Tem um projeto em mente? Vamos conversar sobre a pedra certa para ele.",
+  description:
+    "A DiPedra atende com foco em elegância, precisão e orientação técnica para transformar a escolha do material em uma etapa mais segura do processo.",
+  primaryAction: {
+    label: "Solicitar orçamento",
+    href: whatsappHref
+  },
+  secondaryAction: {
+    label: "Ver projetos",
+    href: "#projetos"
+  }
 };
