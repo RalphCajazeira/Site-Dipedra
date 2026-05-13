@@ -16,6 +16,8 @@ type InternalPageHeroProps = {
   image: string;
   imageAlt: string;
   breadcrumb: BreadcrumbItem[];
+  mediaEyebrow?: string;
+  mediaCaption?: string;
   children?: ReactNode;
 };
 
@@ -26,6 +28,8 @@ export function InternalPageHero({
   image,
   imageAlt,
   breadcrumb,
+  mediaCaption = "Materiais selecionados para compor o catálogo interno da nova arquitetura.",
+  mediaEyebrow = "Curadoria DiPedra",
   children
 }: InternalPageHeroProps) {
   return (
@@ -57,8 +61,8 @@ export function InternalPageHero({
           <img className={styles.image} src={image} alt={imageAlt} />
           <div className={styles.mediaOverlay} aria-hidden="true" />
           <div className={styles.mediaCaption}>
-            <span>Curadoria DiPedra</span>
-            <strong>Materiais selecionados para compor o catálogo interno da nova arquitetura.</strong>
+            <span>{mediaEyebrow}</span>
+            <strong>{mediaCaption}</strong>
           </div>
         </div>
       </div>

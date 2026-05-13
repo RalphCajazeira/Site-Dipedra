@@ -47,7 +47,7 @@ export function ProductCatalogSection() {
         imageAlt={catalogHero.imageAlt}
         title={catalogHero.title}
       >
-        <Button to="/#contato" variant="primary">
+        <Button to="/contato" variant="primary">
           Falar com especialista
           <ArrowUpRight size={16} />
         </Button>
@@ -90,7 +90,7 @@ export function ProductCatalogSection() {
             Nesta fundação já deixamos o catálogo pronto para receber backend, CMS
             ou filtros funcionais sem reestruturar a apresentação visual.
           </p>
-          <Link className={styles.noteLink} to="/#contato">
+          <Link className={styles.noteLink} to="/contato">
             Solicitar um catálogo sob medida
           </Link>
         </SurfaceCard>

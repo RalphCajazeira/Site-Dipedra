@@ -16,7 +16,7 @@ export function Footer() {
           <Link to="/#pedras">Coleção</Link>
           <Link to="/projetos">Projetos</Link>
           <NavLink to="/sobre">Sobre</NavLink>
-          <Link to="/#contato">Contato</Link>
+          <Link to="/contato">Contato</Link>
         </nav>
 
         <Link className={styles.backToTop} to="/">

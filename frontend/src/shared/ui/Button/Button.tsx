@@ -50,10 +50,14 @@ export function Button({ children, className, variant = "ghost", ...props }: But
     );
   }
 
-  const { type: _type, ...buttonProps } = props as ButtonAsButton;
+  const { type, ...buttonProps } = props as ButtonAsButton;
 
   return (
-    <button className={classes} type="button" {...(buttonProps as ButtonHTMLAttributes<HTMLButtonElement>)}>
+    <button
+      className={classes}
+      type={type ?? "button"}
+      {...(buttonProps as ButtonHTMLAttributes<HTMLButtonElement>)}
+    >
       {children}
     </button>
   );
