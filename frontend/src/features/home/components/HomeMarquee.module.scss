@@ -1,0 +1,50 @@
+.marquee {
+  overflow: hidden;
+  padding: 16px 0;
+  border-top: 1px solid rgba(201, 162, 103, 0.12);
+  border-bottom: 1px solid rgba(201, 162, 103, 0.12);
+  background:
+    linear-gradient(90deg, rgba(201, 162, 103, 0.05), transparent 25%, transparent 75%, rgba(201, 162, 103, 0.05));
+}
+
+.track {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: max-content;
+  padding-inline: 18px;
+  animation: scroll 24s linear infinite;
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  color: rgba(240, 232, 219, 0.78);
+  font-size: 0.74rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.item::before {
+  content: "";
+  width: 34px;
+  height: 1px;
+  background: var(--color-accent);
+}
+
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    animation: none;
+  }
+}
