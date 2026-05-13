@@ -13,7 +13,7 @@ type CatalogSearchProps = {
 export function CatalogSearch({
   onClear,
   onChange,
-  placeholder = "Ex.: mármore, cozinha ou fachada",
+  placeholder = "Digite uma ou mais partes do nome, tipo, ou material...",
   value
 }: CatalogSearchProps) {
   return (

@@ -28,23 +28,11 @@
   height: 100%;
   object-fit: cover;
   transform: scale(1.02);
-  filter: saturate(0.92) contrast(1.05) brightness(0.72);
-  transition:
-    transform 240ms ease,
-    filter 240ms ease;
+  transition: transform 240ms ease;
 }
 
 .card:hover .image {
   transform: scale(1.08);
-  filter: saturate(1) contrast(1.08) brightness(0.8);
-}
-
-.overlay {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(180deg, rgba(5, 4, 3, 0.08), rgba(5, 4, 3, 0.78)),
-    radial-gradient(circle at top, rgba(201, 162, 103, 0.08), transparent 42%);
 }
 
 .content {

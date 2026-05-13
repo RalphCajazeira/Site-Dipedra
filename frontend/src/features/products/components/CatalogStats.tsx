@@ -28,7 +28,7 @@ export function CatalogStats({ categoryCounts, isLoading, sortBy, totalFound }: 
         {isLoading ? <span>Atualizando catálogo...</span> : null}
       </div>
 
-      <div className={styles.breakdown} aria-label="Contagem por categoria">
+      <div className={styles.breakdown} aria-label="Contagem por grupo do catálogo">
         {categoryCounts.map((item) => (
           <div className={styles.breakdownItem} key={item.id}>
             <span>{item.label}</span>

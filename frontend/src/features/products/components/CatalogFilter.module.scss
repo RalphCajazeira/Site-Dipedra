@@ -1,55 +1,117 @@
+.filterFieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .filterBar {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 12px 18px;
+  align-items: center;
 }
 
-.filterChip {
-  appearance: none;
-  cursor: pointer;
-  width: 100%;
-  display: grid;
-  gap: 4px;
-  min-width: 168px;
-  padding: 14px 16px;
+.filterOption {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
   border: 1px solid rgba(201, 162, 103, 0.12);
-  border-radius: 18px;
+  border-radius: 999px;
   background: rgba(255, 255, 255, 0.02);
-  color: inherit;
-  font: inherit;
-  text-align: left;
+  color: rgba(240, 232, 219, 0.88);
+  cursor: pointer;
   transition:
     transform 180ms ease,
     border-color 180ms ease,
     background-color 180ms ease,
-    box-shadow 180ms ease;
+    box-shadow 180ms ease,
+    color 180ms ease;
 }
 
-.filterChip span {
-  color: rgba(240, 232, 219, 0.9);
-  font-size: 0.78rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-
-.filterChip strong {
-  color: var(--color-accent);
-  font-size: 0.86rem;
-  font-weight: 500;
-}
-
-.filterChip:hover {
+.filterOption:hover {
   transform: translateY(-1px);
   border-color: rgba(201, 162, 103, 0.28);
 }
 
-.filterChipActive {
-  border-color: rgba(201, 162, 103, 0.42);
+.filterOptionActive {
+  border-color: rgba(201, 162, 103, 0.46);
   background: rgba(201, 162, 103, 0.08);
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
+  color: var(--color-accent);
 }
 
-.filterChip:focus-visible {
-  outline: 2px solid var(--color-accent);
+.filterLabel {
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.radioWrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.radioOuter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid rgba(201, 162, 103, 0.48);
+  border-radius: 999px;
+  background: rgba(8, 7, 5, 0.4);
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    transform 180ms ease;
+}
+
+.radioInner {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: transparent;
+  transition: background-color 180ms ease;
+}
+
+.filterOptionActive .radioOuter {
+  border-color: rgba(201, 162, 103, 0.9);
+}
+
+.filterOptionActive .radioInner {
+  background: var(--color-accent);
+}
+
+.nativeRadio {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.filterOption:focus-within {
+  outline: 2px solid rgba(221, 184, 119, 0.72);
   outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  .filterBar {
+    gap: 10px;
+  }
 }

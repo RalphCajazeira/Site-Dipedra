@@ -1,4 +1,18 @@
-export type CatalogGroupId = "all" | "naturais" | "industrializadas" | "outros";
+export type CatalogGroupId = "all" | "ambientes" | "nome" | "tipo" | "material" | "chapas";
+
+export type CatalogCategoryId =
+  | "chapas"
+  | "quartzitos"
+  | "granitos"
+  | "marmores"
+  | "travertinos"
+  | "dolomiticos"
+  | "onix"
+  | "limestone"
+  | "rocha_ornamental"
+  | "sinteticos"
+  | "ultracompactos"
+  | "outros";
 
 export type CatalogSortId = "name-asc" | "name-desc" | "category";
 
@@ -20,11 +34,14 @@ export type CatalogProduct = {
   id: string;
   title: string;
   description: string;
+  legacyName: string;
+  environments: string[];
   category: string;
-  categoryGroup: Exclude<CatalogGroupId, "all">;
+  categoryGroup: CatalogCategoryId;
   categorySlug: string;
   finish: string;
   application: string;
+  imageFile: string;
   image: string;
   imageAlt: string;
   searchKeywords: string[];
@@ -32,7 +49,7 @@ export type CatalogProduct = {
 };
 
 export type CatalogCategoryCount = {
-  id: Exclude<CatalogGroupId, "all">;
+  id: CatalogCategoryId;
   label: string;
   count: number;
 };

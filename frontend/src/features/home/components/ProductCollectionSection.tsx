@@ -22,8 +22,8 @@ export function ProductCollectionSection() {
         </div>
 
         <div className={styles.footer}>
-          <Button href="#contato" variant="ghost">
-            Pedir catálogo completo
+          <Button to="/produtos" variant="ghost">
+            Ver pedras no catálogo
             <ArrowUpRight size={16} />
           </Button>
         </div>

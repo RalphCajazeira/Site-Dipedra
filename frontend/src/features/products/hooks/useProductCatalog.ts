@@ -23,7 +23,13 @@ function normalizeValue(value: string) {
 }
 
 function parseFilter(value: string | null): CatalogGroupId {
-  if (value === "naturais" || value === "industrializadas" || value === "outros") {
+  if (
+    value === "ambientes" ||
+    value === "nome" ||
+    value === "tipo" ||
+    value === "material" ||
+    value === "chapas"
+  ) {
     return value;
   }
 
@@ -60,6 +66,8 @@ function getNextSearchParams(
     } else {
       nextParams.delete(SEARCH_PARAM_KEYS.query);
     }
+
+    nextParams.delete("search");
   }
 
   if (updates.sort !== undefined) {
@@ -104,7 +112,8 @@ export function useProductCatalog({ products }: UseProductCatalogArgs) {
   const paramsSnapshot = searchParams.toString();
   const initialParams = useMemo(() => {
     const filter = parseFilter(searchParams.get(SEARCH_PARAM_KEYS.filter));
-    const query = searchParams.get(SEARCH_PARAM_KEYS.query) ?? "";
+    const query =
+      searchParams.get(SEARCH_PARAM_KEYS.query) ?? searchParams.get("search") ?? "";
     const sort = parseSort(searchParams.get(SEARCH_PARAM_KEYS.sort));
 
     return { filter, query, sort };
@@ -170,50 +179,107 @@ export function useProductCatalog({ products }: UseProductCatalogArgs) {
     const normalizedQuery = normalizeValue(debouncedQuery);
 
     const productsByFilter = products.filter((product) => {
-      return activeFilter === "all" ? true : product.categoryGroup === activeFilter;
+      if (activeFilter === "chapas") {
+        return product.application === "Seleção de chapa";
+      }
+
+      return true;
+    });
+
+    const productsByMode = [...productsByFilter].sort((left, right) => {
+      switch (activeFilter) {
+        case "ambientes":
+          return (
+            left.environments[0]?.localeCompare(right.environments[0] ?? "", "pt-BR") ??
+            left.title.localeCompare(right.title, "pt-BR")
+          );
+        case "nome":
+          return left.legacyName.localeCompare(right.legacyName, "pt-BR");
+        case "tipo":
+          return left.category.localeCompare(right.category, "pt-BR");
+        case "material":
+          return left.title.localeCompare(right.title, "pt-BR");
+        case "chapas":
+          return left.title.localeCompare(right.title, "pt-BR");
+        case "all":
+        default:
+          return left.sortPriority - right.sortPriority;
+      }
     });
 
     const productsBySearch = normalizedQuery
-      ? productsByFilter.filter((product) => {
+      ? productsByMode.filter((product) => {
           const searchableText = normalizeValue(
             [
               product.title,
+              product.legacyName,
               product.category,
               product.categorySlug,
               product.description,
               product.application,
+              product.environments.join(" "),
+              product.category,
               ...product.searchKeywords
             ].join(" ")
           );
 
           return searchableText.includes(normalizedQuery);
         })
-      : productsByFilter;
+      : productsByMode;
+
+    if (activeFilter !== "all" && sortBy === "name-asc") {
+      return productsBySearch;
+    }
 
     return sortCatalogProducts(productsBySearch, sortBy);
   }, [activeFilter, debouncedQuery, products, sortBy]);
 
   const categoryCounts = useMemo<CatalogCategoryCount[]>(() => {
     const counts = new Map<CatalogCategoryCount["id"], number>([
-      ["naturais", 0],
-      ["industrializadas", 0],
+      ["chapas", 0],
+      ["quartzitos", 0],
+      ["granitos", 0],
+      ["marmores", 0],
+      ["travertinos", 0],
+      ["dolomiticos", 0],
+      ["onix", 0],
+      ["limestone", 0],
+      ["rocha_ornamental", 0],
+      ["sinteticos", 0],
+      ["ultracompactos", 0],
       ["outros", 0]
     ]);
 
-    filteredProducts.forEach((product) => {
+    products.forEach((product) => {
       counts.set(product.categoryGroup, (counts.get(product.categoryGroup) ?? 0) + 1);
+      if (product.application === "Seleção de chapa") {
+        counts.set("chapas", (counts.get("chapas") ?? 0) + 1);
+      }
     });
 
     return [
-      { id: "naturais", label: "Pedras Naturais", count: counts.get("naturais") ?? 0 },
+      { id: "chapas", label: "Chapas", count: counts.get("chapas") ?? 0 },
+      { id: "quartzitos", label: "Quartzitos", count: counts.get("quartzitos") ?? 0 },
+      { id: "granitos", label: "Granitos", count: counts.get("granitos") ?? 0 },
+      { id: "marmores", label: "Mármores", count: counts.get("marmores") ?? 0 },
+      { id: "travertinos", label: "Travertinos", count: counts.get("travertinos") ?? 0 },
+      { id: "dolomiticos", label: "Dolomíticos", count: counts.get("dolomiticos") ?? 0 },
+      { id: "onix", label: "Ônix", count: counts.get("onix") ?? 0 },
+      { id: "limestone", label: "Limestone", count: counts.get("limestone") ?? 0 },
       {
-        id: "industrializadas",
-        label: "Industrializadas",
-        count: counts.get("industrializadas") ?? 0
+        id: "rocha_ornamental",
+        label: "Rocha ornamental",
+        count: counts.get("rocha_ornamental") ?? 0
       },
-      { id: "outros", label: "Outras categorias", count: counts.get("outros") ?? 0 }
+      { id: "sinteticos", label: "Sintéticos", count: counts.get("sinteticos") ?? 0 },
+      {
+        id: "ultracompactos",
+        label: "UltraCompactos",
+        count: counts.get("ultracompactos") ?? 0
+      },
+      { id: "outros", label: "Outras pedras", count: counts.get("outros") ?? 0 }
     ];
-  }, [filteredProducts]);
+  }, [products]);
 
   const hasPendingSearch = queryInput !== debouncedQuery;
 

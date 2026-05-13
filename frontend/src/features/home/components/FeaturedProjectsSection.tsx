@@ -26,8 +26,8 @@ export function FeaturedProjectsSection() {
         </div>
 
         <div className={styles.footer}>
-          <Button href="#contato" variant="ghost">
-            Conversar sobre um projeto
+          <Button to="/projetos" variant="ghost">
+            Ver todos os projetos
             <ArrowUpRight size={16} />
           </Button>
         </div>

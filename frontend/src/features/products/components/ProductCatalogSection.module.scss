@@ -15,11 +15,44 @@
 }
 
 .controlsHeader {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 260px);
+  gap: 16px;
+  align-items: start;
+}
+
+.searchStack {
+  display: grid;
+  gap: 14px;
+}
+
+.searchRow {
   display: flex;
   flex-wrap: wrap;
-  align-items: end;
-  justify-content: space-between;
-  gap: 16px;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.shareActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-top: 22px;
+}
+
+.actionButton {
+  min-height: 42px;
+  padding: 0 16px;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+}
+
+.shareFeedback {
+  margin: 0;
+  color: rgba(240, 232, 219, 0.68);
+  font-size: 0.76rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .resultsSummary {
@@ -85,6 +118,11 @@
   }
 
   .controlsHeader {
-    align-items: stretch;
+    grid-template-columns: 1fr;
+  }
+
+  .shareActions {
+    padding-top: 0;
+    gap: 8px;
   }
 }

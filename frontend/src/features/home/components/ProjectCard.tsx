@@ -11,7 +11,6 @@ export function ProjectCard({ description, featured = false, image, label, locat
     <article className={`${styles.card} ${featured ? styles.featured : ""}`}>
       <div className={styles.media}>
         <img className={styles.image} src={image} alt={title} loading="lazy" />
-        <div className={styles.overlay} />
       </div>
 
       <div className={styles.content}>
