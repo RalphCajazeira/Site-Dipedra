@@ -50,7 +50,7 @@ export function ProjectsPageHero({
           <div className={styles.badges} aria-label="Destaques da página">
             <span>Hero interno</span>
             <span>Galeria responsiva</span>
-            <span>Dados mockados</span>
+            <span>Acervo real</span>
           </div>
         </div>
 
@@ -66,4 +66,3 @@ export function ProjectsPageHero({
     </section>
   );
 }
-

@@ -1,7 +1,7 @@
-import bronzitaGourmetImage from "@/assets/images/collection/bronzita-gourmet.jpg";
-import montBlancBanhoImage from "@/assets/images/collection/mont-blanc-banho.jpg";
-import tajMahalCozinhaImage from "@/assets/images/collection/taj-mahal-cozinha.jpg";
-import pedraMoledoExternoImage from "@/assets/images/projects/pedra-moledo-externo.jpg";
+import amazonitaChapaImage from "@/assets/images/products/amazonita-chapa.jpg";
+import montBlancPolidoImage from "@/assets/images/products/mont-blanc-polido.jpg";
+import tajMahalChapaImage from "@/assets/images/products/taj-mahal-chapa.jpg";
+import titaniumGoldImage from "@/assets/images/projects/titanium-gold-escritorio.jpg";
 import pretoVulcanoGourmetImage from "@/assets/images/projects/preto-vulcano-gourmet.jpg";
 import travertinoBanheiroImage from "@/assets/images/projects/travertino-banheiro.jpg";
 import { whatsappHref } from "@/shared/config/site";
@@ -27,25 +27,28 @@ export type ProductCollectionItem = {
 
 export const productCollectionItems: ProductCollectionItem[] = [
   {
-    title: "Mont Blanc",
-    tag: "Banheiro",
-    highlight: "Elegância neutra",
-    description: "Uma leitura limpa e sofisticada para ambientes com luz e textura equilibradas.",
-    image: montBlancBanhoImage
-  },
-  {
     title: "Taj Mahal",
-    tag: "Cozinha",
+    tag: "Bancadas",
     highlight: "Tons quentes",
-    description: "Superfície clássica com presença suave, ideal para uma composição premium.",
-    image: tajMahalCozinhaImage
+    description:
+      "Uma chapa de leitura suave e sofisticada, ideal para cozinhas e ilhas com presença equilibrada.",
+    image: tajMahalChapaImage
   },
   {
-    title: "Bronzita",
-    tag: "Gourmet",
-    highlight: "Contraste marcante",
-    description: "Visual mais dramático, com personalidade forte para áreas de convívio.",
-    image: bronzitaGourmetImage
+    title: "Amazonita",
+    tag: "Painéis",
+    highlight: "Cor e personalidade",
+    description:
+      "Uma pedra com leitura marcante para composições autorais, painéis e pontos de destaque.",
+    image: amazonitaChapaImage
+  },
+  {
+    title: "Mont Blanc",
+    tag: "Uso intenso",
+    highlight: "Controle técnico",
+    description:
+      "Uma superfície de linguagem clara para cozinhas e ilhas que pedem precisão e desempenho.",
+    image: montBlancPolidoImage
   }
 ];
 
@@ -73,11 +76,12 @@ export const featuredProjectItems: FeaturedProjectItem[] = [
     image: travertinoBanheiroImage
   },
   {
-    title: "Revestimento em Pedra Moledo",
-    label: "Arquitetônico",
-    location: "Área externa",
-    description: "Textura robusta e volumetria natural para composições com caráter industrial.",
-    image: pedraMoledoExternoImage
+    title: "Escritório em Titanium Gold",
+    label: "Corporativo",
+    location: "Área executiva",
+    description:
+      "Uma peça de impacto para um ambiente de trabalho mais autoral, com leitura refinada e sob medida.",
+    image: titaniumGoldImage
   }
 ];
 

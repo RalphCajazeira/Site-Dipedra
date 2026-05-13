@@ -74,8 +74,8 @@ export function ProjectsGallerySection() {
           <SurfaceCard className={styles.emptyState}>
             <span>Nenhum resultado encontrado</span>
             <p>
-              A categoria "{activeFilterLabel}" ainda não possui projetos mockados
-              nesta fase. Tente mudar o filtro para explorar as composições disponíveis.
+              A categoria "{activeFilterLabel}" ainda não possui projetos nesta seleção.
+              Tente mudar o filtro para explorar as composições disponíveis.
             </p>
           </SurfaceCard>
         )}
