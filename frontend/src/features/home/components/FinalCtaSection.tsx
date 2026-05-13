@@ -20,7 +20,7 @@ export function FinalCtaSection() {
               {finalCtaContent.primaryAction.label}
               <ArrowUpRight size={16} />
             </Button>
-            <Button href={finalCtaContent.secondaryAction.href} variant="ghost">
+            <Button to={finalCtaContent.secondaryAction.to} variant="ghost">
               {finalCtaContent.secondaryAction.label}
             </Button>
           </div>

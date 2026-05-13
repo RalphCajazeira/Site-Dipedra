@@ -32,7 +32,7 @@ export function HeroSection() {
               Explorar Catálogo
               <ArrowUpRight size={16} />
             </Button>
-            <Button href="#projetos" variant="ghost">
+            <Button to="/projetos" variant="ghost">
               Ver Projetos
             </Button>
           </div>

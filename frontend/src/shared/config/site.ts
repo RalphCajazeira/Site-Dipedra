@@ -18,7 +18,7 @@ export const whatsappHref = `https://wa.me/557136781431?text=${whatsappMessage}`
 export const siteNavigation: NavigationItem[] = [
   { label: "Home", to: "/" },
   { label: "Pedras", to: "/produtos" },
-  { label: "Projetos", to: "/#projetos" },
+  { label: "Projetos", to: "/projetos" },
   { label: "Sobre", to: "/#sobre" },
   { label: "Contato", to: "/#contato" }
 ];

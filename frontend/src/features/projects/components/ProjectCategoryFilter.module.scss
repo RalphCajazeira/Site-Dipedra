@@ -1,0 +1,72 @@
+.filterBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.filterChip {
+  display: grid;
+  gap: 4px;
+  padding: 14px 18px;
+  border: 1px solid rgba(201, 162, 103, 0.16);
+  border-radius: 18px;
+  background: rgba(15, 13, 9, 0.84);
+  color: rgba(240, 232, 219, 0.76);
+  text-align: left;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+.filterChip:focus-visible {
+  outline: 2px solid rgba(221, 184, 119, 0.7);
+  outline-offset: 3px;
+}
+
+.filterChip:hover,
+.filterChip:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(201, 162, 103, 0.34);
+}
+
+.labelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.labelRow > span {
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.labelRow > strong {
+  display: inline-flex;
+  align-items: center;
+  min-width: 28px;
+  justify-content: center;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(201, 162, 103, 0.14);
+  color: rgba(240, 232, 219, 0.92);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+}
+
+.filterChip > strong {
+  font-size: 0.86rem;
+  font-weight: 500;
+  color: rgba(240, 232, 219, 0.6);
+}
+
+.filterChipActive {
+  background: linear-gradient(180deg, rgba(201, 162, 103, 0.18), rgba(15, 13, 9, 0.9));
+  border-color: rgba(201, 162, 103, 0.42);
+}
+
+.filterChipActive strong {
+  color: rgba(240, 232, 219, 0.82);
+}

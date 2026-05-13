@@ -13,7 +13,7 @@ export function Footer() {
 
         <nav className={styles.links} aria-label="Links do rodapé">
           <Link to="/#pedras">Coleção</Link>
-          <Link to="/#projetos">Projetos</Link>
+          <Link to="/projetos">Projetos</Link>
           <Link to="/#sobre">Diferenciais</Link>
           <Link to="/#contato">Contato</Link>
         </nav>

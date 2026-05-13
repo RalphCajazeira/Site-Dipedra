@@ -127,6 +127,6 @@ export const finalCtaContent = {
   },
   secondaryAction: {
     label: "Ver projetos",
-    href: "#projetos"
+    to: "/projetos"
   }
 };
