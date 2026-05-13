@@ -1,6 +1,6 @@
 import { Menu, X, ArrowUpRight } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 import { Button } from "@/shared/ui";
 import { siteNavigation, whatsappHref } from "@/shared/config/site";
@@ -10,7 +10,6 @@ import styles from "./Header.module.scss";
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isScrolled = useScrolled(16);
-  const location = useLocation();
 
   useEffect(() => {
     const closeOnEscape = (event: KeyboardEvent) => {
@@ -36,13 +35,13 @@ export function Header() {
 
         <nav className={styles.navDesktop} aria-label="Navegação principal">
           {siteNavigation.map((item) => (
-            <Link
+            <NavLink
               key={item.to}
-              className={location.pathname === item.to ? styles.activeLink : undefined}
+              className={({ isActive }) => (isActive ? styles.activeLink : undefined)}
               to={item.to}
             >
               {item.label}
-            </Link>
+            </NavLink>
           ))}
         </nav>
 
@@ -67,14 +66,14 @@ export function Header() {
       <div className={`${styles.mobileMenu} ${mobileMenuOpen ? styles.mobileMenuOpen : ""}`}>
         <nav className={styles.navMobile} aria-label="Navegação mobile">
           {siteNavigation.map((item) => (
-            <Link
+            <NavLink
               key={item.to}
-              className={location.pathname === item.to ? styles.activeLink : undefined}
+              className={({ isActive }) => (isActive ? styles.activeLink : undefined)}
               to={item.to}
               onClick={() => setMobileMenuOpen(false)}
             >
               {item.label}
-            </Link>
+            </NavLink>
           ))}
         </nav>
 

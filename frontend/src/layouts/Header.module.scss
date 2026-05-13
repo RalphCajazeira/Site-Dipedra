@@ -72,6 +72,12 @@
   color: var(--color-accent);
 }
 
+.navDesktop a:focus-visible {
+  outline: 2px solid rgba(221, 184, 119, 0.4);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
 .activeLink {
   color: var(--color-accent) !important;
 }
@@ -165,6 +171,12 @@
   .navMobile a:hover,
   .navMobile a:focus-visible {
     color: var(--color-accent);
+  }
+
+  .navMobile a:focus-visible {
+    outline: 2px solid rgba(221, 184, 119, 0.32);
+    outline-offset: 4px;
+    border-radius: 8px;
   }
 
   .navMobile a.activeLink {

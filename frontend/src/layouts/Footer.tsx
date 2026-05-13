@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 import styles from "./Footer.module.scss";
 
@@ -14,7 +15,7 @@ export function Footer() {
         <nav className={styles.links} aria-label="Links do rodapé">
           <Link to="/#pedras">Coleção</Link>
           <Link to="/projetos">Projetos</Link>
-          <Link to="/#sobre">Diferenciais</Link>
+          <NavLink to="/sobre">Sobre</NavLink>
           <Link to="/#contato">Contato</Link>
         </nav>
 

@@ -19,7 +19,7 @@ export const siteNavigation: NavigationItem[] = [
   { label: "Home", to: "/" },
   { label: "Pedras", to: "/produtos" },
   { label: "Projetos", to: "/projetos" },
-  { label: "Sobre", to: "/#sobre" },
+  { label: "Sobre", to: "/sobre" },
   { label: "Contato", to: "/#contato" }
 ];
 

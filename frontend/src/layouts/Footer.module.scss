@@ -65,6 +65,11 @@
   outline-offset: 3px;
 }
 
+.links a:focus-visible,
+.backToTop:focus-visible {
+  border-radius: 4px;
+}
+
 .backToTop {
   white-space: nowrap;
 }
