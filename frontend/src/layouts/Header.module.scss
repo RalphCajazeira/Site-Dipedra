@@ -1,15 +1,25 @@
 .header {
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: 30;
+  background: rgba(9, 8, 6, 0.18);
+  border-bottom: 1px solid transparent;
+  backdrop-filter: blur(10px);
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    backdrop-filter 180ms ease;
+}
+
+.scrolled {
+  background: rgba(9, 8, 6, 0.84);
+  border-bottom-color: rgba(194, 160, 100, 0.16);
   backdrop-filter: blur(18px);
-  background: rgba(9, 8, 6, 0.72);
-  border-bottom: 1px solid rgba(194, 160, 100, 0.14);
 }
 
 .inner {
   width: min(1180px, calc(100% - 32px));
-  min-height: 76px;
+  min-height: 88px;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -19,7 +29,8 @@
 
 .brand {
   display: inline-flex;
-  flex-direction: column;
+  align-items: baseline;
+  gap: 6px;
   text-decoration: none;
   color: var(--color-text);
   line-height: 0.9;
@@ -27,24 +38,24 @@
   text-transform: uppercase;
 }
 
-.brand span:first-child {
+.brandMark {
   font-family: var(--font-display);
-  font-size: 1.35rem;
+  font-size: 1.55rem;
   color: var(--color-accent);
 }
 
-.brand span:last-child {
-  font-size: 0.72rem;
-  color: rgba(235, 229, 219, 0.7);
+.brandWord {
+  font-size: 0.82rem;
+  color: rgba(235, 229, 219, 0.84);
 }
 
-.nav {
+.navDesktop {
   display: flex;
   align-items: center;
   gap: 28px;
 }
 
-.nav a {
+.navDesktop a {
   color: rgba(235, 229, 219, 0.66);
   text-decoration: none;
   font-size: 0.78rem;
@@ -60,24 +71,94 @@
 .actions {
   display: flex;
   align-items: center;
+  gap: 10px;
 }
 
-.actionButton {
-  min-height: 42px;
+.quoteButton {
+  min-height: 44px;
+}
+
+ .menuButton {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  color: var(--color-text);
+  border: 1px solid rgba(194, 160, 100, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.mobileMenu {
+  display: none;
+}
+
+@media (max-width: 920px) {
+  .inner {
+    min-height: 76px;
+  }
+
+  .navDesktop,
+  .quoteButton {
+    display: none;
+  }
+
+  .menuButton {
+    display: inline-flex;
+  }
+
+  .mobileMenu {
+    display: grid;
+    gap: 18px;
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 0 0 18px;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition:
+      max-height 220ms ease,
+      opacity 180ms ease,
+      padding-bottom 180ms ease;
+  }
+
+  .mobileMenuOpen {
+    max-height: 520px;
+    opacity: 1;
+    padding-bottom: 20px;
+  }
+
+  .navMobile {
+    display: grid;
+    gap: 10px;
+    padding: 16px;
+    border: 1px solid rgba(194, 160, 100, 0.12);
+    border-radius: 22px;
+    background: rgba(10, 9, 6, 0.9);
+  }
+
+  .navMobile a {
+    padding: 12px 8px;
+    color: rgba(235, 229, 219, 0.88);
+    text-decoration: none;
+    font-size: 0.92rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(194, 160, 100, 0.08);
+  }
+
+  .navMobile a:last-child {
+    border-bottom: 0;
+  }
+
+  .mobileQuoteButton {
+    width: 100%;
+  }
 }
 
 @media (max-width: 840px) {
   .inner {
-    flex-wrap: wrap;
-    justify-content: center;
-    padding-block: 16px;
-  }
-
-  .nav {
-    order: 3;
-    width: 100%;
-    justify-content: center;
-    gap: 18px;
     flex-wrap: wrap;
   }
 }
