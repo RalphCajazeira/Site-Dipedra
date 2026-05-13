@@ -1,4 +1,7 @@
 .card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   overflow: hidden;
   border: 1px solid rgba(201, 162, 103, 0.14);
   border-radius: 26px;
@@ -46,6 +49,7 @@
 
 .content {
   padding: 20px 20px 24px;
+  flex: 1;
 }
 
 .metaRow {

@@ -1,5 +1,6 @@
-import amazonitaChapaImage from "@/assets/images/products/amazonita-chapa.jpg";
+import calcitaBlueImage from "@/assets/images/products/calcita-blue.jpg";
 import montBlancPolidoImage from "@/assets/images/products/mont-blanc-polido.jpg";
+import verdeAvocatusImage from "@/assets/images/products/verde-avocatus.jpg";
 import tajMahalChapaImage from "@/assets/images/products/taj-mahal-chapa.jpg";
 import titaniumGoldImage from "@/assets/images/projects/titanium-gold-escritorio.jpg";
 import pretoVulcanoGourmetImage from "@/assets/images/projects/preto-vulcano-gourmet.jpg";
@@ -27,6 +28,14 @@ export type ProductCollectionItem = {
 
 export const productCollectionItems: ProductCollectionItem[] = [
   {
+    title: "Verde Avocatus",
+    tag: "Painéis",
+    highlight: "Cor e profundidade",
+    description:
+      "Uma chapa com presença cromática forte para composições autorais e leitura mineral mais intensa.",
+    image: verdeAvocatusImage
+  },
+  {
     title: "Taj Mahal",
     tag: "Bancadas",
     highlight: "Tons quentes",
@@ -35,12 +44,12 @@ export const productCollectionItems: ProductCollectionItem[] = [
     image: tajMahalChapaImage
   },
   {
-    title: "Amazonita",
-    tag: "Painéis",
-    highlight: "Cor e personalidade",
+    title: "Calcita Blue",
+    tag: "Revestimentos",
+    highlight: "Leitura fria",
     description:
-      "Uma pedra com leitura marcante para composições autorais, painéis e pontos de destaque.",
-    image: amazonitaChapaImage
+      "Uma chapa clara com nuance suave, útil para equilibrar projetos com mais contraste e leveza visual.",
+    image: calcitaBlueImage
   },
   {
     title: "Mont Blanc",
@@ -62,6 +71,14 @@ export type FeaturedProjectItem = {
 
 export const featuredProjectItems: FeaturedProjectItem[] = [
   {
+    title: "Escritório em Titanium Gold",
+    label: "Corporativo",
+    location: "Área executiva",
+    description:
+      "Uma peça de impacto para um ambiente de trabalho mais autoral, com leitura refinada e sob medida.",
+    image: titaniumGoldImage
+  },
+  {
     title: "Cozinha gourmet em Preto Vulcano",
     label: "Residencial",
     location: "Área gourmet",
@@ -74,14 +91,6 @@ export const featuredProjectItems: FeaturedProjectItem[] = [
     location: "Spa e lavabo",
     description: "Leitura delicada, quente e atemporal, ideal para ambientes de pausa e conforto.",
     image: travertinoBanheiroImage
-  },
-  {
-    title: "Escritório em Titanium Gold",
-    label: "Corporativo",
-    location: "Área executiva",
-    description:
-      "Uma peça de impacto para um ambiente de trabalho mais autoral, com leitura refinada e sob medida.",
-    image: titaniumGoldImage
   }
 ];
 

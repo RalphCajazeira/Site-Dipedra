@@ -11,8 +11,8 @@ export function FeaturedProjectsSection() {
       <Container>
         <SectionHeading
           eyebrow="Projetos em destaque"
-          title="Composições que mostram escala, acabamento e leitura arquitetônica."
-          description="Uma vitrine inicial para o portfólio da marca, com cards premium e foco em aplicação real."
+          title="Ambientes reais que mostram escala, uso e acabamento."
+          description="Uma seleção curta de aplicações do acervo, pensada para mostrar contexto, leitura espacial e impacto visual."
         />
 
         <div className={styles.grid}>
@@ -27,7 +27,7 @@ export function FeaturedProjectsSection() {
 
         <div className={styles.footer}>
           <Button href="#contato" variant="ghost">
-            Falar sobre um projeto
+            Conversar sobre um projeto
             <ArrowUpRight size={16} />
           </Button>
         </div>

@@ -11,8 +11,8 @@ export function ProductCollectionSection() {
       <Container>
         <SectionHeading
           eyebrow="Nossa Coleção"
-          title="Peças com presença, textura e cuidado no acabamento."
-          description="Uma primeira vitrine de produtos para a Home, organizada em cards reutilizáveis e com imagens locais do próprio acervo da Dipedra."
+          title="Chapas com presença, contraste e leitura mineral."
+          description="Uma seleção curta de chapas reais do acervo da Dipedra, escolhidas para mostrar variedade de cor, textura e acabamento."
         />
 
         <div className={styles.grid}>
@@ -23,7 +23,7 @@ export function ProductCollectionSection() {
 
         <div className={styles.footer}>
           <Button href="#contato" variant="ghost">
-            Solicitar catálogo completo
+            Pedir catálogo completo
             <ArrowUpRight size={16} />
           </Button>
         </div>
