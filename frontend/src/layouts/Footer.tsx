@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 import styles from "./Footer.module.scss";
 
 export function Footer() {
@@ -10,15 +12,15 @@ export function Footer() {
         </div>
 
         <nav className={styles.links} aria-label="Links do rodapé">
-          <a href="#pedras">Coleção</a>
-          <a href="#projetos">Projetos</a>
-          <a href="#sobre">Diferenciais</a>
-          <a href="#contato">Contato</a>
+          <Link to="/#pedras">Coleção</Link>
+          <Link to="/#projetos">Projetos</Link>
+          <Link to="/#sobre">Diferenciais</Link>
+          <Link to="/#contato">Contato</Link>
         </nav>
 
-        <a className={styles.backToTop} href="#inicio">
+        <Link className={styles.backToTop} to="/">
           Voltar ao topo
-        </a>
+        </Link>
       </div>
     </footer>
   );

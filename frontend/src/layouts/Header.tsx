@@ -1,5 +1,6 @@
 import { Menu, X, ArrowUpRight } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 import { Button } from "@/shared/ui";
 import { siteNavigation, whatsappHref } from "@/shared/config/site";
@@ -9,6 +10,7 @@ import styles from "./Header.module.scss";
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isScrolled = useScrolled(16);
+  const location = useLocation();
 
   useEffect(() => {
     const closeOnEscape = (event: KeyboardEvent) => {
@@ -27,16 +29,20 @@ export function Header() {
   return (
     <header className={`${styles.header} ${isScrolled ? styles.scrolled : ""}`}>
       <div className={styles.inner}>
-        <a className={styles.brand} href="#inicio" aria-label="DiPedra - página inicial">
+        <Link className={styles.brand} to="/" aria-label="DiPedra - página inicial">
           <span className={styles.brandMark}>Di</span>
           <span className={styles.brandWord}>Pedra</span>
-        </a>
+        </Link>
 
         <nav className={styles.navDesktop} aria-label="Navegação principal">
           {siteNavigation.map((item) => (
-            <a key={item.href} href={item.href}>
+            <Link
+              key={item.to}
+              className={location.pathname === item.to ? styles.activeLink : undefined}
+              to={item.to}
+            >
               {item.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
@@ -61,9 +67,14 @@ export function Header() {
       <div className={`${styles.mobileMenu} ${mobileMenuOpen ? styles.mobileMenuOpen : ""}`}>
         <nav className={styles.navMobile} aria-label="Navegação mobile">
           {siteNavigation.map((item) => (
-            <a key={item.href} href={item.href} onClick={() => setMobileMenuOpen(false)}>
+            <Link
+              key={item.to}
+              className={location.pathname === item.to ? styles.activeLink : undefined}
+              to={item.to}
+              onClick={() => setMobileMenuOpen(false)}
+            >
               {item.label}
-            </a>
+            </Link>
           ))}
         </nav>
 

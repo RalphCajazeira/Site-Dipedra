@@ -1,0 +1,29 @@
+.sortField {
+  display: grid;
+  gap: 10px;
+  min-width: min(100%, 240px);
+}
+
+.sortField span {
+  color: rgba(240, 232, 219, 0.9);
+  font-size: 0.74rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+.sortField select {
+  appearance: none;
+  min-height: 52px;
+  padding: 0 16px;
+  border: 1px solid rgba(201, 162, 103, 0.14);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--color-text);
+  font: inherit;
+  outline: none;
+}
+
+.sortField select:focus-visible {
+  border-color: rgba(201, 162, 103, 0.42);
+  box-shadow: 0 0 0 3px rgba(201, 162, 103, 0.12);
+}

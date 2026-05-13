@@ -1,6 +1,6 @@
 export type NavigationItem = {
-  href: string;
   label: string;
+  to: string;
 };
 
 export type HeroMetric = {
@@ -16,11 +16,11 @@ export const whatsappMessage = encodeURIComponent(
 export const whatsappHref = `https://wa.me/557136781431?text=${whatsappMessage}`;
 
 export const siteNavigation: NavigationItem[] = [
-  { label: "Home", href: "#inicio" },
-  { label: "Pedras", href: "#pedras" },
-  { label: "Projetos", href: "#projetos" },
-  { label: "Sobre", href: "#sobre" },
-  { label: "Contato", href: "#contato" }
+  { label: "Home", to: "/" },
+  { label: "Pedras", to: "/produtos" },
+  { label: "Projetos", to: "/#projetos" },
+  { label: "Sobre", to: "/#sobre" },
+  { label: "Contato", to: "/#contato" }
 ];
 
 export const heroMetrics: HeroMetric[] = [

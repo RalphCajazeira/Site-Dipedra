@@ -55,7 +55,10 @@
   gap: 28px;
 }
 
-.navDesktop a {
+.navDesktop a,
+.navDesktop a:visited,
+.navDesktop a:link,
+.navDesktop a:active {
   color: rgba(235, 229, 219, 0.66);
   text-decoration: none;
   font-size: 0.78rem;
@@ -67,6 +70,10 @@
 .navDesktop a:hover,
 .navDesktop a:focus-visible {
   color: var(--color-accent);
+}
+
+.activeLink {
+  color: var(--color-accent) !important;
 }
 
 .actions {
@@ -158,6 +165,10 @@
   .navMobile a:hover,
   .navMobile a:focus-visible {
     color: var(--color-accent);
+  }
+
+  .navMobile a.activeLink {
+    color: var(--color-accent) !important;
   }
 
   .navMobile a:last-child {

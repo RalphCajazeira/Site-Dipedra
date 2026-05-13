@@ -51,6 +51,11 @@
   font-size: 0.72rem;
 }
 
+.links a:visited,
+.backToTop:visited {
+  color: var(--color-accent);
+}
+
 .links a:hover,
 .links a:focus-visible,
 .backToTop:hover,
